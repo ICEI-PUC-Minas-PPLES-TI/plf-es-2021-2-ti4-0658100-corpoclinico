@@ -1,4 +1,16 @@
-function SortPaginate(query, atributos, dadosCount) {
+import { OrderItem } from 'sequelize'
+
+interface ISortableQuery{
+  atributo: string,
+  ordem: 'ASC' | 'DESC'
+}
+interface IPaginatableQuery{
+  limite: string,
+  pagina: string
+}
+export interface ISortPaginateQuery extends Partial<ISortableQuery>, Partial<IPaginatableQuery>{}
+
+function SortPaginate(query: ISortPaginateQuery, atributos: string[], dadosCount: number) {
   const limite =
     query.limite && Number.parseInt(query.limite) < 50
       ? Number.parseInt(query.limite)
@@ -19,11 +31,11 @@ function SortPaginate(query, atributos, dadosCount) {
   return {
     limit: limite,
     offset: offset,
-    order: [[atributo, ordem]],
+    order: [[atributo, ordem]] as OrderItem[],
     paginas
   };
 }
 
-module.exports = {
+export {
   SortPaginate
 };

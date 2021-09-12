@@ -1,10 +1,10 @@
 
-const { Router } = require('express')
+import { Router } from 'express';
 const router = Router()
-const autenticacaoJwt = require('./verificarJwtToken.js');
+import autenticacaoJwt from './verificarJwtToken';
 
 // Importar controllers
-const UsuarioController  = require('../controllers/UsuarioController.js');
+import UsuarioController from '../controllers/UsuarioController';
 
 // Iniciar controllers
 const usuarioController = new UsuarioController();
@@ -13,9 +13,9 @@ const usuarioController = new UsuarioController();
 // Usuario
 router.post('/signin', usuarioController.signin)
 router.post('/usuario', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], usuarioController.create)
-router.get('/usuario/:id', [autenticacaoJwt.verificarToken], usuarioController.get)
+router.get('/usuario/:id', [autenticacaoJwt.verificarToken], usuarioController.get )
 router.get('/usuario', [autenticacaoJwt.verificarToken], usuarioController.getAll)
 router.delete('/usuario/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], usuarioController.delete)
 router.put('/usuario/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], usuarioController.update)
 
-module.exports = router
+export default router;

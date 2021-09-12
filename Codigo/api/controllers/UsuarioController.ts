@@ -1,12 +1,26 @@
-const Usuario = require("../models/Usuario");
-const { SortPaginate } = require("../helpers/SortPaginate");
+import Usuario, { IAtributosUsuario, IAtributosUsuarioCriacao } from "../models/Usuario";
+import { SortPaginate } from "../helpers/SortPaginate";
 
-const yup = require("yup");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
+import yup from "yup";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import { RequestHandler } from "express";
+import { CreateResponse, DeleteResponse } from "../types/Responses";
+import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
+
+interface ILoginUsuario{
+  email: string,
+  senha: string
+}
+
+type SigninReponse = string | {
+  autenticado: boolean,
+  acessoToken: string | null,
+  razao?: "Senha incorreta!"
+}
 
 class UsuarioController {
-  async signin(req, res) {
+  public signin: RequestHandler<never, SigninReponse, ILoginUsuario> = async (req , res) => {
     const { email, senha } = req.body;
 
     Usuario.findOne({
@@ -28,7 +42,7 @@ class UsuarioController {
           });
         }
 
-        const token = jwt.sign({ id: usuario.id }, process.env.SECRET_KEY, {
+        const token = jwt.sign({ id: usuario.id }, process.env.SECRET_KEY ?? "fill-the-env-file.this-is-only-to-prevent-type-error", {
           expiresIn: 604800 // 1 semana expira
         });
 
@@ -39,7 +53,7 @@ class UsuarioController {
       });
   }
 
-  async create(request, response) {
+  public create: CreateRequestHandler = async (request, response) => {
     const telefoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
     const senhaRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
     /*
@@ -85,10 +99,10 @@ class UsuarioController {
     // Validando com o esquema criado:
     try {
       await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (erro) {
+    } catch (erro: any) {
       return response.status(422).json({
         criado: false,
-        "nome:": erro.name, // => 'ValidationError'
+        nome: erro.name, // => 'ValidationError'
         erros: erro.errors
       });
     }
@@ -107,13 +121,13 @@ class UsuarioController {
 
     usuario
       .save()
-      .then(function(anotherTask) {
+      .then(() => {
         return response.status(201).json({
           criado: true,
-          usuarioID: usuario.id
+          id: usuario.id
         });
       })
-      .catch(function(erro) {
+      .catch((erro) => {
         return response.status(500).json({
           criado: false,
           erros: erro.message
@@ -122,22 +136,28 @@ class UsuarioController {
   }
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
-  async delete(request, response) {
+  public delete: DeleteRequestHandler = async (request, response) => {
     await Usuario.destroy({
       where: {
         id: request.params.id
       }
     })
-      .then(dado => {
-        response.status(204).json(dado);
-      })
-      .catch(function(error) {
-        response.status(500).send("Erro interno do servidor");
+    .then(dado => {
+      response.status(204).json({
+        deletado: true,
+        dado
       });
+    })
+    .catch(function(error) {
+      response.status(500).json({
+        deletado: false,
+        errors: error
+      });
+    });
   }
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
-  async update(request, response) {
+  public update: UpddateRequestHandler<IAtributosUsuario> = async (request, response) => {
     const telefoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
     const senhaRegEx = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
     // Em breve buscar dos tipos automaticamente no banco de dados.
@@ -166,10 +186,10 @@ class UsuarioController {
     // Validando com o esquema criado:
     try {
       await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (err) {
+    } catch (err: any) {
       return response.status(422).json({
         atualizado: false,
-        "nome:": err.name, // => 'ValidationError'
+        nome: err.name, // => 'ValidationError'
         erros: err.errors
       });
     }
@@ -185,16 +205,20 @@ class UsuarioController {
       "tipo",
       "data_expira"
     ];
-    const usuario = await Usuario.findAll({
+    const usuario = await Usuario.findOne({
       where: {
         id: request.params.id
       },
       attributes: atributos
     });
-    if (usuario[0] == null) {
-      response.status(404).json(usuario);
+    if (!usuario) {
+      response.status(404).json({
+        atualizado: false,
+        nome: "Usuario não encontrado",
+        erros: "O id que foi solicitado alteração não existe no banco de dados"
+      });
     } else {
-      usuario[0].update({
+      usuario.update({
         nome: nome,
         email: email,
         telefone: telefone,
@@ -204,13 +228,14 @@ class UsuarioController {
       });
       response.status(200).json({
         atualizado: true,
-        usuarioID: usuario[0].id
+        id: usuario.id
       });
     }
   }
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
-  async get(request, response) {
+  public get: GetRequestHandler<IAtributosUsuario> = async (request, response) => {
+
     const atributos = [
       "id",
       "login",
@@ -220,22 +245,22 @@ class UsuarioController {
       "tipo",
       "data_expira"
     ];
-    const usuario = await Usuario.findAll({
+    const usuario = await Usuario.findOne({
       where: {
         id: request.params.id
       },
       attributes: atributos
     });
-    if (usuario[0] == null) {
+    if (!usuario) {
       response.status(404).json(usuario);
     } else {
-      response.status(200).json(usuario[0]);
+      response.status(200).json(usuario);
     }
   }
 
   // URI de exemplo: http://localhost:3000/api/usuario?pagina=1&limite=5&atributo=nome&ordem=DESC
   // todos as querys são opicionais
-  async getAll(request, response) {
+  public getAll: GetAllRequestHandler<IAtributosUsuario> = async (request, response) => {
     const atributos = [
       "id",
       "login",
@@ -247,31 +272,31 @@ class UsuarioController {
     ];
 
     Usuario.findAndCountAll()
-      .then(dados => {
-        const { paginas, ...SortPaginateOptions } = SortPaginate(
-          request.query,
-          atributos,
-          dados.count
-        );
-        Usuario.findAll({
-          attributes: atributos,
-          ...SortPaginateOptions
-        })
-          .then(usuarios => {
-            response.status(200).json({
-              dados: usuarios,
-              quantidade: usuarios.length,
-              total: dados.count,
-              paginas: paginas,
-              offset: SortPaginateOptions.offset
-            });
-          })
-          .catch(error => {
-            response.status(500).json({
-              titulo: "Erro interno do servidor!",
-              error
-            });
+    .then(dados => {
+      const { paginas, ...SortPaginateOptions } = SortPaginate(
+        request.query,
+        atributos,
+        dados.count
+      );
+      Usuario.findAll({
+        attributes: atributos,
+        ...SortPaginateOptions,
+      })
+        .then(usuarios => {
+          response.status(200).json({
+            dados: usuarios,
+            quantidade: usuarios.length,
+            total: dados.count,
+            paginas: paginas,
+            offset: SortPaginateOptions.offset
           });
+        })
+        .catch(error => {
+          response.status(500).json({
+            titulo: "Erro interno do servidor!",
+            error
+          });
+        });
       })
       .catch(function(error) {
         response.status(500).json({
@@ -282,4 +307,4 @@ class UsuarioController {
   }
 }
 
-module.exports = UsuarioController;
+export default UsuarioController;

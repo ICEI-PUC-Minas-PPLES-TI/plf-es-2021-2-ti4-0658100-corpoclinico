@@ -1,15 +1,15 @@
-const express = require("express");
+import express from "express";
 require("express-async-errors");
-const cors = require("cors");
+import cors from "cors";
 require("dotenv").config();
 
 // Create express instance
 const app = express();
 
 // Require API routes
-const routes = require("./routes");
-const AppError = require("./errors/AppError");
-const db = require("./database");
+import routes from "./routes";
+const AppError = require("./errors/AppError").default;
+import db from "./database";
 
 // Import API Routes
 app.use(cors());
@@ -18,7 +18,7 @@ app.use(routes);
 
 db.connect();
 
-app.use(function(err, request, response, next) {
+app.use([(err , request, response, next) => {
   if (err instanceof AppError) {
     return response.status(err.statusCode).json({
       message: err.message
@@ -38,7 +38,7 @@ app.use(function(err, request, response, next) {
       message: `Internal server error ${err.message}`
     });
   }
-});
+}]);
 
 // Export express app
 module.exports = app;
