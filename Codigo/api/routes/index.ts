@@ -5,10 +5,8 @@ import autenticacaoJwt from './verificarJwtToken';
 
 // Importar controllers
 import UsuarioController from '../controllers/UsuarioController';
-console.log(UsuarioController)
 
 // Iniciar controllers
-console.log('alibaba')
 const usuarioController = new UsuarioController();
 
 // Adicionar rotas

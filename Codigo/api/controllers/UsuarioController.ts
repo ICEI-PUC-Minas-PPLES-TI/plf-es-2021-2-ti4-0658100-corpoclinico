@@ -1,8 +1,7 @@
 import Usuario, { IAtributosUsuario, IAtributosUsuarioCriacao } from "../models/Usuario";
 import { SortPaginate } from "../helpers/SortPaginate";
 
-import { object as yupObject } from 'yup'
-import yup from 'yup'
+import * as yup from 'yup'
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { RequestHandler } from "express";
@@ -69,7 +68,7 @@ class UsuarioController {
     // Em breve buscar dos tipos automaticamente no banco de dados.
     const tipos = ["A", "M", "V"];
     console.log('')
-    console.log(yupObject);
+    console.log(yup);
     const scheme = yup.object().shape({
       nome: yup.string().required("Nome obrigatório!"),
       telefone: yup.string().matches(telefoneRegExp, "Telefone inválido!"),
