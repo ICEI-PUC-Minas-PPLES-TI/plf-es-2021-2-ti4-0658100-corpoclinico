@@ -1,7 +1,7 @@
 import Usuario, { IAtributosUsuario, IAtributosUsuarioCriacao } from "../models/Usuario";
 import { SortPaginate } from "../helpers/SortPaginate";
 
-import yup from "yup";
+import * as yup from 'yup'
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { RequestHandler } from "express";
@@ -53,7 +53,7 @@ class UsuarioController {
       });
   }
 
-  public create: CreateRequestHandler = async (request, response) => {
+  public create: any = async (request: any, response: any) => {
     const telefoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
     const senhaRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
     /*
@@ -67,7 +67,8 @@ class UsuarioController {
 
     // Em breve buscar dos tipos automaticamente no banco de dados.
     const tipos = ["A", "M", "V"];
-
+    console.log('')
+    console.log(yup);
     const scheme = yup.object().shape({
       nome: yup.string().required("Nome obrigatório!"),
       telefone: yup.string().matches(telefoneRegExp, "Telefone inválido!"),

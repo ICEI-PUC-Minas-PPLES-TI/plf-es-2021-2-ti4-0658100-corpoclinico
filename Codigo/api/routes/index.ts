@@ -12,7 +12,7 @@ const usuarioController = new UsuarioController();
 // Adicionar rotas
 // Usuario
 router.post('/signin', usuarioController.signin)
-router.post('/usuario', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], usuarioController.create)
+router.post('/usuario', usuarioController.create)
 router.get('/usuario/:id', [autenticacaoJwt.verificarToken], usuarioController.get )
 router.get('/usuario', [autenticacaoJwt.verificarToken], usuarioController.getAll)
 router.delete('/usuario/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], usuarioController.delete)
