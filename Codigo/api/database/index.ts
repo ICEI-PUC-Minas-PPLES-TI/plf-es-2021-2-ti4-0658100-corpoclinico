@@ -1,8 +1,11 @@
-require("dotenv").config();
+
+import dotenv from 'dotenv';
 import { Sequelize } from "sequelize";
 
 // Importar modelos aqui
 import Usuario from "../models/Usuario";
+
+dotenv.config();
 
 const sequelize = new Sequelize(
   process.env.DB_DATABASE ?? "agenda",

@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express'
-import { CreateResponse, DeleteResponse, ReadResponse, UpdateResponse } from './Responses';
+import { CreateResponse, DeleteResponse, ReadResponse, UpdateResponse } from './Responses'
 import { ISortPaginateQuery } from '../helpers/SortPaginate'
 
 ///tipos dos handlers dos principais requests

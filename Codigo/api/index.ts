@@ -1,14 +1,16 @@
 import express from "express";
-require("express-async-errors");
+import 'express-async-errors';
 import cors from "cors";
-require("dotenv").config();
+import dotenv from 'dotenv'
+
+dotenv.config();
 
 // Create express instance
 const app = express();
 
 // Require API routes
 import routes from "./routes";
-const AppError = require("./errors/AppError").default;
+import AppError from "./errors/AppError"
 import db from "./database";
 
 // Import API Routes
