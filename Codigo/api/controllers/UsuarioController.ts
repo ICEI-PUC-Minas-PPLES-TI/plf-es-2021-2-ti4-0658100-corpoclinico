@@ -5,7 +5,6 @@ import * as yup from 'yup'
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { RequestHandler } from "express";
-import { CreateResponse, DeleteResponse } from "../types/Responses";
 import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
 
 interface ILoginUsuario{
@@ -33,7 +32,7 @@ class UsuarioController {
           return res.status(404).send("Usuario nao encontrado.");
         }
 
-        const senhaValida = bcrypt.compareSync(senha, usuario.senha);
+        const senhaValida = bcrypt.compareSync(senha, usuario.get().senha);
         if (!senhaValida) {
           return res.status(401).send({
             autenticado: false,
@@ -53,7 +52,7 @@ class UsuarioController {
       });
   }
 
-  public create: any = async (request: any, response: any) => {
+  public create: CreateRequestHandler = async (request, response) => {
     const telefoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
     const senhaRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
     /*
