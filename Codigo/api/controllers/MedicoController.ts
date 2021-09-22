@@ -31,7 +31,10 @@ class MedicoController {
         .required("rg obrigatório!"), // TODO: RegEX de RG
       cpf: yup
       .string()
-      .required("rg obrigatório!"), // TODO: RegEX de CPF
+      .required("rg obrigatório!"), // TODO: RegEX de CPF,
+      usuario_id: yup
+      .number()
+      .required('usuario_id obrigatório')
     });
 
     // Validando com o esquema criado:
@@ -45,10 +48,7 @@ class MedicoController {
       });
     }
 
-    const { crm, celular, categoria, rg, cpf } = request.body;
-    const usuario_id = 35;
-
-    console.log(crm, celular, categoria, rg, cpf, usuario_id)
+    const { crm, celular, categoria, rg, cpf, usuario_id } = request.body;
 
     const medico = Medico.build({
       crm: crm,

@@ -1,6 +1,7 @@
 
 import dotenv from 'dotenv';
 import { Sequelize } from "sequelize";
+import Medico from '../models/Medico';
 
 // Importar modelos aqui
 import Usuario from "../models/Usuario";
@@ -8,9 +9,9 @@ import Usuario from "../models/Usuario";
 dotenv.config();
 
 const sequelize = new Sequelize(
-  process.env.DB_DATABASE ?? "agenda",
-  process.env.DB_USER ?? "agenda",
-  process.env.DB_PASS ?? "agenda",
+  process.env.DB_DATABASE ?? "corpoclinico",
+  process.env.DB_USER ?? "ccc",
+  process.env.DB_PASS ?? "ccc",
   {
     host: process.env.DB_HOST,
     dialect: "mysql",
@@ -24,6 +25,7 @@ export default {
       await sequelize.authenticate();
       // Iniciar modelos aqui
       Usuario.initialize(sequelize);
+      Medico.initialize(sequelize);
       if (process.env.NODE_ENV === "dev") {
         console.log(
           `Conexão com '${process.env.DB_HOST}/${process.env.DB_DATABASE}' estabelecida`
