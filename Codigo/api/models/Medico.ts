@@ -1,5 +1,5 @@
 import { Model, DataTypes, Sequelize, Optional } from "sequelize";
-import Usuario from "./Usuario";
+import AppError from "../errors/AppError";
 
 export interface IAtributosMedico {
   id: number,
@@ -35,11 +35,7 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
         },
         usuario_id: {
           type: DataTypes.INTEGER().UNSIGNED,
-          allowNull: false,
-          references: {
-            key: 'id',
-            model: Usuario
-          }
+          allowNull: false
         },
         crm: {
           type: DataTypes.STRING(20),
