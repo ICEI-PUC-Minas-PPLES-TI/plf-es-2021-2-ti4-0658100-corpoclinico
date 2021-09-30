@@ -9,10 +9,9 @@ export interface IAtributosMedico {
   categoria: "E" | "T" | "C",
   rg: string,
   cpf: string,
-  data_excluido: Date
 }
 export interface IAtributosMedicoCriacao
-  extends Optional<IAtributosMedico, "id" | "data_excluido"> {}
+  extends Optional<IAtributosMedico, "id"> {}
 
 class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
   implements IAtributosMedico {
@@ -23,7 +22,6 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
   categoria!: "E" | "T" | "C";
   rg!: string;
   cpf!: string;
-  data_excluido!: Date;
 
   static initialize(sequelize: Sequelize) {
     Medico.init(
@@ -57,16 +55,11 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
           type: DataTypes.STRING(20),
           allowNull: false
         },
-        data_excluido: {
-          type: DataTypes.DATE,
-          allowNull: true
-        }
       },
       {
         tableName: "medico",
         timestamps: true, // deletedAt precisa disso true
-        paranoid: true, // deletedAt precisa disso true
-        deletedAt: "data_excluido",
+        deletedAt: false,
         createdAt: false,
         updatedAt: false,
         sequelize

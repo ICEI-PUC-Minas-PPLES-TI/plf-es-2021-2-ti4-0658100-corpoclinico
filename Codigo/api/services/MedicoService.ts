@@ -6,10 +6,15 @@ export default  class MedicoService{
     async create(medico: IAtributosMedicoCriacao){
         return Medico.create(medico);
     }
-    async update(medico: IAtributosMedico){
+    async update(medico: Partial<IAtributosMedico>){
         return Medico.update(medico, {
             where: {id: medico.id}
         });
+    }
+    async delete(id: number){
+        return Medico.destroy({
+            where: {id}
+          })
     }
     async getById(id: number){
         return Medico.findOne({
@@ -42,5 +47,9 @@ export default  class MedicoService{
                 offset: SortPaginateOptions.offset
             }
         })
+        .catch((error) => {
+            console.log(error);
+            throw error;
+        });
     }
 }
