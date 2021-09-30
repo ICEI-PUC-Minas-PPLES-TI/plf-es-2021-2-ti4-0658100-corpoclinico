@@ -66,8 +66,6 @@ class UsuarioController {
 
     // Em breve buscar dos tipos automaticamente no banco de dados.
     const tipos = ["A", "M", "V"];
-    console.log('')
-    console.log(yup);
     const scheme = yup.object().shape({
       nome: yup.string().required("Nome obrigatório!"),
       telefone: yup.string().matches(telefoneRegExp, "Telefone inválido!"),

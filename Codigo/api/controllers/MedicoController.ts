@@ -2,7 +2,6 @@ import Medico, { IAtributosMedico, IAtributosMedicoCriacao } from "../models/Med
 import { SortPaginate } from "../helpers/SortPaginate";
 
 import * as yup from 'yup'
-import bcrypt from "bcryptjs";
 import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
 import MedicoService from "../services/MedicoService";
 
@@ -29,18 +28,18 @@ class MedicoController {
       crm: yup.string().required("crm obrigatório!"),
       celular: yup.string().matches(celularRegExp, "celular inválido!"),
       categoria: yup
-      .mixed()
-      .oneOf(categorias, `categoria deve ser alguma destas: ${categorias}.`)
-      .required("categoria obrigatório!"),
+        .mixed()
+        .oneOf(categorias, `categoria deve ser alguma destas: ${categorias}.`)
+        .required("categoria obrigatório!"),
       rg: yup
         .string()
         .required("rg obrigatório!"), // TODO: RegEX de RG
       cpf: yup
-      .string()
-      .required("rg obrigatório!"), // TODO: RegEX de CPF,
+        .string()
+        .required("rg obrigatório!"), // TODO: RegEX de CPF,
       usuario_id: yup
-      .number()
-      .required('usuario_id obrigatório')
+        .number()
+        .required('usuario_id obrigatório')
     });
 
     // Validando com o esquema criado:
@@ -88,18 +87,18 @@ class MedicoController {
         id: request.params.id
       }
     })
-    .then(dado => {
-      response.status(204).json({
-        deletado: true,
-        dado
+      .then(dado => {
+        response.status(204).json({
+          deletado: true,
+          dado
+        });
+      })
+      .catch(function (error) {
+        response.status(500).json({
+          deletado: false,
+          errors: error
+        });
       });
-    })
-    .catch(function(error) {
-      response.status(500).json({
-        deletado: false,
-        errors: error
-      });
-    });
   }
 
   // URI de exemplo: http://localhost:3000/api/medico/1
@@ -118,9 +117,9 @@ class MedicoController {
     const scheme = yup.object().shape({
       celular: yup.string().matches(celularRegExp, "celular inválido!"),
       categoria: yup
-      .mixed()
-      .oneOf(categorias, `categoria deve ser alguma destas: ${categorias}.`)
-      .required("categoria obrigatório!"),
+        .mixed()
+        .oneOf(categorias, `categoria deve ser alguma destas: ${categorias}.`)
+        .required("categoria obrigatório!"),
     });
 
     // Validando com o esquema criado:
@@ -207,6 +206,7 @@ class MedicoController {
       "data_excluido"
     ];
 
+<<<<<<< HEAD
     this.Service.getAll(
       {...request.query},
       atributos,
@@ -218,6 +218,40 @@ class MedicoController {
         total: count,
         paginas: paginas,
         offset: offset
+=======
+    Medico.findAndCountAll()
+      .then(dados => {
+        const { paginas, ...SortPaginateOptions } = SortPaginate(
+          request.query,
+          atributos,
+          dados.count
+        );
+        Medico.findAll({
+          attributes: atributos,
+          ...SortPaginateOptions,
+        })
+          .then(medicos => {
+            response.status(200).json({
+              dados: medicos,
+              quantidade: medicos.length,
+              total: dados.count,
+              paginas: paginas,
+              offset: SortPaginateOptions.offset
+            });
+          })
+          .catch(error => {
+            response.status(500).json({
+              titulo: "Erro interno do servidor!",
+              error
+            });
+          });
+      })
+      .catch(function (error) {
+        response.status(500).json({
+          titulo: "Erro interno do servidor!",
+          error
+        });
+>>>>>>> 8d852ebd7b960d44bdfaa4a21878f6160bc0cea7
       });
     })
     .catch(error => {
