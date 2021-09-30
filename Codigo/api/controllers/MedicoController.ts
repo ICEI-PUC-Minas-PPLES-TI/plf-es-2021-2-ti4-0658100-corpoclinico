@@ -4,8 +4,14 @@ import { SortPaginate } from "../helpers/SortPaginate";
 import * as yup from 'yup'
 import bcrypt from "bcryptjs";
 import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
+import MedicoService from "../services/MedicoService";
 
 class MedicoController {
+  private Service!: MedicoService;
+
+  constructor(){
+    this.Service = new MedicoService();
+  }
 
   public create: CreateRequestHandler<IAtributosMedicoCriacao> = async (request, response) => {
     const celularRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -201,39 +207,25 @@ class MedicoController {
       "data_excluido"
     ];
 
-    Medico.findAndCountAll()
-    .then(dados => {
-      const { paginas, ...SortPaginateOptions } = SortPaginate(
-        request.query,
-        atributos,
-        dados.count
-      );
-      Medico.findAll({
-        attributes: atributos,
-        ...SortPaginateOptions,
-      })
-        .then(medicos => {
-          response.status(200).json({
-            dados: medicos,
-            quantidade: medicos.length,
-            total: dados.count,
-            paginas: paginas,
-            offset: SortPaginateOptions.offset
-          });
-        })
-        .catch(error => {
-          response.status(500).json({
-            titulo: "Erro interno do servidor!",
-            error
-          });
-        });
-      })
-      .catch(function(error) {
-        response.status(500).json({
-          titulo: "Erro interno do servidor!",
-          error
-        });
+    this.Service.getAll(
+      {...request.query},
+      atributos,
+    )
+    .then(({medicos, count, paginas, offset}) => {
+      response.status(200).json({
+        dados: medicos,
+        quantidade: medicos.length,
+        total: count,
+        paginas: paginas,
+        offset: offset
       });
+    })
+    .catch(error => {
+      response.status(500).json({
+        titulo: "Erro interno do servidor!",
+        error
+      });
+    });
   }
 }
 
