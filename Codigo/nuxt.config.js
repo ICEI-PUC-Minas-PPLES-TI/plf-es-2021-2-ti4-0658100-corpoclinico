@@ -45,8 +45,23 @@ export default {
   ** Nuxt.js dev-modules
   */
   buildModules: [
-    '@nuxt/typescript-build'
+    '@nuxt/typescript-build',
+    '@nuxtjs/vuetify'
   ],
+
+  vuetify: {
+    treeShake: true,
+    theme: {
+      themes: {
+        light: {
+          primary: '01BAF2',
+          success: '25BAAE',
+          warning: 'F8A51B',
+          error: 'EE5A74',
+        },
+      },
+    },
+  },
 
   /*
   ** Nuxt.js modules
