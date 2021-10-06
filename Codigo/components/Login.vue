@@ -5,7 +5,7 @@
                 <v-row align="center" justify="center" dense>
                     <v-col cols="12" sm="8" md="5" lg="4">
                         <v-card elevation="0">
-                            <v-img src="@/assets/logo.png" alt="corpo clinico" contain height="200"></v-img>
+                            <v-img src="../assets/logo.svg" alt="corpo clinico" contain height="200"></v-img>
                             <v-card-text>
                                 <v-form @submit.prevent="handleSubmit">
                                     <v-text-field label="Login" name="email" prepend-inner-icon="mdi-account-circle" type="email" class="rounded-0" outlined placeholder="email@email.com" v-model="email"></v-text-field>
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-    import axios from 'axios';
+    // import axios from 'axios';
 export default {
     name: 'Login',
     data(){
@@ -38,11 +38,11 @@ export default {
     },
     methods: {
         async handleSubmit(){
-            const response= await axios.post('http://localhost:3000/api/signin',{
-                email:this.email,
-                password: this.password
-            });
-            console.log(response);
+            // const response= await axios.post('http://localhost:3000/api/signin',{
+            //     email:this.email,
+            //     senha: this.senha
+            // });
+            console.log(this.email,this.senha);
         }
     },
 }
