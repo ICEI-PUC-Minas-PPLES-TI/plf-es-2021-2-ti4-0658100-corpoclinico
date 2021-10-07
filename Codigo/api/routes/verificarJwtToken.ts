@@ -9,7 +9,7 @@ interface IAuthRequest{
 // < params, response, body,  >
 const verificarToken: RequestHandler = (req, res, next) => {
   let token = req.headers["x-access-token"];
-  
+
   if (!token) {
     return res.status(403).send({
       autenticado: false,
@@ -25,10 +25,11 @@ const verificarToken: RequestHandler = (req, res, next) => {
           message: "Falha ao autenticar o token. Erro -> " + err
         });
       }
+      console.log(decoded);
       req.headers.authorization = decoded?.id;
       next();
     });
-  
+
 
   }
 
@@ -36,7 +37,8 @@ const verificarToken: RequestHandler = (req, res, next) => {
 
 const isAdmin: RequestHandler = (req, res, next) => {
   Usuario.findByPk(req.headers.authorization).then(usuario => {
-    if ((usuario as any)?.tipo === "A") {
+    console.log(usuario)
+    if (usuario?.get().tipo === "A") {
       next();
       return;
     }

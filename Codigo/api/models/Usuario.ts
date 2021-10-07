@@ -4,27 +4,21 @@ import AppError from "../errors/AppError";
 
 export interface IAtributosUsuario{
   id: number,
-  login: string,
   nome: string,
   email: string,
-  telefone: string,
   senha: string,
   data_excluido: Date,
-  data_expira: Date,
   tipo: 'A' | 'M' | 'V'
 }
-export interface IAtributosUsuarioCriacao extends Optional<IAtributosUsuario, 'id' | 'data_expira' | 'data_excluido'>{}
+export interface IAtributosUsuarioCriacao extends Optional<IAtributosUsuario, 'id' | 'data_excluido'>{}
 
 class Usuario extends Model<IAtributosUsuario, IAtributosUsuarioCriacao> implements IAtributosUsuario{
-  
+
   id!: number;
-  login!: string;
   nome!: string;
   email!: string;
-  telefone!: string;
   senha!: string;
   data_excluido!: Date;
-  data_expira!: Date;
   tipo!: "A" | "M" | "V";
 
   static initialize(sequelize: Sequelize){
@@ -33,24 +27,6 @@ class Usuario extends Model<IAtributosUsuario, IAtributosUsuarioCriacao> impleme
         type: DataTypes.INTEGER().UNSIGNED,
         primaryKey: true,
         autoIncrement: true
-      },
-      login: {
-        type: DataTypes.STRING(30),
-        allowNull: true,
-        validate: {
-          isUnique: (value: string, next: ((err?: AppError)=>void)) => {
-            Usuario.findAll({
-              where: { login: value },
-              attributes: ["id"]
-            })
-              .then(usuario => {
-                if (usuario.length != 0)
-                  next(new AppError("Login já utilizado!"));
-                next();
-              })
-              .catch(onError => console.log(onError));
-          }
-        }
       },
       nome: {
         type: DataTypes.STRING(120),
@@ -74,19 +50,11 @@ class Usuario extends Model<IAtributosUsuario, IAtributosUsuarioCriacao> impleme
           }
         }
       },
-      telefone: {
-        type: DataTypes.STRING(15),
-        allowNull: true
-      },
       senha: {
         type: DataTypes.STRING(64),
         allowNull: false
       },
       data_excluido: {
-        type: DataTypes.DATE,
-        allowNull: true
-      },
-      data_expira: {
         type: DataTypes.DATE,
         allowNull: true
       },

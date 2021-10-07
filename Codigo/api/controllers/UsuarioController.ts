@@ -41,7 +41,7 @@ class UsuarioController {
           });
         }
 
-        const token = jwt.sign({ id: usuario.id }, process.env.SECRET_KEY ?? "fill-the-env-file.this-is-only-to-prevent-type-error", {
+        const token = jwt.sign({ id: usuario.get().id }, process.env.SECRET_KEY ?? "fill-the-env-file.this-is-only-to-prevent-type-error", {
           expiresIn: 604800 // 1 semana expira
         });
 
@@ -53,7 +53,6 @@ class UsuarioController {
   }
 
   public create: CreateRequestHandler = async (request, response) => {
-    const telefoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
     const senhaRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
     /*
       /^
@@ -67,22 +66,19 @@ class UsuarioController {
     // Em breve buscar dos tipos automaticamente no banco de dados.
     const tipos = ["A", "M", "V"];
     const scheme = yup.object().shape({
-      nome: yup.string().required("Nome obrigatório!"),
-      telefone: yup.string().matches(telefoneRegExp, "Telefone inválido!"),
-
-      login: yup.string().min(3, "Login deve ter no mínimo 3 caracteres!"),
+      nome: yup.string().required("Nome obrigatório!").max(120, "Nome deve ter no máximo 120 caracteres!"),
 
       email: yup
         .string()
         .email()
-        .required("Email obrigatório!"),
+        .required("Email obrigatório!").max(100, "Nome deve ter no máximo 100 caracteres!"),
       senha: yup
         .string()
         .required("Senha obrigatória!")
         .matches(
           senhaRegEx,
           "Senha deve ter no mínimo 8 caracteres, 1 maiúsculo, 1 minúsculo e 1 número!"
-        ),
+        ).max(64, "Nome deve ter no máximo 64 caracteres!"),
       senhaRepetida: yup
         .string()
         .required("Senhas repetida é obrigatória!")
@@ -105,14 +101,12 @@ class UsuarioController {
       });
     }
 
-    const { nome, email, telefone, login, senha, tipo } = request.body;
+    const { nome, email, senha, tipo } = request.body;
     const password = bcrypt.hashSync(senha, 8);
 
     const usuario = Usuario.build({
       nome,
       email,
-      telefone: telefone,
-      login: login,
       senha: password,
       tipo: tipo
     });
@@ -156,24 +150,20 @@ class UsuarioController {
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
   public update: UpddateRequestHandler<IAtributosUsuario> = async (request, response) => {
-    const telefoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
     const senhaRegEx = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
     // Em breve buscar dos tipos automaticamente no banco de dados.
     const tipos = ["A", "M", "V"];
 
     const scheme = yup.object().shape({
-      nome: yup.string(),
-      telefone: yup.string().matches(telefoneRegExp, "Telefone inválido!"),
+      nome: yup.string().max(120, "Nome deve ter no máximo 120 caracteres!"),
 
-      login: yup.string().min(3, "Login deve ter no mínimo 3 caracteres!"),
-
-      email: yup.string().email(),
+      email: yup.string().email().max(100, "Nome deve ter no máximo 100 caracteres!"),
       senha: yup
         .string()
         .matches(
           senhaRegEx,
           "Senha deve ter no mínimo 8 caracteres, 1 maiúsculo, 1 minúsculo, 1 número e 1 caracter especial!"
-        ),
+        ).max(64, "Nome deve ter no máximo 64 caracteres!"),
       senhaRepetida: yup
         .string()
         .oneOf([yup.ref("senha"), null], "Senhas devem ser iguais"),
@@ -192,16 +182,13 @@ class UsuarioController {
       });
     }
 
-    const { nome, email, telefone, login, senha, tipo } = request.body;
+    const { nome, email, senha, tipo } = request.body;
 
     const atributos = [
       "id",
-      "login",
       "nome",
       "email",
-      "telefone",
-      "tipo",
-      "data_expira"
+      "tipo"
     ];
     const usuario = await Usuario.findOne({
       where: {
@@ -219,8 +206,6 @@ class UsuarioController {
       usuario.update({
         nome: nome,
         email: email,
-        telefone: telefone,
-        login: login,
         senha: senha,
         tipo: tipo
       });
@@ -236,12 +221,9 @@ class UsuarioController {
 
     const atributos = [
       "id",
-      "login",
       "nome",
       "email",
-      "telefone",
-      "tipo",
-      "data_expira"
+      "tipo"
     ];
     const usuario = await Usuario.findOne({
       where: {
@@ -261,12 +243,9 @@ class UsuarioController {
   public getAll: GetAllRequestHandler<IAtributosUsuario> = async (request, response) => {
     const atributos = [
       "id",
-      "login",
       "nome",
       "email",
-      "telefone",
-      "tipo",
-      "data_expira"
+      "tipo"
     ];
 
     Usuario.findAndCountAll()
