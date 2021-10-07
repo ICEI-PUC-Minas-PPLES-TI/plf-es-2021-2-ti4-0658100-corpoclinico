@@ -58,6 +58,9 @@ export default {
           success: '25BAAE',
           warning: 'F8A51B',
           error: 'EE5A74',
+          accent: '01BAF2',
+          main: '007970',
+          sub: '71BF45'
         },
       },
     },
