@@ -23,6 +23,7 @@ class UsuarioController {
     const { email, senha } = req.body;
 
     Usuario.findOne({
+      attributes: ['id', 'senha'],
       where: {
         email: email
       }
@@ -183,18 +184,12 @@ class UsuarioController {
     }
 
     const { nome, email, senha, tipo } = request.body;
+    const password = bcrypt.hashSync(senha, 8);
 
-    const atributos = [
-      "id",
-      "nome",
-      "email",
-      "tipo"
-    ];
     const usuario = await Usuario.findOne({
       where: {
         id: request.params.id
-      },
-      attributes: atributos
+      }
     });
     if (!usuario) {
       response.status(404).json({
@@ -206,7 +201,7 @@ class UsuarioController {
       usuario.update({
         nome: nome,
         email: email,
-        senha: senha,
+        senha: password,
         tipo: tipo
       });
       response.status(200).json({
@@ -219,17 +214,10 @@ class UsuarioController {
   // URI de exemplo: http://localhost:3000/api/usuario/1
   public get: GetRequestHandler<IAtributosUsuario> = async (request, response) => {
 
-    const atributos = [
-      "id",
-      "nome",
-      "email",
-      "tipo"
-    ];
     const usuario = await Usuario.findOne({
       where: {
         id: request.params.id
-      },
-      attributes: atributos
+      }
     });
     if (!usuario) {
       response.status(404).json(usuario);
@@ -241,22 +229,17 @@ class UsuarioController {
   // URI de exemplo: http://localhost:3000/api/usuario?pagina=1&limite=5&atributo=nome&ordem=DESC
   // todos as querys são opicionais
   public getAll: GetAllRequestHandler<IAtributosUsuario> = async (request, response) => {
-    const atributos = [
-      "id",
-      "nome",
-      "email",
-      "tipo"
-    ];
 
     Usuario.findAndCountAll()
     .then(dados => {
       const { paginas, ...SortPaginateOptions } = SortPaginate(
         request.query,
-        atributos,
+        Object.keys(
+          Usuario.rawAttributes
+        ) /* Todos os atributos de usuário */,
         dados.count
       );
       Usuario.findAll({
-        attributes: atributos,
         ...SortPaginateOptions,
       })
         .then(usuarios => {

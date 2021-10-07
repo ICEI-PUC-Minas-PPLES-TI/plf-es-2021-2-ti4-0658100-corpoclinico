@@ -25,7 +25,6 @@ const verificarToken: RequestHandler = (req, res, next) => {
           message: "Falha ao autenticar o token. Erro -> " + err
         });
       }
-      console.log(decoded);
       req.headers.authorization = decoded?.id;
       next();
     });
@@ -37,7 +36,6 @@ const verificarToken: RequestHandler = (req, res, next) => {
 
 const isAdmin: RequestHandler = (req, res, next) => {
   Usuario.findByPk(req.headers.authorization).then(usuario => {
-    console.log(usuario)
     if (usuario?.get().tipo === "A") {
       next();
       return;

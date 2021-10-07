@@ -71,7 +71,12 @@ class Usuario extends Model<IAtributosUsuario, IAtributosUsuarioCriacao> impleme
       deletedAt: "data_excluido",
       createdAt: false,
       updatedAt: false,
-      sequelize
+      sequelize,
+      defaultScope: {
+        attributes: {
+          exclude: ['senha'],
+        }
+      },
     })
   }
 }
