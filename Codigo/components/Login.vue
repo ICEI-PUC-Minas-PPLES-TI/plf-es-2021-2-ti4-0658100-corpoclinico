@@ -4,7 +4,7 @@
             <v-container class="fill-height" fluid secondary>
                 <v-row align="center" justify="center" dense>
                     <v-col cols="12" sm="8" md="5" lg="4">
-                        <v-card class="py-4" elevation="0">
+                        <v-card class="py-2" elevation="0">
                             <v-img  src="@/assets/logo.svg" alt="corpo clinico" contain height="150" width="400"></v-img>
                             <v-card-text>
                                 <v-form @submit.prevent="handleSubmit">
