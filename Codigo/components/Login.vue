@@ -3,10 +3,10 @@
         <v-main>
             <v-container class="fill-height" fluid secondary>
                 <v-row align="center" justify="center" dense>
-                    <v-col cols="12" sm="8" md="5" lg="4">
-                        <v-card class="py-4" elevation="0">
-                        <v-row align="center" justify="center">
-                            <v-img  max-width="40%" src="@/assets/logo.svg" alt="corpo clinico"></v-img>
+                    <v-col cols="12" sm="10" md="5" lg="3">
+                        <v-card class="py-0" elevation="0">
+                        <v-row class="py-4" align="center" justify="center">
+                            <v-img  max-width="40%" :src="image" alt="corpo clinico"></v-img>
                         </v-row>
                             <v-card-text>
                                 <v-form @submit.prevent="handleSubmit">
@@ -30,13 +30,16 @@
 
 <script>
     // import axios from 'axios';
+    import image from '/assets/logo.svg'
 export default {
     name: 'Login',
     data(){
         return{
             email:'',
-            senha:''
+            senha:'',
+            image:image
         }
+
     },
     methods: {
         async handleSubmit(){

@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `corpoclinico`.`usuario` (
   `email` VARCHAR(100) NOT NULL,
   `senha` VARCHAR(64) NOT NULL,
   `nome` VARCHAR(120) NOT NULL,
+  `data_excluido` date,
   `tipo` ENUM('A', 'M', 'CC', 'DC', 'DT') NOT NULL COMMENT 'A: Admin\nM: Médico\nCC: Coordenador clínico\nDC: Diretor clínico\nDT: Diretor técnico',
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
