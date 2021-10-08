@@ -46,16 +46,21 @@ export default {
     },
     methods: {
         async handleSubmit(){
-            document.cookie = `key=`;
-            const response= await axios.post('http://localhost:3000/api/signin',{
-                email:this.email,
-                senha: this.senha
-            });
-            if(response.status==200){
-                document.cookie = `key=${response.data.acessoToken}`;
-                this.msg = "Logando"
+            if(this.email==" "||this.senha==" "){
+                this.msg="Favor inserir dados"
             }else{
-                this.msg="Login inválido"
+                document.cookie = `key=`;
+                const response= await axios.post('http://localhost:3000/api/signin',{
+                    email:this.email,
+                    senha: this.senha
+                });
+                if(response.status==200){
+                    document.cookie = `key=${response.data.acessoToken}`;
+                    this.msg = "Logando"
+                }else{
+                    this.msg="Login inválido"
+                }
+            
             }
             
             console.log(this.lembrar)
