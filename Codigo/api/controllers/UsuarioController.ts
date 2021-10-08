@@ -6,8 +6,9 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { RequestHandler } from "express";
 import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
+import AppError from "../errors/AppError";
 
-interface ILoginUsuario{
+interface ILoginUsuario {
   email: string,
   senha: string
 }
@@ -19,7 +20,7 @@ type SigninReponse = string | {
 }
 
 class UsuarioController {
-  public signin: RequestHandler<never, SigninReponse, ILoginUsuario> = async (req , res) => {
+  public signin: RequestHandler<never, SigninReponse, ILoginUsuario> = async (req, res) => {
     const { email, senha } = req.body;
 
     Usuario.findOne({
@@ -130,29 +131,49 @@ class UsuarioController {
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
   public delete: DeleteRequestHandler = async (request, response) => {
+    const usuario = await Usuario.findOne({
+      where: {
+        id: request.params.id
+      }
+    });
+    if (!usuario) {
+      return response.status(404).json({
+        deletado: false,
+        errors: "ID de usuário não encontrado!"
+      });
+    }
+
     await Usuario.destroy({
       where: {
         id: request.params.id
       }
     })
-    .then(dado => {
-      response.status(204).json({
-        deletado: true,
-        dado
+      .then(dado => {
+        response.status(204).json({
+          deletado: true,
+          dado
+        });
+      })
+      .catch(function (error) {
+        response.status(500).json({
+          deletado: false,
+          errors: error
+        });
       });
-    })
-    .catch(function(error) {
-      response.status(500).json({
-        deletado: false,
-        errors: error
-      });
-    });
   }
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
   public update: UpddateRequestHandler<IAtributosUsuario> = async (request, response) => {
-    const senhaRegEx = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-    // Em breve buscar dos tipos automaticamente no banco de dados.
+    const senhaRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+    /*
+      /^
+        (?=.*\d)          // deve ter no mínimo 1 número
+        (?=.*[a-z])       // deve ter no mínimo 1 letra minúscula
+        (?=.*[A-Z])       // deve ter no mínimo 1 letra maiúscula
+        [a-zA-Z0-9]{8,}   // deve ter no mínimo 8 caracteres alfanuméricos
+      $/
+    */
+
     const tipos = ["A", "M", "V"];
 
     const scheme = yup.object().shape({
@@ -184,7 +205,11 @@ class UsuarioController {
     }
 
     const { nome, email, senha, tipo } = request.body;
-    const password = bcrypt.hashSync(senha, 8);
+
+    let passTemp = null;
+    if (senha)
+      passTemp = bcrypt.hashSync(senha, 8);
+    const password = passTemp;
 
     const usuario = await Usuario.findOne({
       where: {
@@ -199,10 +224,10 @@ class UsuarioController {
       });
     } else {
       usuario.update({
-        nome: nome,
-        email: email,
-        senha: password,
-        tipo: tipo
+        nome: nome ? nome : usuario.get().nome,
+        email: email ? email : usuario.get().email,
+        senha: password ? password : usuario.get().senha,
+        tipo: tipo ? tipo : usuario.get().tipo
       });
       response.status(200).json({
         atualizado: true,
@@ -231,34 +256,34 @@ class UsuarioController {
   public getAll: GetAllRequestHandler<IAtributosUsuario> = async (request, response) => {
 
     Usuario.findAndCountAll()
-    .then(dados => {
-      const { paginas, ...SortPaginateOptions } = SortPaginate(
-        request.query,
-        Object.keys(
-          Usuario.rawAttributes
-        ) /* Todos os atributos de usuário */,
-        dados.count
-      );
-      Usuario.findAll({
-        ...SortPaginateOptions,
-      })
-        .then(usuarios => {
-          response.status(200).json({
-            dados: usuarios,
-            quantidade: usuarios.length,
-            total: dados.count,
-            paginas: paginas,
-            offset: SortPaginateOptions.offset
-          });
+      .then(dados => {
+        const { paginas, ...SortPaginateOptions } = SortPaginate(
+          request.query,
+          Object.keys(
+            Usuario.rawAttributes
+          ) /* Todos os atributos de usuário */,
+          dados.count
+        );
+        Usuario.findAll({
+          ...SortPaginateOptions,
         })
-        .catch(error => {
-          response.status(500).json({
-            titulo: "Erro interno do servidor!",
-            error
+          .then(usuarios => {
+            response.status(200).json({
+              dados: usuarios,
+              quantidade: usuarios.length,
+              total: dados.count,
+              paginas: paginas,
+              offset: SortPaginateOptions.offset
+            });
+          })
+          .catch(error => {
+            response.status(500).json({
+              titulo: "Erro interno do servidor!",
+              error
+            });
           });
-        });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         response.status(500).json({
           titulo: "Erro interno do servidor!",
           error
