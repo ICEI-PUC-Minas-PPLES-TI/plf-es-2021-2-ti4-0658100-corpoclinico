@@ -9,10 +9,11 @@
                             <v-img  max-width="40%" :src="image" alt="corpo clinico"></v-img>
                         </v-row>
                             <v-card-text>
-                                <v-form @submit.prevent="handleSubmit">
+                                <v-form v-on:submit.prevent="handleSubmit">
                                     <v-text-field label="Login" name="email" prepend-inner-icon="mdi-account-circle" type="email" class="p-0rounded-0" outlined placeholder="email@email.com" v-model="email"></v-text-field>
-                                    <v-text-field label="Senha" name="senha" prepend-inner-icon="mdi-lock" type="senha" outlined class="rounded-0" v-model="senha"></v-text-field>
-                                     <v-checkbox color="#25BAAE" label="Lembrar-me" class="mt-0">
+                                    <v-text-field label="Senha" name="senha" prepend-inner-icon="mdi-lock" type="password" outlined class="rounded-0" v-model="senha"></v-text-field>
+                                    <span name="msg" v-model="msg" class="mx-1 my-0">{{msg}}</span>
+                                     <v-checkbox color="#25BAAE" label="Lembrar-me" class="mt-0" value="checked" v-model="lembrar"></v-checkbox>
                                     </v-checkbox>
                                     <v-btn  @click.native="handleSubmit" class="rounded-0" color="#25BAAE" x-large block dark > Entrar </v-btn>
                                     <v-card-actions class="text--secondary" >
@@ -29,7 +30,7 @@
 </template>
 
 <script>
-    // import axios from 'axios';
+    import axios from 'axios';
     import image from '/assets/logo.svg'
 export default {
     name: 'Login',
@@ -37,18 +38,27 @@ export default {
         return{
             email:'',
             senha:'',
-            image:image
+            image:image,//logo do corpo clinico
+            lembrar:'',//checkbox de lembrar senha
+            msg:'' //mensagem que aparece embaixo da senha (mas acho que vou tirar kk)
         }
 
     },
     methods: {
         async handleSubmit(){
-            // const response= await axios.post('http://localhost:3000/api/signin',{
-            //     email:this.email,
-            //     password: this.password
-            // });
-            // console.log(response);
-            console.log(this.email + ' ' + this.senha)
+            document.cookie = `key=`;
+            const response= await axios.post('http://localhost:3000/api/signin',{
+                email:this.email,
+                senha: this.senha
+            });
+            if(response.status==200){
+                document.cookie = `key=${response.data.acessoToken}`;
+                this.msg = "Logando"
+            }else{
+                this.msg="Login inválido"
+            }
+            
+            console.log(this.lembrar)
         }
     },
 }
