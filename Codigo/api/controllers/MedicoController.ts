@@ -7,12 +7,11 @@ import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRe
 class MedicoController {
   private Service!: MedicoService;
 
-  constructor(){
+  constructor() {
     this.Service = new MedicoService();
   }
 
   public create: CreateRequestHandler<IAtributosMedicoCriacao> = async (request, response) => {
-    console.log(request.file)
     const scheme = medicoCreateValidationScheme;
 
     // Validando com o esquema criado:
@@ -26,43 +25,85 @@ class MedicoController {
       });
     }
 
-    const { crm, celular, categoria, rg, cpf, usuario_id } = request.body;
+    const { usuario_id, crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
 
-    this.Service.create({ crm, celular, categoria, rg, cpf, usuario_id })
-    .then((medico) => {
-      return response.status(201).json({
-        criado: true,
-        id: medico.id
+    this.Service.create(
+      {
+        usuario_id,
+        crm,
+        regiao,
+        dt_inscricao_crm,
+        celular,
+        cartao_sus,
+        categoria,
+        rg,
+        rg_orgao_emissor,
+        rg_data_emissao,
+        dt_nascimento,
+        cpf,
+        titulo_eleitoral,
+        zona,
+        secao,
+        logradouro,
+        numero,
+        complemento,
+        bairro,
+        cidade,
+        estado,
+        cep,
+        sociedade_cientifica,
+        escolaridade_max,
+      }
+    )
+      .then((medico) => {
+        return response.status(201).json({
+          criado: true,
+          id: medico.id
+        });
+      })
+      .catch((erro) => {
+        return response.status(500).json({
+          criado: false,
+          erros: erro.message
+        });
       });
-    })
-    .catch((erro) => {
-      return response.status(500).json({
-        criado: false,
-        erros: erro.message
-      });
-    });
   }
 
   // URI de exemplo: http://localhost:3000/api/medico/1
   public delete: DeleteRequestHandler = async (request, response) => {
     this.Service.delete(Number(request.params.id))
-    .then(dado => {
-      response.status(204).json({
-        deletado: true,
-        dado
+      .then(dado => {
+        response.status(204).json({
+          deletado: true,
+          dado
+        });
+      })
+      .catch(function (error) {
+        response.status(500).json({
+          deletado: false,
+          errors: error
+        });
       });
-    })
-    .catch(function(error) {
-      response.status(500).json({
-        deletado: false,
-        errors: error
-      });
+  }
+
+  // URI de exemplo: http://localhost:3000/api/medico/1
+  public get: GetRequestHandler<IAtributosMedico> = async (request, response) => {
+
+    const medico = await Medico.findOne({
+      where: {
+        id: request.params.id
+      }
     });
+    if (!medico) {
+      response.status(404).json(medico);
+    } else {
+      response.status(200).json(medico);
+    }
   }
 
   // URI de exemplo: http://localhost:3000/api/medico/1
   public update: UpddateRequestHandler<IAtributosMedico> = async (request, response) => {
-    
+
     const scheme = medicoUpdateValidationScheme
 
     // Validando com o esquema criado:
@@ -78,14 +119,6 @@ class MedicoController {
 
     const { celular, categoria } = request.body;
 
-    const atributos = [
-      "id",
-      "crm",
-      "celular",
-      "categoria",
-      "rg",
-      "cpf",
-    ];
     const medico = await this.Service.getById(Number(request.params.id))
     if (!medico) {
       response.status(404).json({
@@ -102,30 +135,6 @@ class MedicoController {
     }
   }
 
-  // URI de exemplo: http://localhost:3000/api/medico/1
-  public get: GetRequestHandler<IAtributosMedico> = async (request, response) => {
-
-    const atributos = [
-      "id",
-      "crm",
-      "celular",
-      "categoria",
-      "rg",
-      "cpf",
-    ];  
-    const medico = await Medico.findOne({
-      where: {
-        id: request.params.id
-      },
-      attributes: atributos
-    });
-    if (!medico) {
-      response.status(404).json(medico);
-    } else {
-      response.status(200).json(medico);
-    }
-  }
-
   // URI de exemplo: http://localhost:3000/api/medico?pagina=1&limite=5&atributo=nome&ordem=DESC
   // todos as querys são opicionais
   public getAll: GetAllRequestHandler<IAtributosMedico> = async (request, response) => {
@@ -139,24 +148,24 @@ class MedicoController {
     ];
 
     this.Service.getAll(
-      {...request.query},
+      { ...request.query },
       atributos,
     )
-    .then(({medicos, count, paginas, offset}) => {
-      response.status(200).json({
-        dados: medicos,
-        quantidade: medicos.length,
-        total: count,
-        paginas: paginas,
-        offset: offset
+      .then(({ medicos, count, paginas, offset }) => {
+        response.status(200).json({
+          dados: medicos,
+          quantidade: medicos.length,
+          total: count,
+          paginas: paginas,
+          offset: offset
+        });
+      })
+      .catch(error => {
+        response.status(500).json({
+          titulo: "Erro interno do servidor!",
+          error
+        });
       });
-    })
-    .catch(error => {
-      response.status(500).json({
-        titulo: "Erro interno do servidor!",
-        error
-      });
-    });
   }
 }
 

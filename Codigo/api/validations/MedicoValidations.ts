@@ -1,28 +1,194 @@
-import * as yup from 'yup'
-import { celularRegExp } from './Regex';
+import * as yup from "yup";
+import { celularRegEx, rgRegEx, cpfRegEx, cepRegEx } from "./Regex";
+import { estados } from "../helpers/Siglas";
 
 const categorias = ["E", "T", "C"];
+const escolaridades = ["BACHA", "ESPE", "MESTRE", "DOUTOR"];
+
 export const medicoCreateValidationScheme = yup.object().shape({
-    crm: yup.string().required("crm obrigatório!"),
-    celular: yup.string().matches(celularRegExp, "celular inválido!"),
-    categoria: yup
+  usuario_id: yup.number().required("'usuario_id' obrigatório!"),
+
+  crm: yup
+    .string()
+    .required("'crm' obrigatório!")
+    .max(20, "'crm' tamanho máximo de 20 caracteres!"),
+
+  regiao: yup
     .mixed()
-    .oneOf(categorias, `categoria deve ser alguma destas: ${categorias}.`)
-    .required("categoria obrigatório!"),
-    rg: yup
+    .oneOf(estados, `'regiao' deve ser algum destes valores: ${estados}!`)
+    .required("'regiao' obrigatório!"),
+
+  dt_inscricao_crm: yup.date().required("'dt_inscricao_crm' obrigatório!"),
+
+  celular: yup
     .string()
-    .required("rg obrigatório!"), // TODO: RegEX de RG
-    cpf: yup
+    .matches(celularRegEx, "'celular' inválido!")
+    .required("'celular' obrigatório!")
+    .max(14, "'celular' tamanho máximo de 14 caracteres!"),
+
+  cartao_sus: yup
     .string()
-    .required("rg obrigatório!"), // TODO: RegEX de CPF,
-    usuario_id: yup
-    .number()
-    .required('usuario_id obrigatório')
+    .max(25, "'cartao_sus' tamanho máximo de 25 caracteres!"),
+
+  categoria: yup
+    .mixed()
+    .oneOf(
+      categorias,
+      `'categoria' deve ser algum destes valores: ${categorias}.`
+    )
+    .required("'categoria' obrigatório!"),
+
+  rg: yup
+    .string()
+    .matches(rgRegEx, "'rg' inválido!")
+    .max(14, "'rg' tamanho máximo de 14 caracteres!"),
+
+  rg_orgao_emissor: yup
+    .string()
+    .max(30, "'rg_orgao_emissor' tamanho máximo de 30 caracteres!"),
+
+  rg_data_emissao: yup.date(),
+
+  cpf: yup
+    .string()
+    .matches(cpfRegEx, "'cpf' inválido!")
+    .max(14, "'cpf' tamanho máximo de 14 caracteres!"),
+
+  titulo_eleitoral: yup
+    .string()
+    .min(1, "'titulo_eleitoral' tamanho mínimo de 1 caractere.")
+    .max(12, "'titulo_eleitoral' tamanho máximo de 12 caracteres!"),
+
+  zona: yup.string().max(3, "'zona' tamanho máximo de 3 caracteres!"),
+
+  secao: yup.string().max(4, "'secao' tamanho máximo de 4 caracteres!"),
+
+  logradouro: yup
+    .string()
+    .required("'logradouro' obrigatório!")
+    .max(100, "'logradouro' tamanho máximo de 100 caracteres!"),
+
+  numero: yup.number().required("'numero' obrigatório!"),
+
+  complemento: yup
+    .string()
+    .max(20, "'complemento' tamanho máximo de 20 caracteres!"),
+
+  bairro: yup
+    .string()
+    .required("'bairro' obrigatório!")
+    .max(45, "'bairro' tamanho máximo de 45 caracteres!"),
+
+  cidade: yup
+    .string()
+    .required("'cidade' obrigatório!")
+    .max(100, "'cidade' tamanho máximo de 100 caracteres!"),
+
+  estado: yup
+    .mixed()
+    .oneOf(estados, `'estado' deve ser algum destes valores: ${estados}!`)
+    .required("'estado' obrigatório!"),
+
+  cep: yup
+    .string()
+    .required("'cep' obrigatório!")
+    .matches(cepRegEx, "'cep' inválido!")
+    .max(8, "'cep' tamanho máximo de 8 caracteres!"),
+
+  sociedade_cientifica: yup
+    .string()
+    .max(100, "'sociedade_cientifica' tamanho máximo de 100 caracteres!"),
+
+  escolaridade_max: yup
+    .mixed()
+    .oneOf(
+      escolaridades,
+      `'escolaridade_max' deve ser algum destes valores: ${escolaridades}!`
+    )
+    .required("'escolaridade_max' obrigatório!")
 });
 
 export const medicoUpdateValidationScheme = yup.object().shape({
-    celular: yup.string().matches(celularRegExp, "celular inválido!"),
-    categoria: yup
+  crm: yup.string().max(20, "'crm' tamanho máximo de 20 caracteres!"),
+
+  regiao: yup
     .mixed()
-    .oneOf(categorias, `categoria deve ser alguma destas: ${categorias}.`)
-})
+    .oneOf(estados, `'regiao' deve ser algum destes valores: ${estados}!`),
+
+  dt_inscricao_crm: yup.date(),
+
+  celular: yup
+    .string()
+    .matches(celularRegEx, "'celular' inválido!")
+    .max(14, "'celular' tamanho máximo de 14 caracteres!"),
+
+  cartao_sus: yup
+    .string()
+    .max(25, "'cartao_sus' tamanho máximo de 25 caracteres!"),
+
+  categoria: yup
+    .mixed()
+    .oneOf(
+      categorias,
+      `'categoria' deve ser algum destes valores: ${categorias}.`
+    ),
+
+  rg: yup
+    .string()
+    .matches(rgRegEx, "'rg' inválido!")
+    .max(14, "'rg' tamanho máximo de 14 caracteres!"),
+
+  rg_orgao_emissor: yup
+    .string()
+    .max(30, "'rg_orgao_emissor' tamanho máximo de 30 caracteres!"),
+
+  rg_data_emissao: yup.date(),
+
+  cpf: yup
+    .string()
+    .matches(cpfRegEx, "'cpf' inválido!")
+    .max(14, "'cpf' tamanho máximo de 14 caracteres!"),
+
+  titulo_eleitoral: yup
+    .string()
+    .min(1, "'titulo_eleitoral' tamanho mínimo de 1 caractere.")
+    .max(12, "'titulo_eleitoral' tamanho máximo de 12 caracteres!"),
+
+  zona: yup.string().max(3, "'zona' tamanho máximo de 3 caracteres!"),
+
+  secao: yup.string().max(4, "'secao' tamanho máximo de 4 caracteres!"),
+
+  logradouro: yup
+    .string()
+    .max(100, "'logradouro' tamanho máximo de 100 caracteres!"),
+
+  numero: yup.number(),
+
+  complemento: yup
+    .string()
+    .max(20, "'complemento' tamanho máximo de 20 caracteres!"),
+
+  bairro: yup.string().max(45, "'bairro' tamanho máximo de 45 caracteres!"),
+
+  cidade: yup.string().max(100, "'cidade' tamanho máximo de 100 caracteres!"),
+
+  estado: yup
+    .mixed()
+    .oneOf(estados, `'estado' deve ser algum destes valores: ${estados}!`),
+
+  cep: yup
+    .string()
+    .matches(cepRegEx, "'cep' inválido!")
+    .max(8, "'cep' tamanho máximo de 8 caracteres!"),
+
+  sociedade_cientifica: yup
+    .string()
+    .max(100, "'sociedade_cientifica' tamanho máximo de 100 caracteres!"),
+
+  escolaridade_max: yup
+    .mixed()
+    .oneOf(
+      escolaridades,
+      `'escolaridade_max' deve ser algum destes valores: ${escolaridades}!`
+    )
+});
