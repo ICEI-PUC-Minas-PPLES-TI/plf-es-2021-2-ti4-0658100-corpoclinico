@@ -6,8 +6,9 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { RequestHandler } from "express";
 import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
+import AppError from "../errors/AppError";
 
-interface ILoginUsuario{
+interface ILoginUsuario {
   email: string,
   senha: string
 }
@@ -19,10 +20,11 @@ type SigninReponse = string | {
 }
 
 class UsuarioController {
-  public signin: RequestHandler<never, SigninReponse, ILoginUsuario> = async (req , res) => {
+  public signin: RequestHandler<never, SigninReponse, ILoginUsuario> = async (req, res) => {
     const { email, senha } = req.body;
 
     Usuario.findOne({
+      attributes: ['id', 'senha'],
       where: {
         email: email
       }
@@ -41,7 +43,7 @@ class UsuarioController {
           });
         }
 
-        const token = jwt.sign({ id: usuario.id }, process.env.SECRET_KEY ?? "fill-the-env-file.this-is-only-to-prevent-type-error", {
+        const token = jwt.sign({ id: usuario.get().id }, process.env.SECRET_KEY ?? "fill-the-env-file.this-is-only-to-prevent-type-error", {
           expiresIn: 604800 // 1 semana expira
         });
 
@@ -53,7 +55,6 @@ class UsuarioController {
   }
 
   public create: CreateRequestHandler = async (request, response) => {
-    const telefoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
     const senhaRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
     /*
       /^
@@ -67,22 +68,19 @@ class UsuarioController {
     // Em breve buscar dos tipos automaticamente no banco de dados.
     const tipos = ["A", "M", "V"];
     const scheme = yup.object().shape({
-      nome: yup.string().required("Nome obrigatório!"),
-      telefone: yup.string().matches(telefoneRegExp, "Telefone inválido!"),
-
-      login: yup.string().min(3, "Login deve ter no mínimo 3 caracteres!"),
+      nome: yup.string().required("Nome obrigatório!").max(120, "Nome deve ter no máximo 120 caracteres!"),
 
       email: yup
         .string()
         .email()
-        .required("Email obrigatório!"),
+        .required("Email obrigatório!").max(100, "Nome deve ter no máximo 100 caracteres!"),
       senha: yup
         .string()
         .required("Senha obrigatória!")
         .matches(
           senhaRegEx,
           "Senha deve ter no mínimo 8 caracteres, 1 maiúsculo, 1 minúsculo e 1 número!"
-        ),
+        ).max(64, "Nome deve ter no máximo 64 caracteres!"),
       senhaRepetida: yup
         .string()
         .required("Senhas repetida é obrigatória!")
@@ -105,14 +103,12 @@ class UsuarioController {
       });
     }
 
-    const { nome, email, telefone, login, senha, tipo } = request.body;
+    const { nome, email, senha, tipo } = request.body;
     const password = bcrypt.hashSync(senha, 8);
 
     const usuario = Usuario.build({
       nome,
       email,
-      telefone: telefone,
-      login: login,
       senha: password,
       tipo: tipo
     });
@@ -135,45 +131,61 @@ class UsuarioController {
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
   public delete: DeleteRequestHandler = async (request, response) => {
+    const usuario = await Usuario.findOne({
+      where: {
+        id: request.params.id
+      }
+    });
+    if (!usuario) {
+      return response.status(404).json({
+        deletado: false,
+        errors: "ID de usuário não encontrado!"
+      });
+    }
+
     await Usuario.destroy({
       where: {
         id: request.params.id
       }
     })
-    .then(dado => {
-      response.status(204).json({
-        deletado: true,
-        dado
+      .then(dado => {
+        response.status(204).json({
+          deletado: true,
+          dado
+        });
+      })
+      .catch(function (error) {
+        response.status(500).json({
+          deletado: false,
+          errors: error
+        });
       });
-    })
-    .catch(function(error) {
-      response.status(500).json({
-        deletado: false,
-        errors: error
-      });
-    });
   }
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
   public update: UpddateRequestHandler<IAtributosUsuario> = async (request, response) => {
-    const telefoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-    const senhaRegEx = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-    // Em breve buscar dos tipos automaticamente no banco de dados.
+    const senhaRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+    /*
+      /^
+        (?=.*\d)          // deve ter no mínimo 1 número
+        (?=.*[a-z])       // deve ter no mínimo 1 letra minúscula
+        (?=.*[A-Z])       // deve ter no mínimo 1 letra maiúscula
+        [a-zA-Z0-9]{8,}   // deve ter no mínimo 8 caracteres alfanuméricos
+      $/
+    */
+
     const tipos = ["A", "M", "V"];
 
     const scheme = yup.object().shape({
-      nome: yup.string(),
-      telefone: yup.string().matches(telefoneRegExp, "Telefone inválido!"),
+      nome: yup.string().max(120, "Nome deve ter no máximo 120 caracteres!"),
 
-      login: yup.string().min(3, "Login deve ter no mínimo 3 caracteres!"),
-
-      email: yup.string().email(),
+      email: yup.string().email().max(100, "Nome deve ter no máximo 100 caracteres!"),
       senha: yup
         .string()
         .matches(
           senhaRegEx,
           "Senha deve ter no mínimo 8 caracteres, 1 maiúsculo, 1 minúsculo, 1 número e 1 caracter especial!"
-        ),
+        ).max(64, "Nome deve ter no máximo 64 caracteres!"),
       senhaRepetida: yup
         .string()
         .oneOf([yup.ref("senha"), null], "Senhas devem ser iguais"),
@@ -192,22 +204,17 @@ class UsuarioController {
       });
     }
 
-    const { nome, email, telefone, login, senha, tipo } = request.body;
+    const { nome, email, senha, tipo } = request.body;
 
-    const atributos = [
-      "id",
-      "login",
-      "nome",
-      "email",
-      "telefone",
-      "tipo",
-      "data_expira"
-    ];
+    let passTemp = null;
+    if (senha)
+      passTemp = bcrypt.hashSync(senha, 8);
+    const password = passTemp;
+
     const usuario = await Usuario.findOne({
       where: {
         id: request.params.id
-      },
-      attributes: atributos
+      }
     });
     if (!usuario) {
       response.status(404).json({
@@ -217,12 +224,10 @@ class UsuarioController {
       });
     } else {
       usuario.update({
-        nome: nome,
-        email: email,
-        telefone: telefone,
-        login: login,
-        senha: senha,
-        tipo: tipo
+        nome: nome ? nome : usuario.get().nome,
+        email: email ? email : usuario.get().email,
+        senha: password ? password : usuario.get().senha,
+        tipo: tipo ? tipo : usuario.get().tipo
       });
       response.status(200).json({
         atualizado: true,
@@ -234,20 +239,10 @@ class UsuarioController {
   // URI de exemplo: http://localhost:3000/api/usuario/1
   public get: GetRequestHandler<IAtributosUsuario> = async (request, response) => {
 
-    const atributos = [
-      "id",
-      "login",
-      "nome",
-      "email",
-      "telefone",
-      "tipo",
-      "data_expira"
-    ];
     const usuario = await Usuario.findOne({
       where: {
         id: request.params.id
-      },
-      attributes: atributos
+      }
     });
     if (!usuario) {
       response.status(404).json(usuario);
@@ -259,44 +254,36 @@ class UsuarioController {
   // URI de exemplo: http://localhost:3000/api/usuario?pagina=1&limite=5&atributo=nome&ordem=DESC
   // todos as querys são opicionais
   public getAll: GetAllRequestHandler<IAtributosUsuario> = async (request, response) => {
-    const atributos = [
-      "id",
-      "login",
-      "nome",
-      "email",
-      "telefone",
-      "tipo",
-      "data_expira"
-    ];
 
     Usuario.findAndCountAll()
-    .then(dados => {
-      const { paginas, ...SortPaginateOptions } = SortPaginate(
-        request.query,
-        atributos,
-        dados.count
-      );
-      Usuario.findAll({
-        attributes: atributos,
-        ...SortPaginateOptions,
-      })
-        .then(usuarios => {
-          response.status(200).json({
-            dados: usuarios,
-            quantidade: usuarios.length,
-            total: dados.count,
-            paginas: paginas,
-            offset: SortPaginateOptions.offset
-          });
+      .then(dados => {
+        const { paginas, ...SortPaginateOptions } = SortPaginate(
+          request.query,
+          Object.keys(
+            Usuario.rawAttributes
+          ) /* Todos os atributos de usuário */,
+          dados.count
+        );
+        Usuario.findAll({
+          ...SortPaginateOptions,
         })
-        .catch(error => {
-          response.status(500).json({
-            titulo: "Erro interno do servidor!",
-            error
+          .then(usuarios => {
+            response.status(200).json({
+              dados: usuarios,
+              quantidade: usuarios.length,
+              total: dados.count,
+              paginas: paginas,
+              offset: SortPaginateOptions.offset
+            });
+          })
+          .catch(error => {
+            response.status(500).json({
+              titulo: "Erro interno do servidor!",
+              error
+            });
           });
-        });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         response.status(500).json({
           titulo: "Erro interno do servidor!",
           error
