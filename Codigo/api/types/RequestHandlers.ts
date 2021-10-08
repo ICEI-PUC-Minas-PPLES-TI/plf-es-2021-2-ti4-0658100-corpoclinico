@@ -8,8 +8,8 @@ export type CreateRequestHandler<TRequestBody = any> = RequestHandler<never, Cre
 
 export type GetAllRequestHandler<TModel> = RequestHandler<never, ReadResponse<TModel>, never, ISortPaginateQuery>;
 
-export type GetRequestHandler<TModel> = RequestHandler<{id: string}, TModel|undefined|null>
+export type GetRequestHandler<TModel> = RequestHandler<{ id: string }, TModel | undefined | null>
 
-export type UpddateRequestHandler<TRequestBody = any> = RequestHandler<{id: string}, UpdateResponse, TRequestBody>;
+export type UpddateRequestHandler<TRequestBody = any> = RequestHandler<{ id: string }, UpdateResponse, TRequestBody>;
 
-export type DeleteRequestHandler = RequestHandler<{id: string}, DeleteResponse, never>;
+export type DeleteRequestHandler = RequestHandler<{ id: string }, DeleteResponse, never>;
