@@ -1,13 +1,31 @@
 import * as yup from "yup";
-import { celularRegEx, rgRegEx, cpfRegEx, cepRegEx } from "./Regex";
+import { senhaRegEx,celularRegEx, rgRegEx, cpfRegEx, cepRegEx } from "./Regex";
 import { estados } from "../helpers/Siglas";
 
 const categorias = ["E", "T", "C"];
 const escolaridades = ["BACHA", "ESPE", "MESTRE", "DOUTOR"];
 
 export const medicoCreateValidationScheme = yup.object().shape({
-  usuario_id: yup.number().required("'usuario_id' obrigatório!"),
 
+  // * Campos de Usuario
+  nome: yup.string().required("Nome obrigatório!").max(120, "Nome deve ter no máximo 120 caracteres!"),
+  email: yup
+    .string()
+    .email()
+    .required("Email obrigatório!").max(100, "Nome deve ter no máximo 100 caracteres!"),
+  senha: yup
+    .string()
+    .required("Senha obrigatória!")
+    .matches(
+      senhaRegEx,
+      "Senha deve ter no mínimo 8 caracteres, 1 maiúsculo, 1 minúsculo e 1 número!"
+    ).max(64, "Nome deve ter no máximo 64 caracteres!"),
+  senhaRepetida: yup
+    .string()
+    .required("Senhas repetida é obrigatória!")
+    .oneOf([yup.ref("senha"), null], "Senhas devem ser iguais"),
+
+  // * Campos de médico
   crm: yup
     .string()
     .required("'crm' obrigatório!")
@@ -49,6 +67,8 @@ export const medicoCreateValidationScheme = yup.object().shape({
 
   rg_data_emissao: yup.date(),
 
+  dt_nascimento: yup.date(),
+
   cpf: yup
     .string()
     .matches(cpfRegEx, "'cpf' inválido!")
@@ -56,7 +76,6 @@ export const medicoCreateValidationScheme = yup.object().shape({
 
   titulo_eleitoral: yup
     .string()
-    .min(1, "'titulo_eleitoral' tamanho mínimo de 1 caractere.")
     .max(12, "'titulo_eleitoral' tamanho máximo de 12 caracteres!"),
 
   zona: yup.string().max(3, "'zona' tamanho máximo de 3 caracteres!"),
@@ -143,6 +162,8 @@ export const medicoUpdateValidationScheme = yup.object().shape({
     .max(30, "'rg_orgao_emissor' tamanho máximo de 30 caracteres!"),
 
   rg_data_emissao: yup.date(),
+
+  dt_nascimento: yup.date(),
 
   cpf: yup
     .string()

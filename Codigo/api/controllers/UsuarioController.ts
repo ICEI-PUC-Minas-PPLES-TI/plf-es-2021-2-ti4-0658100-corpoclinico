@@ -66,7 +66,7 @@ class UsuarioController {
     */
 
     // Em breve buscar dos tipos automaticamente no banco de dados.
-    const tipos = ["A", "M", "V"];
+    const tipos = ["A", "V"];
     const scheme = yup.object().shape({
       nome: yup.string().required("Nome obrigatório!").max(120, "Nome deve ter no máximo 120 caracteres!"),
 

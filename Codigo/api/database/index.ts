@@ -23,9 +23,16 @@ export default {
   async connect() {
     try {
       await sequelize.authenticate();
+
       // Iniciar modelos aqui
       Usuario.initialize(sequelize);
       Medico.initialize(sequelize);
+
+      // Associações
+      Medico.belongsTo(Usuario, {
+        foreignKey: 'usuario_id'
+      });
+
       if (process.env.NODE_ENV === "dev") {
         console.log(
           `Conexão com '${process.env.DB_HOST}/${process.env.DB_DATABASE}' estabelecida`

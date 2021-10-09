@@ -1,26 +1,43 @@
 import { Model, where } from "sequelize/types";
+import AppError from "../errors/AppError";
 import { ISortPaginateQuery, SortPaginate } from "../helpers/SortPaginate";
 import Medico, { IAtributosMedico, IAtributosMedicoCriacao } from "../models/Medico";
+import Usuario from "../models/Usuario";
 
 export default class MedicoService {
+
   async create(medico: IAtributosMedicoCriacao) {
-    return Medico.create(medico);
+    try {
+      return Medico.create(medico);
+    } catch (erro) {
+      throw new AppError("Usuário não criado!" + erro, 500);
+    }
   }
+
   async update(medico: Partial<IAtributosMedico>) {
     return Medico.update(medico, {
       where: { id: medico.id }
     });
   }
+
+  // * Não é soft-delete nem hard-delete, apenas volta o status para 0.
   async delete(id: number) {
-    return Medico.destroy({
-      where: { id }
-    })
+    const medico = await Medico.findByPk(id);
+    if (!medico) {
+      throw new AppError("Médico não encontrado!", 404);
+    }
+    medico.update({
+      ativo: 0,
+    });
+    return medico;
   }
+
   async getById(id: number) {
     return Medico.findOne({
       where: { id }
     })
   }
+
   async getBy(field: keyof Medico, value: any) {
     return Medico.findOne({
       where: {
@@ -41,6 +58,12 @@ export default class MedicoService {
           medicos: await Medico.findAll({
             attributes: atributos,
             ...SortPaginateOptions,
+            include: [
+              {
+                model: Usuario,
+                attributes: ['email', 'nome']
+              }
+            ]
           }),
           count: dados.count,
           paginas,
@@ -52,4 +75,5 @@ export default class MedicoService {
         throw error;
       });
   }
+
 }

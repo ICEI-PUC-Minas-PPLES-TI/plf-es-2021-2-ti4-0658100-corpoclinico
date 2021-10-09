@@ -2,13 +2,20 @@ import Medico, { IAtributosMedico, IAtributosMedicoCriacao } from "../models/Med
 import MedicoService from "../services/MedicoService";
 import { medicoCreateValidationScheme, medicoUpdateValidationScheme } from "../validations/MedicoValidations";
 
+import Usuario from "../models/Usuario";
+import UsuarioService from "../services/UsuarioService";
+
+import bcrypt from "bcryptjs";
 import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
+import AppError from "../errors/AppError";
 
 class MedicoController {
   private Service!: MedicoService;
+  private UsuarioSerive!: UsuarioService;
 
   constructor() {
     this.Service = new MedicoService();
+    this.UsuarioSerive = new UsuarioService();
   }
 
   public create: CreateRequestHandler<IAtributosMedicoCriacao> = async (request, response) => {
@@ -25,11 +32,28 @@ class MedicoController {
       });
     }
 
-    const { usuario_id, crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
+    const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
+
+    const { nome, email, senha } = request.body;
+    const password = bcrypt.hashSync(senha, 8);
+
+    const usuario = await this.UsuarioSerive.create({
+      nome,
+      email,
+      senha: password,
+      tipo: "M",
+    });
 
     this.Service.create(
       {
-        usuario_id,
+        // Atributos do usuário
+        nome,
+        email,
+        senha: password,
+        tipo: "M",
+
+        // Atributos de médico
+        usuario_id: usuario.id,
         crm,
         regiao,
         dt_inscricao_crm,
@@ -61,10 +85,18 @@ class MedicoController {
           id: medico.id
         });
       })
-      .catch((erro) => {
+      .catch(async (erro) => {
+        // Caso dê erro ao cadastrar o médico, após ter criado o usuário, hard-delete no usuário criado sem médico.
+        await Usuario.destroy({
+          where: {
+            id: usuario.id
+          },
+          force: true
+        });
         return response.status(500).json({
           criado: false,
-          erros: erro.message
+          nome: "Médico não criado!",
+          erros: erro.message,
         });
       });
   }
@@ -72,14 +104,24 @@ class MedicoController {
   // URI de exemplo: http://localhost:3000/api/medico/1
   public delete: DeleteRequestHandler = async (request, response) => {
     this.Service.delete(Number(request.params.id))
-      .then(dado => {
-        response.status(204).json({
-          deletado: true,
-          dado
-        });
+      .then(medico => {
+        this.UsuarioSerive.delete(Number(medico.get().usuario_id))
+          .then(usuarioDado => {
+            const dado = Number(medico.get().id);
+            return response.status(204).json({
+              deletado: true,
+              dado
+            });
+          })
+          .catch(function (error: AppError) {
+            return response.status(error.statusCode).json({
+              deletado: false,
+              errors: error.message
+            });
+          });
       })
       .catch(function (error) {
-        response.status(500).json({
+        return response.status(500).json({
           deletado: false,
           errors: error
         });
@@ -88,17 +130,22 @@ class MedicoController {
 
   // URI de exemplo: http://localhost:3000/api/medico/1
   public get: GetRequestHandler<IAtributosMedico> = async (request, response) => {
-
     const medico = await Medico.findOne({
       where: {
         id: request.params.id
-      }
+      },
+      include: [
+        {
+          model: Usuario,
+          attributes: ['email', 'nome']
+        }
+      ]
     });
-    if (!medico) {
+
+    if (!medico)
       response.status(404).json(medico);
-    } else {
+    else
       response.status(200).json(medico);
-    }
   }
 
   // URI de exemplo: http://localhost:3000/api/medico/1
@@ -117,7 +164,7 @@ class MedicoController {
       });
     }
 
-    const { celular, categoria } = request.body;
+    const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
 
     const medico = await this.Service.getById(Number(request.params.id))
     if (!medico) {
@@ -127,7 +174,33 @@ class MedicoController {
         erros: "O id que foi solicitado alteração não existe no banco de dados"
       });
     } else {
-      await this.Service.update({ celular, categoria });
+      await this.Service.update(
+        {
+          crm,
+          regiao,
+          dt_inscricao_crm,
+          celular,
+          cartao_sus,
+          categoria,
+          rg,
+          rg_orgao_emissor,
+          rg_data_emissao,
+          dt_nascimento,
+          cpf,
+          titulo_eleitoral,
+          zona,
+          secao,
+          logradouro,
+          numero,
+          complemento,
+          bairro,
+          cidade,
+          estado,
+          cep,
+          sociedade_cientifica,
+          escolaridade_max,
+        }
+      );
       response.status(200).json({
         atualizado: true,
         id: medico.id
@@ -138,18 +211,10 @@ class MedicoController {
   // URI de exemplo: http://localhost:3000/api/medico?pagina=1&limite=5&atributo=nome&ordem=DESC
   // todos as querys são opicionais
   public getAll: GetAllRequestHandler<IAtributosMedico> = async (request, response) => {
-    const atributos = [
-      "id",
-      "crm",
-      "celular",
-      "categoria",
-      "rg",
-      "cpf",
-    ];
 
     this.Service.getAll(
       { ...request.query },
-      atributos,
+      Object.keys(Medico.rawAttributes)
     )
       .then(({ medicos, count, paginas, offset }) => {
         response.status(200).json({

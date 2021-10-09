@@ -27,9 +27,15 @@ export interface IAtributosMedico {
   cep: string,
   sociedade_cientifica: string | null,
   escolaridade_max: 'BACHA' | 'ESPE' | 'MESTRE' | 'DOUTOR',
+  ativo: number,
 }
 export interface IAtributosMedicoCriacao
-  extends Optional<IAtributosMedico, "id" | "cartao_sus" | "categoria" | "rg" | "rg_orgao_emissor" | "rg_data_emissao" | "dt_nascimento" | "cpf" | "titulo_eleitoral" | "zona" | "secao" | "complemento" | "sociedade_cientifica"> { }
+  extends Optional<IAtributosMedico, "id" | "cartao_sus" | "categoria" | "rg" | "rg_orgao_emissor" | "rg_data_emissao" | "dt_nascimento" | "cpf" | "titulo_eleitoral" | "zona" | "secao" | "complemento" | "sociedade_cientifica" | "ativo"> {
+  nome: string,
+  email: string,
+  senha: string,
+  tipo: "M",
+}
 
 class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
   implements IAtributosMedico {
@@ -59,6 +65,7 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
   cep!: string;
   sociedade_cientifica!: string | null;
   escolaridade_max!: 'BACHA' | 'ESPE' | 'MESTRE' | 'DOUTOR';
+  ativo!: number;
 
   static initialize(sequelize: Sequelize) {
     Medico.init(
@@ -83,7 +90,7 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
               })
                 .then(medico => {
                   if (medico.length != 0)
-                    next(new AppError("CRM já cadastrado!"));
+                    next(new AppError("'crm' já cadastrado!"));
                   next();
                 })
                 .catch(onError => console.log(onError));
@@ -105,6 +112,20 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
         cartao_sus: {
           type: DataTypes.STRING(25),
           allowNull: true,
+          validate: {
+            isUnique: (value: string, next: ((err?: AppError) => void)) => {
+              Medico.findAll({
+                where: { cartao_sus: value },
+                attributes: ["id"]
+              })
+                .then(medico => {
+                  if (medico.length != 0)
+                    next(new AppError("'cartao_sus' já cadastrado!"));
+                  next();
+                })
+                .catch(onError => console.log(onError));
+            }
+          }
         },
         categoria: {
           type: DataTypes.ENUM("E", "T", "C"),
@@ -112,7 +133,21 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
         },
         rg: {
           type: DataTypes.STRING(20),
-          allowNull: true
+          allowNull: true,
+          validate: {
+            isUnique: (value: string, next: ((err?: AppError) => void)) => {
+              Medico.findAll({
+                where: { rg: value },
+                attributes: ["id"]
+              })
+                .then(medico => {
+                  if (medico.length != 0)
+                    next(new AppError("'rg' já cadastrado!"));
+                  next();
+                })
+                .catch(onError => console.log(onError));
+            }
+          }
         },
         rg_orgao_emissor: {
           type: DataTypes.STRING(30),
@@ -128,11 +163,39 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
         },
         cpf: {
           type: DataTypes.STRING(20),
-          allowNull: true
+          allowNull: true,
+          validate: {
+            isUnique: (value: string, next: ((err?: AppError) => void)) => {
+              Medico.findAll({
+                where: { cpf: value },
+                attributes: ["id"]
+              })
+                .then(medico => {
+                  if (medico.length != 0)
+                    next(new AppError("'cpf' já cadastrado!"));
+                  next();
+                })
+                .catch(onError => console.log(onError));
+            }
+          }
         },
         titulo_eleitoral: {
-          type: DataTypes.STRING(14),
-          allowNull: true
+          type: DataTypes.STRING(12),
+          allowNull: true,
+          validate: {
+            isUnique: (value: string, next: ((err?: AppError) => void)) => {
+              Medico.findAll({
+                where: { titulo_eleitoral: value },
+                attributes: ["id"]
+              })
+                .then(medico => {
+                  if (medico.length != 0)
+                    next(new AppError("'titulo_eleitoral' já cadastrado!"));
+                  next();
+                })
+                .catch(onError => console.log(onError));
+            }
+          }
         },
         zona: {
           type: DataTypes.STRING(3),
@@ -177,6 +240,11 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
         escolaridade_max: {
           type: DataTypes.ENUM("BACHA", "ESPE", "MESTRE", "DOUTOR"),
           allowNull: false
+        },
+        ativo: {
+          type: DataTypes.INTEGER().UNSIGNED,
+          allowNull: false,
+          defaultValue: 0,
         },
       },
       {
