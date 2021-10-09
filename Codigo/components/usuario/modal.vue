@@ -56,7 +56,9 @@
                     @click:append="show1 = !show1"
                     hide-details="auto"
                     label="Senha"
-                    :rules="[v => !!v || 'Senha é obrigatório']"
+                    :rules="[v => !!v || 'Senha é obrigatório',
+                    v => (v && v.length >= 8 && /\d/.test(v) && /[a-z]/g.test(v) && /[A-Z]/g.test(v))
+                    || 'Min 8 caracteres, 1 número, 1 letra minúscula e 1 letra maiúscula']"
                   />
                 </v-col>
               </v-row>
