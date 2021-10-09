@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { senhaRegEx,celularRegEx, rgRegEx, cpfRegEx, cepRegEx } from "./Regex";
+import { senhaRegEx,celularRegEx, cpfRegEx, cepRegEx } from "./Regex";
 import { estados } from "../helpers/Siglas";
 
 const categorias = ["E", "T", "C"];
@@ -58,7 +58,6 @@ export const medicoCreateValidationScheme = yup.object().shape({
 
   rg: yup
     .string()
-    .matches(rgRegEx, "'rg' inválido!")
     .max(14, "'rg' tamanho máximo de 14 caracteres!"),
 
   rg_orgao_emissor: yup
@@ -112,7 +111,7 @@ export const medicoCreateValidationScheme = yup.object().shape({
     .string()
     .required("'cep' obrigatório!")
     .matches(cepRegEx, "'cep' inválido!")
-    .max(8, "'cep' tamanho máximo de 8 caracteres!"),
+    .max(9, "'cep' tamanho máximo de 9 caracteres!"),
 
   sociedade_cientifica: yup
     .string()
@@ -154,7 +153,6 @@ export const medicoUpdateValidationScheme = yup.object().shape({
 
   rg: yup
     .string()
-    .matches(rgRegEx, "'rg' inválido!")
     .max(14, "'rg' tamanho máximo de 14 caracteres!"),
 
   rg_orgao_emissor: yup
@@ -200,7 +198,7 @@ export const medicoUpdateValidationScheme = yup.object().shape({
   cep: yup
     .string()
     .matches(cepRegEx, "'cep' inválido!")
-    .max(8, "'cep' tamanho máximo de 8 caracteres!"),
+    .max(9, "'cep' tamanho máximo de 9 caracteres!"),
 
   sociedade_cientifica: yup
     .string()

@@ -2,12 +2,14 @@ import Medico, { IAtributosMedico, IAtributosMedicoCriacao } from "../models/Med
 import MedicoService from "../services/MedicoService";
 import { medicoCreateValidationScheme, medicoUpdateValidationScheme } from "../validations/MedicoValidations";
 
-import Usuario from "../models/Usuario";
+import Usuario, { IAtributosUsuarioCriacao } from "../models/Usuario";
 import UsuarioService from "../services/UsuarioService";
 
 import bcrypt from "bcryptjs";
 import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
 import AppError from "../errors/AppError";
+
+interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao { }
 
 class MedicoController {
   private Service!: MedicoService;
@@ -18,7 +20,7 @@ class MedicoController {
     this.UsuarioSerive = new UsuarioService();
   }
 
-  public create: CreateRequestHandler<IAtributosMedicoCriacao> = async (request, response) => {
+  public create: CreateRequestHandler<IAtributosMedicoUsuarioCriacao> = async (request, response) => {
     const scheme = medicoCreateValidationScheme;
 
     // Validando com o esquema criado:
@@ -46,12 +48,6 @@ class MedicoController {
 
     this.Service.create(
       {
-        // Atributos do usuário
-        nome,
-        email,
-        senha: password,
-        tipo: "M",
-
         // Atributos de médico
         usuario_id: usuario.id,
         crm,
@@ -74,7 +70,7 @@ class MedicoController {
         bairro,
         cidade,
         estado,
-        cep,
+        cep: cep?.replace(/\D/g,''),
         sociedade_cientifica,
         escolaridade_max,
       }

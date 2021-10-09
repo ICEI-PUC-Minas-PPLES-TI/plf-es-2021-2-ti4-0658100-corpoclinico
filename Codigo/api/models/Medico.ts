@@ -30,12 +30,7 @@ export interface IAtributosMedico {
   ativo: number,
 }
 export interface IAtributosMedicoCriacao
-  extends Optional<IAtributosMedico, "id" | "cartao_sus" | "categoria" | "rg" | "rg_orgao_emissor" | "rg_data_emissao" | "dt_nascimento" | "cpf" | "titulo_eleitoral" | "zona" | "secao" | "complemento" | "sociedade_cientifica" | "ativo"> {
-  nome: string,
-  email: string,
-  senha: string,
-  tipo: "M",
-}
+  extends Optional<IAtributosMedico, "id" | "cartao_sus" | "categoria" | "rg" | "rg_orgao_emissor" | "rg_data_emissao" | "dt_nascimento" | "cpf" | "titulo_eleitoral" | "zona" | "secao" | "complemento" | "sociedade_cientifica" | "ativo"> {}
 
 class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
   implements IAtributosMedico {
@@ -244,7 +239,7 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
         ativo: {
           type: DataTypes.INTEGER().UNSIGNED,
           allowNull: false,
-          defaultValue: 0,
+          defaultValue: 1,
         },
       },
       {
