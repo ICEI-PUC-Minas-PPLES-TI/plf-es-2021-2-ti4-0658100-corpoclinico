@@ -11,11 +11,10 @@
                             <v-card-text>
                                 <v-form v-on:submit.prevent="handleSubmit">
                                     <v-text-field label="Login" name="email" prepend-inner-icon="mdi-account-circle" type="email" class="p-0rounded-0" outlined placeholder="email@email.com" v-model="email"></v-text-field>
-                                    <v-text-field label="Senha" name="senha" prepend-inner-icon="mdi-lock" type="password" outlined class="rounded-0" v-model="senha"></v-text-field>
-                                    <span style="" name="msg" v-model="msg" class="mx-1 my-0">{{msg}}</span>
-                                     <v-checkbox color="#25BAAE" label="Lembrar-me" class="mt-0" value="checked" v-model="lembrar"></v-checkbox>
+                                    <v-text-field label="Senha" name="senha" prepend-inner-icon="mdi-lock" type="password" outlined class="mb-0 rounded-0" v-model="senha"></v-text-field>
+                                    <span style="" name="msg" v-model="msg">{{msg}}</span>
                                     </v-checkbox>
-                                    <v-btn  @click.native="handleSubmit" class="rounded-0" color="#25BAAE" x-large block dark > Entrar </v-btn>
+                                    <v-btn  @click.native="handleSubmit" class="rounded-0 mt-2" color="#25BAAE" x-large block dark > Entrar </v-btn>
                                     <v-card-actions class="text--secondary" >
                                         Ainda não se candidatou?<a href="#" class="pl-2" style="color: #25BAAE">Candidatar-se</a>
                                     </v-card-actions>
@@ -39,7 +38,6 @@ export default {
             email:'',
             senha:'',
             image:image,//logo do corpo clinico
-            lembrar:'',//checkbox de lembrar senha
             msg:'',
             tipo:''
         }
@@ -56,14 +54,13 @@ export default {
                     senha: this.senha
                 }).then(res=>{
                     document.cookie = `token=${res.data.acessoToken}`;
-                    this.msg = "Logando"
+                    this.msg = "Logando..."
                 }).catch(err=>{
                     this.msg="Login inválido"
                 })
 
             }
             
-            console.log(this.lembrar)
         }
     },
 }
