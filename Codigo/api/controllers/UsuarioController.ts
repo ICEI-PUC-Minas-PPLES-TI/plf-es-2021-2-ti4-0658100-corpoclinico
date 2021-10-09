@@ -81,10 +81,6 @@ class UsuarioController {
           senhaRegEx,
           "Senha deve ter no mínimo 8 caracteres, 1 maiúsculo, 1 minúsculo e 1 número!"
         ).max(64, "Nome deve ter no máximo 64 caracteres!"),
-      senhaRepetida: yup
-        .string()
-        .required("Senhas repetida é obrigatória!")
-        .oneOf([yup.ref("senha"), null], "Senhas devem ser iguais"),
 
       tipo: yup
         .mixed()
@@ -186,9 +182,6 @@ class UsuarioController {
           senhaRegEx,
           "Senha deve ter no mínimo 8 caracteres, 1 maiúsculo, 1 minúsculo, 1 número e 1 caracter especial!"
         ).max(64, "Nome deve ter no máximo 64 caracteres!"),
-      senhaRepetida: yup
-        .string()
-        .oneOf([yup.ref("senha"), null], "Senhas devem ser iguais"),
 
       tipo: yup.mixed().oneOf(tipos, `Tipo deve ser algum destes: ${tipos}.`)
     });
