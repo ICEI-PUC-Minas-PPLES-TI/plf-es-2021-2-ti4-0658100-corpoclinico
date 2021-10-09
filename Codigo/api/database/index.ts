@@ -1,6 +1,8 @@
 
 import dotenv from 'dotenv';
 import { Sequelize } from "sequelize";
+import Equipe from '../models/Equipe';
+import Especialidade from '../models/Especialidade';
 import Medico from '../models/Medico';
 
 // Importar modelos aqui
@@ -26,13 +28,20 @@ export default {
       // Iniciar modelos aqui
       Usuario.initialize(sequelize);
       Medico.initialize(sequelize);
+      Especialidade.initialize(sequelize);
+      Equipe.initialize(sequelize);
+
+      // Fazer Associações aqui
+      Equipe.belongsTo(Especialidade, { foreignKey: 'especialidade_id'})
+      Especialidade.hasOne(Equipe, { foreignKey: 'id' })
+      
       if (process.env.NODE_ENV === "dev") {
         console.log(
           `Conexão com '${process.env.DB_HOST}/${process.env.DB_DATABASE}' estabelecida`
         );
       }
     } catch (error) {
-      console.log(
+      console.log( error,
         `Não foi possível estabelecer a conexão com '${process.env.DB_HOST}/${process.env.DB_DATABASE}'`
       );
     }
