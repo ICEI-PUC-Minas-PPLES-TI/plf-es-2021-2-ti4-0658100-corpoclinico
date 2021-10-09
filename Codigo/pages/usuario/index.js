@@ -11,7 +11,7 @@ export default {
       headers: [
         { text: 'Nome', value: 'nome' },
         { text: 'Email', value: 'email' },
-        { text: 'Status', value: 'status' },
+        { text: 'Status', value: 'data_excluido' },
         { text: 'Ação', value: 'actions', sortable: false },
       ],
       usuarios: [
@@ -20,6 +20,7 @@ export default {
           nome: '',
           email: '',
           status: 'Ativo',
+          data_excluido: ''
         }
       ],
       usuarioId: 0,
@@ -47,7 +48,7 @@ export default {
         console.log(error)
         this.errored = true
       })
-
+      console.log(this.usuarios);
     },
 
     abreModal(id){
@@ -73,8 +74,8 @@ export default {
 
     },
 
-    verificaStatus(dataExclusao){
-      if ( dataExclusao ){
+    formataStatus(dataExclusao){
+      if ( dataExclusao == null ){
         return "ATIVO"
       }else{
         return "INATIVO"

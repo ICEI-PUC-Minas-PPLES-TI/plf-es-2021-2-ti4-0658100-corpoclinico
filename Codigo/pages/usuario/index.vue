@@ -16,8 +16,8 @@
         <v-card-text class="text-h5 ">
             <template>
                 <v-data-table :headers="headers" :items="usuarios" :items-per-page="5" class="elevation-1">
-                    <template v-slot:item.tipo="{ item }">
-                        {{ formataTipo(item.tipo) }}
+                    <template v-slot:item.data_excluido="{ item }">
+                        {{ formataStatus(item.data_excluido) }}
                     </template>
                     <template v-slot:item.actions="{ item }">
                         <v-icon color="success" class="mr-2" @click="abreModal(item.id)">
