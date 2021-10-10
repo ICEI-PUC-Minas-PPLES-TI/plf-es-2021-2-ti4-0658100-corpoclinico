@@ -43,8 +43,6 @@ class MedicoController {
     const { nome, email, senha } = request.body;
     const password = bcrypt.hashSync(senha, 8);
 
-    console.log(request.files)
-
     const usuario = await this.usuarioSerive.create({
       nome,
       email,
