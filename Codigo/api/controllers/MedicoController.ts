@@ -8,16 +8,20 @@ import UsuarioService from "../services/UsuarioService";
 import bcrypt from "bcryptjs";
 import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
 import AppError from "../errors/AppError";
+import ArquivoService from "../services/ArquivoService";
+import Arquivo from "../models/Arquivo";
 
 interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao { }
 
 class MedicoController {
-  private Service!: MedicoService;
-  private UsuarioSerive!: UsuarioService;
+  private medicoService!: MedicoService;
+  private usuarioSerive!: UsuarioService;
+  private arquivoService!: ArquivoService;
 
   constructor() {
-    this.Service = new MedicoService();
-    this.UsuarioSerive = new UsuarioService();
+    this.medicoService = new MedicoService();
+    this.usuarioSerive = new UsuarioService();
+    this.arquivoService = new ArquivoService();
   }
 
   public create: CreateRequestHandler<IAtributosMedicoUsuarioCriacao> = async (request, response) => {
@@ -39,14 +43,16 @@ class MedicoController {
     const { nome, email, senha } = request.body;
     const password = bcrypt.hashSync(senha, 8);
 
-    const usuario = await this.UsuarioSerive.create({
+    console.log(request.files)
+
+    const usuario = await this.usuarioSerive.create({
       nome,
       email,
       senha: password,
       tipo: "M",
     });
 
-    this.Service.create(
+    this.medicoService.create(
       {
         // Atributos de médico
         usuario_id: usuario.id,
@@ -70,12 +76,13 @@ class MedicoController {
         bairro,
         cidade,
         estado,
-        cep: cep?.replace(/\D/g,''),
+        cep: cep?.replace(/\D/g, ''),
         sociedade_cientifica,
         escolaridade_max,
       }
     )
       .then((medico) => {
+        this.arquivoService.create(request.files, medico.id);
         return response.status(201).json({
           criado: true,
           id: medico.id
@@ -99,9 +106,9 @@ class MedicoController {
 
   // URI de exemplo: http://localhost:3000/api/medico/1
   public delete: DeleteRequestHandler = async (request, response) => {
-    this.Service.delete(Number(request.params.id))
+    this.medicoService.delete(Number(request.params.id))
       .then(medico => {
-        this.UsuarioSerive.delete(Number(medico.get().usuario_id))
+        this.usuarioSerive.delete(Number(medico.get().usuario_id))
           .then(usuarioDado => {
             const dado = Number(medico.get().id);
             return response.status(204).json({
@@ -134,6 +141,10 @@ class MedicoController {
         {
           model: Usuario,
           attributes: ['email', 'nome']
+        },
+        {
+          model: Arquivo,
+          attributes: ['nome_arquivo', 'tipo']
         }
       ]
     });
@@ -162,7 +173,7 @@ class MedicoController {
 
     const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
 
-    const medico = await this.Service.getById(Number(request.params.id))
+    const medico = await this.medicoService.getById(Number(request.params.id))
     if (!medico) {
       response.status(404).json({
         atualizado: false,
@@ -170,7 +181,7 @@ class MedicoController {
         erros: "O id que foi solicitado alteração não existe no banco de dados"
       });
     } else {
-      await this.Service.update(
+      await this.medicoService.update(
         {
           crm,
           regiao,
@@ -208,7 +219,7 @@ class MedicoController {
   // todos as querys são opicionais
   public getAll: GetAllRequestHandler<IAtributosMedico> = async (request, response) => {
 
-    this.Service.getAll(
+    this.medicoService.getAll(
       { ...request.query },
       Object.keys(Medico.rawAttributes)
     )

@@ -1,6 +1,6 @@
 import * as yup from "yup";
 import { senhaRegEx,celularRegEx, cpfRegEx, cepRegEx } from "./Regex";
-import { estados } from "../helpers/Siglas";
+import { estados } from "../helpers/siglas";
 
 const categorias = ["E", "T", "C"];
 const escolaridades = ["BACHA", "ESPE", "MESTRE", "DOUTOR"];

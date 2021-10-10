@@ -1,5 +1,5 @@
 import Usuario, { IAtributosUsuario, IAtributosUsuarioCriacao } from "../models/Usuario";
-import { SortPaginate } from "../helpers/SortPaginate";
+import { SortPaginate } from "../helpers/sortPaginate";
 
 import * as yup from 'yup'
 import jwt from "jsonwebtoken";

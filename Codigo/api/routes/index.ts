@@ -1,18 +1,19 @@
 
-import { Router } from 'express';
+import { RequestHandler, Router } from 'express';
 const router = Router()
 import autenticacaoJwt from './verificarJwtToken';
-import multer from 'multer';
-
-const upload = multer({ dest: './api/uploads/' });
 
 // Importar controllers
 import UsuarioController from '../controllers/UsuarioController';
 import MedicoController from '../controllers/MedicoController';
+import { upload } from '../helpers/files/multer';
+import { documentosCriarMedico } from '../helpers/files/documentos';
 
 // Iniciar controllers
 const usuarioController = new UsuarioController();
 const medicoController = new MedicoController();
+
+const multerUploadCriarMedico = upload.fields(documentosCriarMedico);
 
 // Adicionar rotas
 // Usuario
@@ -23,7 +24,7 @@ router.get('/usuario', [autenticacaoJwt.verificarToken], usuarioController.getAl
 router.delete('/usuario/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], usuarioController.delete)
 router.put('/usuario/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], usuarioController.update)
 // Medico
-router.post('/medico', upload.single('file'), medicoController.create)
+router.post('/medico', multerUploadCriarMedico, medicoController.create)
 router.get('/medico/:id', [autenticacaoJwt.verificarToken], medicoController.get)
 router.get('/medico', [autenticacaoJwt.verificarToken], medicoController.getAll)
 router.delete('/medico/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], medicoController.delete)

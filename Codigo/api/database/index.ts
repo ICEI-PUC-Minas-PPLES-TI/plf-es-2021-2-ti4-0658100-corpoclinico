@@ -1,6 +1,7 @@
 
 import dotenv from 'dotenv';
 import { Sequelize } from "sequelize";
+import Arquivo from '../models/Arquivo';
 import Medico from '../models/Medico';
 
 // Importar modelos aqui
@@ -27,10 +28,14 @@ export default {
       // Iniciar modelos aqui
       Usuario.initialize(sequelize);
       Medico.initialize(sequelize);
+      Arquivo.initialize(sequelize);
 
       // Associações
       Medico.belongsTo(Usuario, {
         foreignKey: 'usuario_id'
+      });
+      Medico.hasMany(Arquivo, {
+        foreignKey: 'medico_id'
       });
 
       if (process.env.NODE_ENV === "dev") {

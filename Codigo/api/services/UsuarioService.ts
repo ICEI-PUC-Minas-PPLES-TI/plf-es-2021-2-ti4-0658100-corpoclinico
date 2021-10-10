@@ -1,5 +1,5 @@
 import AppError from "../errors/AppError";
-import { ISortPaginateQuery, SortPaginate } from "../helpers/SortPaginate";
+import { ISortPaginateQuery, SortPaginate } from "../helpers/sortPaginate";
 import Usuario, { IAtributosUsuario, IAtributosUsuarioCriacao } from "../models/Usuario";
 
 export default class UsuarioService {

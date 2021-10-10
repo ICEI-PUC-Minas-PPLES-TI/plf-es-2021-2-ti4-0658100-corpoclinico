@@ -1,6 +1,6 @@
 import { Model, where } from "sequelize/types";
 import AppError from "../errors/AppError";
-import { ISortPaginateQuery, SortPaginate } from "../helpers/SortPaginate";
+import { ISortPaginateQuery, SortPaginate } from "../helpers/sortPaginate";
 import Medico, { IAtributosMedico, IAtributosMedicoCriacao } from "../models/Medico";
 import Usuario from "../models/Usuario";
 
