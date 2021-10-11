@@ -49,6 +49,7 @@
             <v-col cols="12" :xs="12" :sm="6" :md="4">
               <v-text-field
                 :hide-details="'auto'"
+                type="tel"
                 v-model="formData.celular"
                 v-mask="['(##) ####-####', '(##) #####-####']"
                 label="Telefone Celular (obrigatório)"
@@ -61,6 +62,7 @@
                 :hide-details="'auto'"
                 v-model="formData.email"
                 label="E-mail (obrigatório)"
+                type="email"
                 maxlength="100"
                 :rules="[v => !!v || 'E-mail obrigatório']"
                 @blur="salvarEmCache"
@@ -123,6 +125,7 @@
                 :hide-details="'auto'"
                 v-model="formData.rg_orgao_emissor"
                 label="Orgão Emissor"
+                maxlength="30"
                 @blur="salvarEmCache"
               />
             </v-col>
@@ -211,13 +214,13 @@
                 @click:append="senhaVisivel = !senhaVisivel"
                 hide-details="auto"
                 label="Senha (obrigatório)"
-                :rules="[v => !!v || 'Senha é obrigatório', v => (v && v.length >= 8 && /\d/.test(v) && /[a-z]/g.test(v) && /[A-Z]/g.test(v)) || 'Min 8 caracteres, 1 número, 1 letra minúscula e 1 letra maiúscula']"
+                :rules="[v => !!v || 'Senha é obrigatório', v => (v && v.length >= 8) || 'Min 8 caracteres']"
               />
             </v-col>
             <v-col cols="12" :xs="12" :sm="6" :md="2">
               <v-file-input
                 accept="image/*"
-                label="Doc. RG"
+                label="Doc. RG (Frente e Verso)"
                 :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
                 @change="carregaArquivo($event, 'doc_rg')"
               />
@@ -915,7 +918,7 @@ export default {
     enviarDados(){
       let info = JSON.parse(JSON.stringify(this.formData))
       info.celular = info.celular.replace(/\D/g,'')
-      info.cnpj = info.cnpj.replace(/\D/g,'')
+      info.cnpj = info.cnpj ? info.cnpj.replace(/\D/g,''): null
       info.regiao = info.crm.substr(info.crm.length - 2)
       info.crm = info.crm.substr(0, info.crm.length - 3)
       info.titulo_eleitoral = info.titulo_eleitoral.replace(/ /g,'')
