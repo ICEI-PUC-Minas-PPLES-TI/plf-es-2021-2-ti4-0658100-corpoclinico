@@ -13,7 +13,7 @@
         step="1"
       >
         Dados Pessoais
-        <small v-if="step == 1">Descrição de dados preenchidos</small>
+        <small v-if="step == 1">Informações Pessoais</small>
       </v-stepper-step>
 
       <v-stepper-content step="1">
@@ -28,6 +28,7 @@
                 :hide-details="'auto'"
                 :rules="[v => !!v || 'Nome é obrigatório']"
                 v-model="formData.nome"
+                maxlength="120"
                 label="Nome (obrigatório)"
                 @blur="salvarEmCache"
               />
@@ -60,6 +61,7 @@
                 :hide-details="'auto'"
                 v-model="formData.email"
                 label="E-mail (obrigatório)"
+                maxlength="100"
                 :rules="[v => !!v || 'E-mail obrigatório']"
                 @blur="salvarEmCache"
               />
@@ -104,6 +106,15 @@
                 v-model="formData.rg"
                 :rules="[v => !!v || 'RG obrigatório']"
                 label="RG (obrigatório)"
+                v-mask="{mask: 'AA-FFFFFFFFFFF', tokens: {
+                  F: {
+                    pattern: /^[0-9]*\.?[0-9]*$/
+                  },
+                  A: {
+                    pattern: /[a-zA-Z]/,
+                    transform: v => v.toLocaleUpperCase()
+                  }
+                }}"
                 @blur="salvarEmCache"
               />
             </v-col>
@@ -207,18 +218,24 @@
               <v-file-input
                 accept="image/*"
                 label="Doc. RG"
+                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+                @change="carregaArquivo($event, 'doc_rg')"
               />
             </v-col>
             <v-col cols="12" :xs="12" :sm="6" :md="2">
               <v-file-input
                 accept="image/*"
                 label="Doc. CPF"
+                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+                @change="carregaArquivo($event, 'doc_cpf')"
               />
             </v-col>
             <v-col cols="12" :xs="12" :sm="6" :md="2">
               <v-file-input
                 accept="image/*"
                 label="Foto 3x4"
+                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+                @change="carregaArquivo($event, 'doc_foto_txq')"
               />
             </v-col>
           </v-row>
@@ -242,7 +259,6 @@
         step="2"
       >
         Informações de Moradia 
-        <small v-if="step == 2">Descrição de dados preenchidos</small>
       </v-stepper-step>
 
       <v-stepper-content step="2">
@@ -267,6 +283,7 @@
                 :hide-details="'auto'"
                 v-model="formData.logradouro"
                 label="Logradouro (obrigatório)"
+                maxlength="100"
                 :rules="[v => !!v || 'Logradouro obrigatório']"
                 @blur="salvarEmCache"
               />
@@ -276,6 +293,7 @@
                 :hide-details="'auto'"
                 v-model="formData.numero"
                 label="Número (obrigatório)"
+                maxlength="20"
                 :rules="[v => !!v || 'Número obrigatório']"
                 @blur="salvarEmCache"
               />
@@ -285,6 +303,7 @@
                 :hide-details="'auto'"
                 v-model="formData.complemento"
                 label="Complemento"
+                maxlength="20"
                 @blur="salvarEmCache"
               />
             </v-col>
@@ -336,6 +355,7 @@
                 v-model="formData.cidade"
                 label="Cidade (obrigatório)"
                 :rules="[v => !!v || 'Cidade obrigatória']"
+                maxlength="100"
                 @blur="salvarEmCache"
               />
             </v-col>
@@ -344,6 +364,7 @@
                 :hide-details="'auto'"
                 v-model="formData.bairro"
                 label="Bairro (obrigatório)"
+                maxlength="45"
                 :rules="[v => !!v || 'Bairro obrigatório']"
                 @blur="salvarEmCache"
               />
@@ -355,6 +376,8 @@
               <v-file-input
                 accept="image/*"
                 label="Comp. de Endereço"
+                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+                @change="carregaArquivo($event, 'doc_comp_ender')"
               />
             </v-col>
           </v-row>
@@ -384,7 +407,6 @@
         step="3"
       >
         Dados Acadêmicos
-        <small v-if="step == 3">Descrição de dados preenchidos</small>
       </v-stepper-step>
 
       <v-stepper-content step="3">
@@ -413,6 +435,7 @@
                 :hide-details="'auto'"
                 label="Sociedade Cientifica"
                 v-model="formData.sociedade_cientifica"
+                maxlength="100"
                 @blur="salvarEmCache"
               >
                 <template v-slot:append>
@@ -440,6 +463,7 @@
                       <v-text-field
                         :hide-details="'auto'"
                         label="Nome Faculdade"
+                        maxlength="60"
                         v-model="formData.formacao[fidx].faculdade_nome"
                         @blur="salvarEmCache"
                       />
@@ -448,6 +472,7 @@
                       <v-file-input
                         accept="image/*"
                         label="Certificado"
+                        :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
                       />
                     </v-col>
                     <v-col cols="12" :xs="12" :sm="6" :md="3">
@@ -498,7 +523,6 @@
       <!--  Dados Profissionais -->
       <v-stepper-step step="4" color="#007970" :complete="step > 4">
         Dados Profissionais
-        <small v-if="step == 4">Descrição de dados preenchidos</small>
       </v-stepper-step>
       <v-stepper-content step="4">
         <v-form
@@ -507,13 +531,22 @@
         >
           <!-- CRM, Categoria -->
           <v-row>
-            <v-col cols="12" :xs="12" :md="5">
+            <v-col cols="12" :xs="12" :md="3">
               <v-text-field
                 :hide-details="'auto'"
                 label="CRM (obrigatório)"
+                maxlength="20"
                 v-model="formData.crm"
                 :rules="[v => !!v || 'CRM obrigatório']"
                 @blur="salvarEmCache"
+              />
+            </v-col>
+            <v-col cols="12" :xs="12" :md="2">
+              <v-file-input
+                accept="image/*"
+                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+                label="Doc. CRM"
+                @change="carregaArquivo($event, 'doc_crm')"
               />
             </v-col>
             <v-col :cols="12" :md="4">
@@ -573,6 +606,7 @@
                         :hide-details="'auto'"
                         label="Instituicao"
                         v-model="formData.especialidade[eidx].instituicao"
+                        maxlength="60"
                         @blur="salvarEmCache"
                       />
                     </v-col>
@@ -589,6 +623,7 @@
                       <v-file-input
                         accept="image/*"
                         label="Certificado"
+                        :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
                       />
                     </v-col>
                     <v-col cols="12" :xs="12" :md="2">
@@ -596,6 +631,7 @@
                         :hide-details="'auto'"
                         type="number"
                         label="Nº RQE"
+                        maxlength="20"
                         v-model="formData.especialidade[eidx].rqe"
                         @blur="salvarEmCache"
                       />
@@ -639,7 +675,6 @@
       <!--  Candidatura -->
       <v-stepper-step step="5" color="#007970">
         Candidatura
-        <small v-if="step == 5">Descrição de dados preenchidos</small>
       </v-stepper-step>
       <v-stepper-content step="5">
         <!-- Faturamento, CNPJ, Unidade, Equipe -->
@@ -678,11 +713,13 @@
             />
           </v-col>
           <v-col cols="12" :xs="12" :md="3">
-            <v-text-field
+            <v-select
               :hide-details="'auto'"
-              label="Equipe"
+              item-text="nome"
+              item-value="id"
+              :items="equipes"
               v-model="formData.equipe_id"
-              disabled
+              label="Equipe"
               @change="salvarEmCache"
             />
           </v-col>
@@ -693,7 +730,7 @@
             <small class="text-muted">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vitae egestas leo. Nam faucibus non lorem sit amet porta.
             </small>
-            <a href="#" class="d-block">Link de Download</a>
+            <a href="/documentos.zip" download class="d-block">Link de Download</a>
           </v-col>
         </v-row>
         <!-- Certificado e Termos -->
@@ -702,18 +739,24 @@
             <v-file-input
               accept="image/*"
               label="Cert. Quitação CRMMG"
+              :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+              @change="carregaArquivo($event, 'doc_cert_quit_crmmg')"
             />
           </v-col>
           <v-col cols="12" :xs="12" :md="4">
             <v-file-input
               accept="image/*"
               label="Termo de Vigilância"
+              :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+              @change="carregaArquivo($event, 'doc_term_vigi')"
             />
           </v-col>
           <v-col cols="12" :xs="12" :md="4">
             <v-file-input
               accept="image/*"
               label="Termo de Compromisso"
+              :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+              @change="carregaArquivo($event, 'doc_term_compr')"
             />
           </v-col>
         </v-row>
@@ -784,19 +827,37 @@ export default {
         faturamento: null,
         cnpj: null,
       },
+      arquivos: {
+        doc_rg: null,
+        doc_cpf: null,
+        doc_foto_txq: null,
+        doc_comp_ender: null,
+        doc_crm: null,
+        doc_cert_quit_crmmg: null,
+        doc_term_vigi: null,
+        doc_term_compr: null,
+      },
       menuNascimento: false,
       menuEmissao: false,
       menuDataCrm: false,
       unidades: [],
+      equipes: [],
       senhaVisivel: false
     }
   },
   async asyncData({ app }) {
     let data = {
-      unidades: []
+      unidades: [],
+      equipes: [],
     }
     await app.$axios.get(`/unidade`).then(res => {
       data.unidades = res.data
+    }).catch(err => {
+      console.log(err.response)
+    })
+
+    await app.$axios.get(`/equipe`).then(res => {
+      data.equipes = res.data.dados
     }).catch(err => {
       console.log(err.response)
     })
@@ -858,19 +919,41 @@ export default {
       info.regiao = info.crm.substr(info.crm.length - 2)
       info.crm = info.crm.substr(0, info.crm.length - 3)
       info.titulo_eleitoral = info.titulo_eleitoral.replace(/ /g,'')
-      console.log(info)
+      
+      for (var key in this.arquivos) {
+        if(this.arquivos[key])
+          info[key] = this.arquivos[key]
+      }
+      // info.doc_rg = this.arquivos.doc_rg
+
+      let formData = new FormData()
+      for (var key in info)
+        formData.append(key, info[key])
+      
+      console.log(info, formData)
       this.$axios
-        .post('/medico', info)
+        .post('/medico', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
         .then(res => {
-          console.log(res)
+          alert('Cadastro concluido!')
+          //window.location.href = '/'
         }) .catch(err => {
           console.log(err.response)
+          alert(err.response.message)
         })
     },
     salvarEmCache(){
+      let info = JSON.parse(JSON.stringify(this.formData))
+      info.senha = null
       localStorage.setItem('corpoclinico-medico-version', MODALV)
-      localStorage.setItem('corpoclinico-medico', JSON.stringify(this.formData))
+      localStorage.setItem('corpoclinico-medico', JSON.stringify(info))
     },
+    carregaArquivo(ev, nome){
+      this.arquivos[nome] = ev
+    }
   }
 }
 </script>
