@@ -1,6 +1,6 @@
 import * as yup from "yup";
 import { estados } from "../helpers/Siglas";
-import { senhaRegEx, celularRegEx, cpfRegEx, cepRegEx } from "./Regex";
+import { celularRegEx, cpfRegEx, cepRegEx } from "./Regex";
 
 const categorias = ["E", "T", "C"];
 const escolaridades = ["BACHA", "ESPE", "MESTRE", "DOUTOR"];
@@ -18,12 +18,9 @@ export const medicoCreateValidationScheme = yup.object().shape({
     .max(100, "Nome deve ter no máximo 100 caracteres!"),
   senha: yup
     .string()
-    .required("Senha obrigatória!")
-    .matches(
-      senhaRegEx,
-      "Senha deve ter no mínimo 8 caracteres, 1 maiúsculo, 1 minúsculo e 1 número!"
-    )
-    .max(64, "Nome deve ter no máximo 64 caracteres!"),
+    .required("'senha' obrigatória!")
+    .min(8, "'senha' deve ter no mínimo 8 caracteres!")
+    .max(64, "'senha' deve ter no máximo 64 caracteres!"),
 
   // * Campos de médico
   crm: yup

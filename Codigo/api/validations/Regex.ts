@@ -7,7 +7,7 @@
     (?=.*[|!"$%&\/\(\)\?\^\'\\\+\-\*]))^.* // deve ter no mínimo um caractere espcial - DESATIVADO
   $/
 */
-const senhaRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+const senhaRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/; // NÃO UTILIZADO
 
 const celularRegEx = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
