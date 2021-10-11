@@ -11,12 +11,8 @@ export default {
         nome: '',
         email: '',
         senha: '',
-        senhaDuplicada: '',
-
-        tipo: 'A'
+        tipo: ''
       },
-
-      //formData: null
 
     }
   },
@@ -42,6 +38,7 @@ export default {
           this.limpaDados();
           this.$emit('input', false) // Fecha modal
           alert('Usuario Cadastrado!')
+          this.$emit('listaUsuarios')
         }).catch(error => {
           alert(JSON.stringify(error.response.data))
           console.log(error)
