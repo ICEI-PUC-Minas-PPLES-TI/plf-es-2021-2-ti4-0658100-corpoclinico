@@ -3,21 +3,37 @@
         <v-main>
             <v-container class="fill-height" fluid fundoclaro>
                 <v-row align="center" justify="center" dense>
-                    <v-col cols="12" sm="10" md="5" lg="3">
+                    <v-col cols="12" sm="10" md="5" lg="4">
                         <v-card class="py-0" elevation="0">
                         <v-row class="py-4" align="center" justify="center">
                             <v-img  max-width="40%" :src="image" alt="corpo clinico"></v-img>
                         </v-row>
                             <v-card-text>
-                                <v-form v-on:submit.prevent="handleSubmit">
-                                    <v-text-field label="Login" name="email" prepend-inner-icon="mdi-account-circle" type="email" class="p-0rounded-0" outlined placeholder="email@email.com" v-model="email"></v-text-field>
-                                    <v-text-field label="Senha" name="senha" prepend-inner-icon="mdi-lock" type="password" outlined class="mb-0 rounded-0" v-model="senha"></v-text-field>
-                                    <span style="" name="msg" v-model="msg">{{msg}}</span>
-                                    </v-checkbox>
+                                <v-form ref="formulario" v-on:submit.prevent="handleSubmit" lazy-validation>
+                                    
+                                    <v-text-field label="Login" 
+                                    :error-messages="erroLogin"
+                                    name="email" prepend-inner-icon="mdi-account-circle" type="email" 
+                                    class="p-0rounded-0" 
+                                    outlined placeholder="email@email.com" 
+                                    :rules="[rules.required,rules.emailValido]" v-model="email"></v-text-field>
+
+                                    <v-text-field ref="password"
+                                    :error-messages="erroLogin"
+                                    :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required]" 
+                                    label="Senha" name="senha" prepend-inner-icon="mdi-lock" 
+                                    :type="show1 ? 'text' : 'password'" 
+                                    outlined 
+                                    class="mb-0 rounded-0" 
+                                    v-model="senha" 
+                                    @click:append="show1 = !show1"></v-text-field>
+
                                     <v-btn  @click.native="handleSubmit" class="rounded-0 mt-2" color="#25BAAE" x-large block dark > Entrar </v-btn>
+
                                     <v-card-actions class="text--secondary" >
                                         Ainda não se candidatou?<a href="#" class="pl-2" style="color: #25BAAE">Candidatar-se</a>
                                     </v-card-actions>
+
                                 </v-form>
                             </v-card-text>
                         </v-card>
@@ -29,7 +45,6 @@
 </template>
 
 <script>
-    import axios from 'axios';
     import image from '/assets/logo.svg'
 export default {
     name: 'Login',
@@ -38,30 +53,31 @@ export default {
             email:'',
             senha:'',
             image:image,//logo do corpo clinico
-            msg:'',
-            tipo:''
+            tipo:'',
+            show1: false,
+            erroLogin:null,
+            rules: {
+                required: value => !!value || 'Obrigatório.',
+                emailValido:v => !v || /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail inválido. Ex: email@email.com'
+            }
         }
-
     },
     methods: {
-            async handleSubmit(){
-            if(this.email==""||this.senha==""){
-                this.msg="Favor inserir dados"
-            }else{
-                document.cookie = `token=`;
-                await this.$axios.post('http://localhost:3000/api/signin',{
-                    email:this.email,
-                    senha: this.senha
-                }).then(res=>{
-                    document.cookie = `token=${res.data.acessoToken}`;
-                    this.msg = "Logando..."
-                }).catch(err=>{
-                    this.msg="Login inválido"
-                })
+            handleSubmit(){
+                if(this.$refs.formulario.validate()){
+                    document.cookie = `token=`;
+                    this.$axios.post('http://localhost:3000/api/signin',{
+                        email:this.email,
+                        senha: this.senha
+                    }).then(res=>{
+                        console.log(res)
+                        document.cookie = `token=${res.data.acessoToken}`;
+                    }).catch(err=>{
+                        this.erroLogin="Login Inválido"
+                    })
 
+                }
             }
-            
-        }
     },
 }
 </script>
