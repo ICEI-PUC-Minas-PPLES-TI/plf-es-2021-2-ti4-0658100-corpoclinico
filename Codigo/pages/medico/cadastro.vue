@@ -29,6 +29,7 @@
                 :rules="[v => !!v || 'Nome é obrigatório']"
                 v-model="formData.nome"
                 label="Nome (obrigatório)"
+                @blur="salvarEmCache"
               />
             </v-col>
             <v-col cols="12" :xs="12" :sm="6" :md="3">
@@ -38,6 +39,7 @@
                 v-mask="['###.###.###-##']"
                 :rules="[v => !!v || 'CPF é obrigatório']"
                 label="CPF (obrigatório)"
+                @blur="salvarEmCache"
               />
             </v-col>
           </v-row>
@@ -50,6 +52,7 @@
                 v-mask="['(##) ####-####', '(##) #####-####']"
                 label="Telefone Celular (obrigatório)"
                 :rules="[v => !!v || 'Telefone Celular obrigatório']"
+                @blur="salvarEmCache"
               />
             </v-col>
             <v-col cols="12" :xs="12" :sm="6" :md="5">
@@ -58,6 +61,7 @@
                 v-model="formData.email"
                 label="E-mail (obrigatório)"
                 :rules="[v => !!v || 'E-mail obrigatório']"
+                @blur="salvarEmCache"
               />
             </v-col>
             <v-col cols="12" :xs="12" :sm="6" :md="3">
@@ -87,7 +91,7 @@
                 </template>
                 <v-date-picker
                   v-model="formData.dt_nascimento"
-                  @input="menuNascimento = false"
+                  @input="menuNascimento = false;salvarEmCache()"
                 ></v-date-picker>
               </v-menu>
             </v-col>
@@ -100,6 +104,7 @@
                 v-model="formData.rg"
                 :rules="[v => !!v || 'RG obrigatório']"
                 label="RG (obrigatório)"
+                @blur="salvarEmCache"
               />
             </v-col>
             <v-col cols="12" :xs="12" :sm="6" :md="5">
@@ -107,6 +112,7 @@
                 :hide-details="'auto'"
                 v-model="formData.rg_orgao_emissor"
                 label="Orgão Emissor"
+                @blur="salvarEmCache"
               />
             </v-col>
             <v-col cols="12" :xs="12" :sm="6" :md="3">
@@ -136,7 +142,7 @@
                 </template>
                 <v-date-picker
                   v-model="formData.rg_data_emissao"
-                  @input="menuEmissao = false"
+                  @input="menuEmissao = false;salvarEmCache()"
                 ></v-date-picker>
               </v-menu>
             </v-col>
@@ -150,6 +156,7 @@
                 v-model="formData.titulo_eleitoral"
                 :rules="[v => !!v || 'Título obrigatório']"
                 v-mask="['#### #### ####']"
+                @blur="salvarEmCache"
               />
             </v-col>
             <v-col cols="12" :xs="12" :sm="6" :md="3">
@@ -158,7 +165,8 @@
                 label="Zona Eleitoral (obrigatório)"
                 :rules="[v => !!v || 'Zona obrigatória']"
                 v-model="formData.zona"
-                maxlength="4"
+                maxlength="3"
+                @blur="salvarEmCache"
               />
             </v-col>
             <v-col cols="12" :xs="12" :sm="6" :md="3">
@@ -168,6 +176,7 @@
                 v-model="formData.secao"
                 :rules="[v => !!v || 'Seção obrigatória']"
                 maxlength="4"
+                @blur="salvarEmCache"
               />
             </v-col>
             <v-col cols="12" :xs="12" :sm="6" :md="3">
@@ -177,24 +186,36 @@
                 :rules="[v => !!v || 'Cartão do Sus obrigatório']"
                 v-model="formData.cartao_sus"
                 maxlength="15"
+                @blur="salvarEmCache"
               />
             </v-col>
           </v-row>
-          <!-- Anexos -->
+          <!-- Senha, Anexos -->
           <v-row>
-            <v-col cols="12" :xs="12" :sm="4" :md="2">
+            <v-col cols="12" :xs="12" :sm="6" :md="3">
+              <v-text-field
+                v-model="formData.senha"
+                :append-icon="senhaVisivel ? 'mdi-eye' : 'mdi-eye-off'"
+                :type="senhaVisivel ? 'text' : 'password'"
+                @click:append="senhaVisivel = !senhaVisivel"
+                hide-details="auto"
+                label="Senha (obrigatório)"
+                :rules="[v => !!v || 'Senha é obrigatório', v => (v && v.length >= 8 && /\d/.test(v) && /[a-z]/g.test(v) && /[A-Z]/g.test(v)) || 'Min 8 caracteres, 1 número, 1 letra minúscula e 1 letra maiúscula']"
+              />
+            </v-col>
+            <v-col cols="12" :xs="12" :sm="6" :md="2">
               <v-file-input
                 accept="image/*"
                 label="Doc. RG"
               />
             </v-col>
-            <v-col cols="12" :xs="12" :sm="4" :md="2">
+            <v-col cols="12" :xs="12" :sm="6" :md="2">
               <v-file-input
                 accept="image/*"
                 label="Doc. CPF"
               />
             </v-col>
-            <v-col cols="12" :xs="12" :sm="4" :md="2">
+            <v-col cols="12" :xs="12" :sm="6" :md="2">
               <v-file-input
                 accept="image/*"
                 label="Foto 3x4"
@@ -247,6 +268,7 @@
                 v-model="formData.logradouro"
                 label="Logradouro (obrigatório)"
                 :rules="[v => !!v || 'Logradouro obrigatório']"
+                @blur="salvarEmCache"
               />
             </v-col>
             <v-col cols="12" :xs="12" :sm="6" :md="2">
@@ -255,6 +277,7 @@
                 v-model="formData.numero"
                 label="Número (obrigatório)"
                 :rules="[v => !!v || 'Número obrigatório']"
+                @blur="salvarEmCache"
               />
             </v-col>
             <v-col cols="12" :xs="12" :sm="6" :md="2">
@@ -262,6 +285,7 @@
                 :hide-details="'auto'"
                 v-model="formData.complemento"
                 label="Complemento"
+                @blur="salvarEmCache"
               />
             </v-col>
           </v-row>
@@ -303,6 +327,7 @@
                 label="Estado (obrigatório)"
                 v-model="formData.estado"
                 :rules="[v => !!v || 'Estado obrigatório']"
+                @change="salvarEmCache"
               ></v-select>
             </v-col>
             <v-col cols="12" :xs="12" :md="5">
@@ -311,6 +336,7 @@
                 v-model="formData.cidade"
                 label="Cidade (obrigatório)"
                 :rules="[v => !!v || 'Cidade obrigatória']"
+                @blur="salvarEmCache"
               />
             </v-col>
             <v-col cols="12" :xs="12" :md="4">
@@ -319,6 +345,7 @@
                 v-model="formData.bairro"
                 label="Bairro (obrigatório)"
                 :rules="[v => !!v || 'Bairro obrigatório']"
+                @blur="salvarEmCache"
               />
             </v-col>
           </v-row>
@@ -378,6 +405,7 @@
                 v-model="formData.escolaridade_max"
                 label="Nível de Escolaridade (obrigatório)"
                 :rules="[v => !!v || 'Nível de Escolaridade obrigatório']"
+                @change="salvarEmCache"
               />
             </v-col>
             <v-col cols="12" :xs="12" :md="7">
@@ -385,6 +413,7 @@
                 :hide-details="'auto'"
                 label="Sociedade Cientifica"
                 v-model="formData.sociedade_cientifica"
+                @blur="salvarEmCache"
               >
                 <template v-slot:append>
                   <v-tooltip
@@ -412,6 +441,7 @@
                         :hide-details="'auto'"
                         label="Nome Faculdade"
                         v-model="formData.formacao[fidx].faculdade_nome"
+                        @blur="salvarEmCache"
                       />
                     </v-col>
                     <v-col cols="12" :xs="12" :sm="6" :md="2">
@@ -426,9 +456,10 @@
                         type="number"
                         label="Ano de Formação"
                         v-model="formData.formacao[fidx].faculdade_ano_formatura"
+                        @blur="salvarEmCache"
                       />
                     </v-col>
-                    <v-col cols="12" :xs="12" :md="1" v-if="fidx > 0" @click="formData.formacao.splice(fidx, 1)">
+                    <v-col cols="12" :xs="12" :md="1" v-if="fidx > 0" @click="formData.formacao.splice(fidx, 1);salvarEmCache()">
                       <v-btn icon class="mt-3">
                         <v-icon>mdi-close</v-icon>
                       </v-btn>
@@ -482,9 +513,42 @@
                 label="CRM (obrigatório)"
                 v-model="formData.crm"
                 :rules="[v => !!v || 'CRM obrigatório']"
+                @blur="salvarEmCache"
               />
             </v-col>
-            <v-col cols="12" :xs="12" :md="7">
+            <v-col :cols="12" :md="4">
+              <v-menu
+                v-model="menuDataCrm"
+                :close-on-content-click="false"
+                :nudge-right="40"
+                transition="scale-transition"
+                offset-y
+                min-width="auto"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="formData.dt_inscricao_crm"
+                    hide-details="auto"
+                    label="Data de Inscrição do CRM (obrigatório)"
+                    type="date"
+                    max="3000-01-01"
+                    class="medico-stepper-input-date"
+                    :rules="[v => !!v || 'Data de Inscrição do CRM obrigatório']"
+                  >
+                    <span slot="append">
+                      <v-icon v-bind="attrs" v-on="on">
+                        mdi-calendar
+                      </v-icon>
+                    </span>
+                  </v-text-field>
+                </template>
+                <v-date-picker
+                  v-model="formData.dt_inscricao_crm"
+                  @input="menuDataCrm = false;salvarEmCache()"
+                ></v-date-picker>
+              </v-menu>
+            </v-col>
+            <v-col cols="12" :xs="12" :md="3">
               <v-select
                 :items="[
                   {text: 'Efetivo', value: 'E'},
@@ -494,6 +558,7 @@
                 label="Categoria (obrigatório)"
                 v-model="formData.categoria"
                 :rules="[v => !!v || 'Categoria obrigatória']"
+                @change="salvarEmCache"
               />
             </v-col>
           </v-row>
@@ -508,6 +573,7 @@
                         :hide-details="'auto'"
                         label="Instituicao"
                         v-model="formData.especialidade[eidx].instituicao"
+                        @blur="salvarEmCache"
                       />
                     </v-col>
                     <v-col cols="12" :xs="12" :md="3">
@@ -516,6 +582,7 @@
                         type="number"
                         label="Ano de Formação"
                         v-model="formData.especialidade[eidx].ano_formatura"
+                        @blur="salvarEmCache"
                       />
                     </v-col>
                     <v-col cols="12" :xs="12" :md="2">
@@ -530,9 +597,10 @@
                         type="number"
                         label="Nº RQE"
                         v-model="formData.especialidade[eidx].rqe"
+                        @blur="salvarEmCache"
                       />
                     </v-col>
-                    <v-col cols="12" :xs="12" :md="1" @click="formData.especialidade.splice(eidx, 1)">
+                    <v-col cols="12" :xs="12" :md="1" @click="formData.especialidade.splice(eidx, 1);salvarEmCache()">
                       <v-btn icon class="mt-3">
                         <v-icon>mdi-close</v-icon>
                       </v-btn>
@@ -574,7 +642,7 @@
         <small v-if="step == 5">Descrição de dados preenchidos</small>
       </v-stepper-step>
       <v-stepper-content step="5">
-        <!-- RG, Orgao Emissor, Data de Emissao -->
+        <!-- Faturamento, CNPJ, Unidade, Equipe -->
         <v-row>
           <v-col cols="12" :xs="12" :md="formData.faturamento == 'PJ' ? 3: 6">
             <v-select
@@ -585,6 +653,7 @@
               ]"
               v-model="formData.faturamento"
               label="Faturamento"
+              @change="salvarEmCache"
             />
           </v-col>
           <v-col cols="12" :xs="12" :md="3" v-if="formData.faturamento == 'PJ'">
@@ -592,14 +661,20 @@
               :hide-details="'auto'"
               label="CNPJ"
               v-model="formData.cnpj"
+              v-mask="['##.###.###/####-##']"
+              @blur="salvarEmCache"
             />
           </v-col>
+          
           <v-col cols="12" :xs="12" :md="3">
-            <v-text-field
+            <v-select
               :hide-details="'auto'"
-              label="Unidade"
+              item-text="nome"
+              item-value="id"
+              :items="unidades"
               v-model="formData.unidade_id"
-              disabled
+              label="Unidade"
+              @change="salvarEmCache"
             />
           </v-col>
           <v-col cols="12" :xs="12" :md="3">
@@ -608,6 +683,7 @@
               label="Equipe"
               v-model="formData.equipe_id"
               disabled
+              @change="salvarEmCache"
             />
           </v-col>
         </v-row>
@@ -651,7 +727,7 @@
             </v-btn>
             <v-btn
               color="accent"
-              @click="step = 1"
+              @click="enviarDados"
             >
               Concluir
             </v-btn>
@@ -665,15 +741,17 @@
 <script>
 import axios2 from 'axios';
 import {mask} from 'vue-the-mask'
+const MODALV = '0.0.1' // Versão dos dados no modal, caso seja diferente da versao salva no PC do usuario nao vai carregar dados anteriores
 export default {
   layout: 'cmedico',
   directives: {mask},
   data () {
     return {
-      step: 4,
+      step: 1,
       formData: {
         nome: null,
         email: null,
+        senha: null,
         celular: null,
         cpf: null,
         dt_nascimento: null,
@@ -694,6 +772,7 @@ export default {
         sociedade_cientifica: null,
         escolaridade_max: null,
         crm: null,
+        dt_inscricao_crm: null,
         categoria: null,
         formacao: [{
           faculdade_nome: null,
@@ -707,6 +786,9 @@ export default {
       },
       menuNascimento: false,
       menuEmissao: false,
+      menuDataCrm: false,
+      unidades: [],
+      senhaVisivel: false
     }
   },
   async asyncData({ app }) {
@@ -715,8 +797,23 @@ export default {
     }
     await app.$axios.get(`/unidade`).then(res => {
       data.unidades = res.data
+    }).catch(err => {
+      console.log(err.response)
     })
     return data
+  },
+  mounted(){
+    const ULTIMAV = localStorage.getItem('corpoclinico-medico-version')
+    // Retomar dados inseridos sem salvar
+    if(ULTIMAV === MODALV) {
+      const DADOS = localStorage.getItem('corpoclinico-medico')
+      try{
+        if(DADOS) {
+          const JSONDADOS = JSON.parse(DADOS)
+          this.formData = JSONDADOS
+        }
+      } catch(e){}
+    }
   },
   methods: {
     buscaCep(){
@@ -729,9 +826,11 @@ export default {
             this.formData.cidade ||= res.data.localidade
             this.formData.bairro ||= res.data.bairro
           }
+          this.salvarEmCache()
         })
         .catch(err => {
           console.log(err)
+          this.salvarEmCache()
         })
     },
     adicionarFormacao(){
@@ -751,7 +850,27 @@ export default {
       if(this.$refs[formNome].validate()){
         this.step = step
       }
-    }
+    },
+    enviarDados(){
+      let info = JSON.parse(JSON.stringify(this.formData))
+      info.celular = info.celular.replace(/\D/g,'')
+      info.cnpj = info.cnpj.replace(/\D/g,'')
+      info.regiao = info.crm.substr(info.crm.length - 2)
+      info.crm = info.crm.substr(0, info.crm.length - 3)
+      info.titulo_eleitoral = info.titulo_eleitoral.replace(/ /g,'')
+      console.log(info)
+      this.$axios
+        .post('/medico', info)
+        .then(res => {
+          console.log(res)
+        }) .catch(err => {
+          console.log(err.response)
+        })
+    },
+    salvarEmCache(){
+      localStorage.setItem('corpoclinico-medico-version', MODALV)
+      localStorage.setItem('corpoclinico-medico', JSON.stringify(this.formData))
+    },
   }
 }
 </script>
