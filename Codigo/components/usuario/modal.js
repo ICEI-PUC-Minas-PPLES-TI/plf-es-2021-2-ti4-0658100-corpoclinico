@@ -11,12 +11,8 @@ export default {
         nome: '',
         email: '',
         senha: '',
-        senhaDuplicada: '',
-
-        tipo: 'A'
+        tipo: ''
       },
-
-      //formData: null
 
     }
   },
