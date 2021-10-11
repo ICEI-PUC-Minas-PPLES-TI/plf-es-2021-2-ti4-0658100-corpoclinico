@@ -947,7 +947,7 @@ export default {
           window.location.href = '/'
         }) .catch(err => {
           console.log(err.response)
-          alert(err.response.message)
+          alert(err.response.data.erros)
         })
     },
     salvarEmCache(){
