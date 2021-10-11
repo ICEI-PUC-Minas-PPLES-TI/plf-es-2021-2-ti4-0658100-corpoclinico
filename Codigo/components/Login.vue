@@ -73,7 +73,7 @@ export default {
                         console.log(res)
                         document.cookie = `token=${res.data.acessoToken}`;
                     }).catch(err=>{
-                        this.erroLogin="Login Inválido"
+                        this.erroLogin="Dados não encontrados"
                     })
 
                 }
