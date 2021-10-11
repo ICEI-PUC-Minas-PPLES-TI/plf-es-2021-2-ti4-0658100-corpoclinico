@@ -939,7 +939,9 @@ export default {
         })
         .then(res => {
           alert('Cadastro concluido!')
-          //window.location.href = '/'
+          localStorage.removeItem('corpoclinico-medico-version')
+          localStorage.removeItem('corpoclinico-medico')
+          window.location.href = '/'
         }) .catch(err => {
           console.log(err.response)
           alert(err.response.message)
