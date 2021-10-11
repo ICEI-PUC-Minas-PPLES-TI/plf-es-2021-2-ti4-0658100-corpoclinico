@@ -55,18 +55,7 @@ class UsuarioController {
   }
 
   public create: CreateRequestHandler = async (request, response) => {
-    const senhaRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
-    /*
-      /^
-        (?=.*\d)          // deve ter no mínimo 1 número
-        (?=.*[a-z])       // deve ter no mínimo 1 letra minúscula
-        (?=.*[A-Z])       // deve ter no mínimo 1 letra maiúscula
-        [a-zA-Z0-9]{8,}   // deve ter no mínimo 8 caracteres alfanuméricos
-      $/
-    */
-
     // Em breve buscar dos tipos automaticamente no banco de dados.
-    const tipos = ["A", "V"];
     const scheme = yup.object().shape({
       nome: yup.string().required("'nome' obrigatório!").max(120, "'nome' deve ter no máximo 120 caracteres!"),
 
@@ -74,12 +63,11 @@ class UsuarioController {
         .string()
         .email()
         .required("'email' obrigatório!").max(100, "'email' deve ter no máximo 100 caracteres!"),
-
       senha: yup
         .string()
         .required("'senha' obrigatória!")
         .min(8, "'senha' deve ter no mínimo 8 caracteres!")
-        .max(64, "'senha' deve ter no máximo 64 caracteres!"),
+        .max(64, "'senha' deve ter no máximo 64 caracteres!")
     });
 
     // Validando com o esquema criado:
@@ -154,18 +142,15 @@ class UsuarioController {
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
   public update: UpddateRequestHandler<IAtributosUsuario> = async (request, response) => {
-    const tipos = ["A", "M", "CC", "DC", "DT"];
-
     const scheme = yup.object().shape({
-      nome: yup.string().max(120, "Nome deve ter no máximo 120 caracteres!"),
+      nome: yup.string().max(120, "'nome' deve ter no máximo 120 caracteres!"),
 
-      email: yup.string().email().max(100, "Nome deve ter no máximo 100 caracteres!"),
+      email: yup.string().email().max(100, "'email' deve ter no máximo 100 caracteres!"),
       senha: yup
         .string()
+        .required("'senha' obrigatória!")
         .min(8, "'senha' deve ter no mínimo 8 caracteres!")
         .max(64, "'senha' deve ter no máximo 64 caracteres!"),
-
-      tipo: yup.mixed().oneOf(tipos, `Tipo deve ser algum destes: ${tipos}.`)
     });
 
     // Validando com o esquema criado:
@@ -179,7 +164,7 @@ class UsuarioController {
       });
     }
 
-    const { nome, email, senha, tipo } = request.body;
+    const { nome, email, senha } = request.body;
 
     let passTemp = null;
     if (senha)
@@ -202,7 +187,7 @@ class UsuarioController {
         nome: nome ? nome : usuario.get().nome,
         email: email ? email : usuario.get().email,
         senha: password ? password : usuario.get().senha,
-        tipo: tipo ? tipo : usuario.get().tipo
+        tipo: "A"
       });
       response.status(200).json({
         atualizado: true,
