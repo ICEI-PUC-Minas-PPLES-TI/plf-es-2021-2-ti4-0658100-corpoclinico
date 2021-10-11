@@ -1,5 +1,5 @@
 import multer from "multer";
-import { extensoesPermitidas, documentosCriarMedico } from "./documentos";
+import { extensoesPermitidas } from "./Documentos";
 import path from 'path';
 
 const armazenamento = multer.diskStorage({
@@ -24,7 +24,7 @@ const upload = multer({
     callback(null, true)
   },
   limits: {
-    fileSize: 20 * 1000000 /* Em bytes, 1 megabyte == 1000000 */
+    fileSize: 2 * 1000000 /* Em bytes, 1 megabyte == 1000000 */
   }
 });
 

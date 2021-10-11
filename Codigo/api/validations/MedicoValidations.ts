@@ -1,29 +1,29 @@
 import * as yup from "yup";
-import { senhaRegEx,celularRegEx, cpfRegEx, cepRegEx } from "./Regex";
-import { estados } from "../helpers/siglas";
+import { estados } from "../helpers/Siglas";
+import { senhaRegEx, celularRegEx, cpfRegEx, cepRegEx } from "./Regex";
 
 const categorias = ["E", "T", "C"];
 const escolaridades = ["BACHA", "ESPE", "MESTRE", "DOUTOR"];
 
 export const medicoCreateValidationScheme = yup.object().shape({
-
   // * Campos de Usuario
-  nome: yup.string().required("Nome obrigatório!").max(120, "Nome deve ter no máximo 120 caracteres!"),
+  nome: yup
+    .string()
+    .required("Nome obrigatório!")
+    .max(120, "Nome deve ter no máximo 120 caracteres!"),
   email: yup
     .string()
     .email()
-    .required("Email obrigatório!").max(100, "Nome deve ter no máximo 100 caracteres!"),
+    .required("Email obrigatório!")
+    .max(100, "Nome deve ter no máximo 100 caracteres!"),
   senha: yup
     .string()
     .required("Senha obrigatória!")
     .matches(
       senhaRegEx,
       "Senha deve ter no mínimo 8 caracteres, 1 maiúsculo, 1 minúsculo e 1 número!"
-    ).max(64, "Nome deve ter no máximo 64 caracteres!"),
-  senhaRepetida: yup
-    .string()
-    .required("Senhas repetida é obrigatória!")
-    .oneOf([yup.ref("senha"), null], "Senhas devem ser iguais"),
+    )
+    .max(64, "Nome deve ter no máximo 64 caracteres!"),
 
   // * Campos de médico
   crm: yup
@@ -46,7 +46,8 @@ export const medicoCreateValidationScheme = yup.object().shape({
 
   cartao_sus: yup
     .string()
-    .max(25, "'cartao_sus' tamanho máximo de 25 caracteres!"),
+    .max(25, "'cartao_sus' tamanho máximo de 25 caracteres!")
+    .nullable(),
 
   categoria: yup
     .mixed()
@@ -54,32 +55,43 @@ export const medicoCreateValidationScheme = yup.object().shape({
       categorias,
       `'categoria' deve ser algum destes valores: ${categorias}.`
     )
-    .required("'categoria' obrigatório!"),
+    .required("'categoria' obrigatório!")
+    .nullable(),
 
   rg: yup
     .string()
-    .max(14, "'rg' tamanho máximo de 14 caracteres!"),
+    .max(14, "'rg' tamanho máximo de 14 caracteres!")
+    .nullable(),
 
   rg_orgao_emissor: yup
     .string()
-    .max(30, "'rg_orgao_emissor' tamanho máximo de 30 caracteres!"),
+    .max(30, "'rg_orgao_emissor' tamanho máximo de 30 caracteres!")
+    .nullable(),
 
-  rg_data_emissao: yup.date(),
+  rg_data_emissao: yup.date().nullable(),
 
-  dt_nascimento: yup.date(),
+  dt_nascimento: yup.date().nullable(),
 
   cpf: yup
     .string()
     .matches(cpfRegEx, "'cpf' inválido!")
-    .max(14, "'cpf' tamanho máximo de 14 caracteres!"),
+    .max(14, "'cpf' tamanho máximo de 14 caracteres!")
+    .nullable(),
 
   titulo_eleitoral: yup
     .string()
-    .max(12, "'titulo_eleitoral' tamanho máximo de 12 caracteres!"),
+    .max(12, "'titulo_eleitoral' tamanho máximo de 12 caracteres!")
+    .nullable(),
 
-  zona: yup.string().max(3, "'zona' tamanho máximo de 3 caracteres!"),
+  zona: yup
+    .string()
+    .max(3, "'zona' tamanho máximo de 3 caracteres!")
+    .nullable(),
 
-  secao: yup.string().max(4, "'secao' tamanho máximo de 4 caracteres!"),
+  secao: yup
+    .string()
+    .max(4, "'secao' tamanho máximo de 4 caracteres!")
+    .nullable(),
 
   logradouro: yup
     .string()
@@ -90,7 +102,8 @@ export const medicoCreateValidationScheme = yup.object().shape({
 
   complemento: yup
     .string()
-    .max(20, "'complemento' tamanho máximo de 20 caracteres!"),
+    .max(20, "'complemento' tamanho máximo de 20 caracteres!")
+    .nullable(),
 
   bairro: yup
     .string()
@@ -115,7 +128,8 @@ export const medicoCreateValidationScheme = yup.object().shape({
 
   sociedade_cientifica: yup
     .string()
-    .max(100, "'sociedade_cientifica' tamanho máximo de 100 caracteres!"),
+    .max(100, "'sociedade_cientifica' tamanho máximo de 100 caracteres!")
+    .nullable(),
 
   escolaridade_max: yup
     .mixed()
@@ -151,9 +165,7 @@ export const medicoUpdateValidationScheme = yup.object().shape({
       `'categoria' deve ser algum destes valores: ${categorias}.`
     ),
 
-  rg: yup
-    .string()
-    .max(14, "'rg' tamanho máximo de 14 caracteres!"),
+  rg: yup.string().max(14, "'rg' tamanho máximo de 14 caracteres!"),
 
   rg_orgao_emissor: yup
     .string()
