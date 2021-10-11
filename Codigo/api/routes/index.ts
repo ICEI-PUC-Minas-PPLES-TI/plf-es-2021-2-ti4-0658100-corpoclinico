@@ -1,13 +1,13 @@
 
-import { RequestHandler, Router } from 'express';
+import { Router } from 'express';
 const router = Router()
 import autenticacaoJwt from './verificarJwtToken';
 
 // Importar controllers
 import UsuarioController from '../controllers/UsuarioController';
 import MedicoController from '../controllers/MedicoController';
-import { upload } from '../helpers/files/multer';
-import { documentosCriarMedico } from '../helpers/files/documentos';
+import { upload } from '../helpers/files/Multer';
+import { documentosCriarMedico } from '../helpers/files/Documentos';
 
 // Iniciar controllers
 const usuarioController = new UsuarioController();

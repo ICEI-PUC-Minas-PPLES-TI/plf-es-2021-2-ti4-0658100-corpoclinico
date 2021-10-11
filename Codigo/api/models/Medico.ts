@@ -30,7 +30,7 @@ export interface IAtributosMedico {
   ativo: number,
 }
 export interface IAtributosMedicoCriacao
-  extends Optional<IAtributosMedico, "id" | "cartao_sus" | "categoria" | "rg" | "rg_orgao_emissor" | "rg_data_emissao" | "dt_nascimento" | "cpf" | "titulo_eleitoral" | "zona" | "secao" | "complemento" | "sociedade_cientifica" | "ativo"> {}
+  extends Optional<IAtributosMedico, "id" | "cartao_sus" | "categoria" | "rg" | "rg_orgao_emissor" | "rg_data_emissao" | "dt_nascimento" | "cpf" | "titulo_eleitoral" | "zona" | "secao" | "complemento" | "sociedade_cientifica" | "ativo"> { }
 
 class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
   implements IAtributosMedico {
@@ -114,7 +114,7 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
                 attributes: ["id"]
               })
                 .then(medico => {
-                  if (medico.length != 0)
+                  if (medico.length != 0 && value != null)
                     next(new AppError("'cartao_sus' já cadastrado!"));
                   next();
                 })
@@ -136,7 +136,7 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
                 attributes: ["id"]
               })
                 .then(medico => {
-                  if (medico.length != 0)
+                  if (medico.length != 0 && value != null)
                     next(new AppError("'rg' já cadastrado!"));
                   next();
                 })
@@ -166,7 +166,7 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
                 attributes: ["id"]
               })
                 .then(medico => {
-                  if (medico.length != 0)
+                  if (medico.length != 0 && value != null)
                     next(new AppError("'cpf' já cadastrado!"));
                   next();
                 })
@@ -184,7 +184,7 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
                 attributes: ["id"]
               })
                 .then(medico => {
-                  if (medico.length != 0)
+                  if (medico.length != 0 && value != null)
                     next(new AppError("'titulo_eleitoral' já cadastrado!"));
                   next();
                 })
