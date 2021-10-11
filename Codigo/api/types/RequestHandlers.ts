@@ -10,6 +10,8 @@ export type GetAllRequestHandler<TModel> = RequestHandler<never, ReadResponse<TM
 
 export type GetRequestHandler<TModel> = RequestHandler<{id: string}, TModel|undefined|null>
 
+export type GetAllSimpleRequestHandler<TModel> = RequestHandler<{id: string}, TModel|undefined|null|TModel[]>
+
 export type UpddateRequestHandler<TRequestBody = any> = RequestHandler<{id: string}, UpdateResponse, TRequestBody>;
 
 export type DeleteRequestHandler = RequestHandler<{id: string}, DeleteResponse, never>;

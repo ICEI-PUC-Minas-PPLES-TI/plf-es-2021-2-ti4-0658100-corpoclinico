@@ -5,6 +5,7 @@ import Medico from '../models/Medico';
 
 // Importar modelos aqui
 import Usuario from "../models/Usuario";
+import Unidade from "../models/Unidade";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ export default {
       // Iniciar modelos aqui
       Usuario.initialize(sequelize);
       Medico.initialize(sequelize);
+      Unidade.initialize(sequelize);
       if (process.env.NODE_ENV === "dev") {
         console.log(
           `Conexão com '${process.env.DB_HOST}/${process.env.DB_DATABASE}' estabelecida`

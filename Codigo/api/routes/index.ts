@@ -6,10 +6,12 @@ import autenticacaoJwt from './verificarJwtToken';
 // Importar controllers
 import UsuarioController from '../controllers/UsuarioController';
 import MedicoController from '../controllers/MedicoController';
+import UnidadeController from '../controllers/UnidadeController';
 
 // Iniciar controllers
 const usuarioController = new UsuarioController();
 const medicoController = new MedicoController();
+const unidadeController = new UnidadeController();
 
 // Adicionar rotas
 // Usuario
@@ -25,5 +27,8 @@ router.get('/medico/:id', [autenticacaoJwt.verificarToken], medicoController.get
 router.get('/medico', [autenticacaoJwt.verificarToken], medicoController.getAll)
 router.delete('/medico/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], medicoController.delete)
 router.put('/medico/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], medicoController.update)
+
+router.get('/unidade/:id', [autenticacaoJwt.verificarToken], unidadeController.get)
+router.get('/unidade', [autenticacaoJwt.verificarToken], unidadeController.getAll)
 
 export default router;
