@@ -53,7 +53,7 @@
                 v-model="formData.celular"
                 v-mask="['(##) ####-####', '(##) #####-####']"
                 label="Telefone Celular (obrigatório)"
-                :rules="[v => !!v || 'Telefone Celular obrigatório']"
+                :rules="[v => !!v || 'Telefone Celular obrigatório', v => (v && v.length >= 14) || 'Telefone inválido',]"
                 @blur="salvarEmCache"
               />
             </v-col>
@@ -64,7 +64,7 @@
                 label="E-mail (obrigatório)"
                 type="email"
                 maxlength="100"
-                :rules="[v => !!v || 'E-mail obrigatório']"
+                :rules="[v => !!v || 'E-mail obrigatório', v => /.+@.+\..+/.test(v) || 'E-mail inválido',]"
                 @blur="salvarEmCache"
               />
             </v-col>
@@ -217,7 +217,7 @@
                 :rules="[v => !!v || 'Senha é obrigatório', v => (v && v.length >= 8) || 'Min 8 caracteres']"
               />
             </v-col>
-            <v-col cols="12" :xs="12" :sm="6" :md="2">
+            <v-col cols="12" :xs="12" :sm="6" :md="3">
               <v-file-input
                 accept="image/*"
                 label="Doc. RG (Frente e Verso)"
@@ -225,7 +225,7 @@
                 @change="carregaArquivo($event, 'doc_rg')"
               />
             </v-col>
-            <v-col cols="12" :xs="12" :sm="6" :md="2">
+            <v-col cols="12" :xs="12" :sm="6" :md="3">
               <v-file-input
                 accept="image/*"
                 label="Doc. CPF"
@@ -233,7 +233,7 @@
                 @change="carregaArquivo($event, 'doc_cpf')"
               />
             </v-col>
-            <v-col cols="12" :xs="12" :sm="6" :md="2">
+            <v-col cols="12" :xs="12" :sm="6" :md="3">
               <v-file-input
                 accept="image/*"
                 label="Foto 3x4"
