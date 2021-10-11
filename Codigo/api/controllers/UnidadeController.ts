@@ -23,7 +23,9 @@ class UnidadeController {
 
   // URI de exemplo: {{server}}/api/unidade
   public getAll: GetAllSimpleRequestHandler<IAtributosUnidade> = async (request, response) => {
-    Unidade.findAll()
+    Unidade.findAll({
+      attributes: ['id', 'nome']
+    })
       .then(unidades => {
         response.status(200).json(unidades);
       })

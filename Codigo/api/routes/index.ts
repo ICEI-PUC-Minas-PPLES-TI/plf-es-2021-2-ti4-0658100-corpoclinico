@@ -33,6 +33,6 @@ router.delete('/medico/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.is
 router.put('/medico/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], medicoController.update)
 
 router.get('/unidade/:id', [autenticacaoJwt.verificarToken], unidadeController.get)
-router.get('/unidade', [autenticacaoJwt.verificarToken], unidadeController.getAll)
+router.get('/unidade', unidadeController.getAll)
 
 export default router;
