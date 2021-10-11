@@ -1,40 +1,31 @@
 import Medico, { IAtributosMedico, IAtributosMedicoCriacao } from "../models/Medico";
-import { SortPaginate } from "../helpers/SortPaginate";
+import MedicoService from "../services/MedicoService";
+import { medicoCreateValidationScheme, medicoUpdateValidationScheme } from "../validations/MedicoValidations";
 
-import * as yup from 'yup'
+import Usuario, { IAtributosUsuarioCriacao } from "../models/Usuario";
+import UsuarioService from "../services/UsuarioService";
+
+import bcrypt from "bcryptjs";
 import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
+import AppError from "../errors/AppError";
+import ArquivoService from "../services/ArquivoService";
+import Arquivo from "../models/Arquivo";
+
+interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao { }
 
 class MedicoController {
+  private medicoService!: MedicoService;
+  private usuarioSerive!: UsuarioService;
+  private arquivoService!: ArquivoService;
 
-  public create: CreateRequestHandler<IAtributosMedicoCriacao> = async (request, response) => {
-    const celularRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-    /*
-      /^
-        (?=.*\d)          // deve ter no mínimo 1 número
-        (?=.*[a-z])       // deve ter no mínimo 1 letra minúscula
-        (?=.*[A-Z])       // deve ter no mínimo 1 letra maiúscula
-        [a-zA-Z0-9]{8,}   // deve ter no mínimo 8 caracteres alfanuméricos
-      $/
-    */
+  constructor() {
+    this.medicoService = new MedicoService();
+    this.usuarioSerive = new UsuarioService();
+    this.arquivoService = new ArquivoService();
+  }
 
-    const categorias = ["E", "T", "C"];
-    const scheme = yup.object().shape({
-      crm: yup.string().required("crm obrigatório!"),
-      celular: yup.string().matches(celularRegExp, "celular inválido!"),
-      categoria: yup
-        .mixed()
-        .oneOf(categorias, `categoria deve ser alguma destas: ${categorias}.`)
-        .required("categoria obrigatório!"),
-      rg: yup
-        .string()
-        .required("rg obrigatório!"), // TODO: RegEX de RG
-      cpf: yup
-        .string()
-        .required("rg obrigatório!"), // TODO: RegEX de CPF,
-      usuario_id: yup
-        .number()
-        .required('usuario_id obrigatório')
-    });
+  public create: CreateRequestHandler<IAtributosMedicoUsuarioCriacao> = async (request, response) => {
+    const scheme = medicoCreateValidationScheme;
 
     // Validando com o esquema criado:
     try {
@@ -47,48 +38,91 @@ class MedicoController {
       });
     }
 
-    const { crm, celular, categoria, rg, cpf, usuario_id } = request.body;
+    const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
 
-    const medico = Medico.build({
-      crm: crm,
-      usuario_id: usuario_id,
-      celular: celular,
-      categoria: categoria,
-      rg: rg,
-      cpf: cpf
+    const { nome, email, senha } = request.body;
+    const password = bcrypt.hashSync(senha, 8);
+
+    const usuario = await this.usuarioSerive.create({
+      nome,
+      email,
+      senha: password,
+      tipo: "M",
     });
 
-    medico
-      .save()
-      .then(() => {
+    this.medicoService.create(
+      {
+        // Atributos de médico
+        usuario_id: usuario.id,
+        crm,
+        regiao,
+        dt_inscricao_crm,
+        celular,
+        cartao_sus,
+        categoria,
+        rg,
+        rg_orgao_emissor,
+        rg_data_emissao,
+        dt_nascimento,
+        cpf,
+        titulo_eleitoral,
+        zona,
+        secao,
+        logradouro,
+        numero,
+        complemento,
+        bairro,
+        cidade,
+        estado,
+        cep: cep?.replace(/\D/g, ''),
+        sociedade_cientifica,
+        escolaridade_max,
+      }
+    )
+      .then((medico) => {
+        this.arquivoService.create(request.files, medico.id);
         return response.status(201).json({
           criado: true,
           id: medico.id
         });
       })
-      .catch((erro) => {
+      .catch(async (erro) => {
+        // Caso dê erro ao cadastrar o médico, após ter criado o usuário, hard-delete no usuário criado sem médico.
+        await Usuario.destroy({
+          where: {
+            id: usuario.id
+          },
+          force: true
+        });
         return response.status(500).json({
           criado: false,
-          erros: erro.message
+          nome: "Médico não criado!",
+          erros: erro.message,
         });
       });
   }
 
   // URI de exemplo: http://localhost:3000/api/medico/1
   public delete: DeleteRequestHandler = async (request, response) => {
-    await Medico.destroy({
-      where: {
-        id: request.params.id
-      }
-    })
-      .then(dado => {
-        response.status(204).json({
-          deletado: true,
-          dado
-        });
+    this.medicoService.delete(Number(request.params.id))
+      .then(medico => {
+        this.usuarioSerive.delete(Number(medico.get().usuario_id))
+          .then(usuarioDado => {
+            const dado = Number(medico.get().id);
+            return response.status(204).json({
+              deletado: true,
+              dado
+            });
+          })
+          .catch(function (error: AppError) {
+            return response.status(error.statusCode).json({
+              deletado: false,
+              errors: error.message
+            });
+          });
       })
       .catch(function (error) {
-        response.status(500).json({
+        return response.status(500).json({
           deletado: false,
           errors: error
         });
@@ -96,25 +130,33 @@ class MedicoController {
   }
 
   // URI de exemplo: http://localhost:3000/api/medico/1
-  public update: UpddateRequestHandler<IAtributosMedico> = async (request, response) => {
-    const celularRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-    /*
-      /^
-        (?=.*\d)          // deve ter no mínimo 1 número
-        (?=.*[a-z])       // deve ter no mínimo 1 letra minúscula
-        (?=.*[A-Z])       // deve ter no mínimo 1 letra maiúscula
-        [a-zA-Z0-9]{8,}   // deve ter no mínimo 8 caracteres alfanuméricos
-      $/
-    */
-
-    const categorias = ["E", "T", "C"];
-    const scheme = yup.object().shape({
-      celular: yup.string().matches(celularRegExp, "celular inválido!"),
-      categoria: yup
-        .mixed()
-        .oneOf(categorias, `categoria deve ser alguma destas: ${categorias}.`)
-        .required("categoria obrigatório!"),
+  public get: GetRequestHandler<IAtributosMedico> = async (request, response) => {
+    const medico = await Medico.findOne({
+      where: {
+        id: request.params.id
+      },
+      include: [
+        {
+          model: Usuario,
+          attributes: ['email', 'nome']
+        },
+        {
+          model: Arquivo,
+          attributes: ['nome_arquivo', 'tipo']
+        }
+      ]
     });
+
+    if (!medico)
+      response.status(404).json(medico);
+    else
+      response.status(200).json(medico);
+  }
+
+  // URI de exemplo: http://localhost:3000/api/medico/1
+  public update: UpddateRequestHandler<IAtributosMedico> = async (request, response) => {
+
+    const scheme = medicoUpdateValidationScheme
 
     // Validando com o esquema criado:
     try {
@@ -127,23 +169,9 @@ class MedicoController {
       });
     }
 
-    const { celular, categoria } = request.body;
+    const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
 
-    const atributos = [
-      "id",
-      "crm",
-      "celular",
-      "categoria",
-      "rg",
-      "cpf",
-      "data_excluido"
-    ];
-    const medico = await Medico.findOne({
-      where: {
-        id: request.params.id
-      },
-      attributes: atributos
-    });
+    const medico = await this.medicoService.getById(Number(request.params.id))
     if (!medico) {
       response.status(404).json({
         atualizado: false,
@@ -151,10 +179,33 @@ class MedicoController {
         erros: "O id que foi solicitado alteração não existe no banco de dados"
       });
     } else {
-      medico.update({
-        celular: celular,
-        categoria: categoria
-      });
+      await this.medicoService.update(
+        {
+          crm,
+          regiao,
+          dt_inscricao_crm,
+          celular,
+          cartao_sus,
+          categoria,
+          rg,
+          rg_orgao_emissor,
+          rg_data_emissao,
+          dt_nascimento,
+          cpf,
+          titulo_eleitoral,
+          zona,
+          secao,
+          logradouro,
+          numero,
+          complemento,
+          bairro,
+          cidade,
+          estado,
+          cep,
+          sociedade_cientifica,
+          escolaridade_max,
+        }
+      );
       response.status(200).json({
         atualizado: true,
         id: medico.id
@@ -162,72 +213,24 @@ class MedicoController {
     }
   }
 
-  // URI de exemplo: http://localhost:3000/api/medico/1
-  public get: GetRequestHandler<IAtributosMedico> = async (request, response) => {
-
-    const atributos = [
-      "id",
-      "crm",
-      "celular",
-      "categoria",
-      "rg",
-      "cpf",
-      "data_excluido"
-    ];
-    const medico = await Medico.findOne({
-      where: {
-        id: request.params.id
-      },
-      attributes: atributos
-    });
-    if (!medico) {
-      response.status(404).json(medico);
-    } else {
-      response.status(200).json(medico);
-    }
-  }
-
   // URI de exemplo: http://localhost:3000/api/medico?pagina=1&limite=5&atributo=nome&ordem=DESC
   // todos as querys são opicionais
   public getAll: GetAllRequestHandler<IAtributosMedico> = async (request, response) => {
-    const atributos = [
-      "id",
-      "crm",
-      "celular",
-      "categoria",
-      "rg",
-      "cpf",
-      "data_excluido"
-    ];
 
-    Medico.findAndCountAll()
-      .then(dados => {
-        const { paginas, ...SortPaginateOptions } = SortPaginate(
-          request.query,
-          atributos,
-          dados.count
-        );
-        Medico.findAll({
-          attributes: atributos,
-          ...SortPaginateOptions,
-        })
-          .then(medicos => {
-            response.status(200).json({
-              dados: medicos,
-              quantidade: medicos.length,
-              total: dados.count,
-              paginas: paginas,
-              offset: SortPaginateOptions.offset
-            });
-          })
-          .catch(error => {
-            response.status(500).json({
-              titulo: "Erro interno do servidor!",
-              error
-            });
-          });
+    this.medicoService.getAll(
+      { ...request.query },
+      Object.keys(Medico.rawAttributes)
+    )
+      .then(({ medicos, count, paginas, offset }) => {
+        response.status(200).json({
+          dados: medicos,
+          quantidade: medicos.length,
+          total: count,
+          paginas: paginas,
+          offset: offset
+        });
       })
-      .catch(function (error) {
+      .catch(error => {
         response.status(500).json({
           titulo: "Erro interno do servidor!",
           error

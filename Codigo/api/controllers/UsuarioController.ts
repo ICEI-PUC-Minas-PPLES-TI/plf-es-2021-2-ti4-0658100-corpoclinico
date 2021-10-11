@@ -1,5 +1,5 @@
 import Usuario, { IAtributosUsuario, IAtributosUsuarioCriacao } from "../models/Usuario";
-import { SortPaginate } from "../helpers/SortPaginate";
+import { SortPaginate } from "../helpers/sortPaginate";
 
 import * as yup from 'yup'
 import jwt from "jsonwebtoken";
@@ -55,6 +55,18 @@ class UsuarioController {
   }
 
   public create: CreateRequestHandler = async (request, response) => {
+    const senhaRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+    /*
+      /^
+        (?=.*\d)          // deve ter no mínimo 1 número
+        (?=.*[a-z])       // deve ter no mínimo 1 letra minúscula
+        (?=.*[A-Z])       // deve ter no mínimo 1 letra maiúscula
+        [a-zA-Z0-9]{8,}   // deve ter no mínimo 8 caracteres alfanuméricos
+      $/
+    */
+
+    // Em breve buscar dos tipos automaticamente no banco de dados.
+    const tipos = ["A", "V"];
     const scheme = yup.object().shape({
       nome: yup.string().required("'nome' obrigatório!").max(120, "'nome' deve ter no máximo 120 caracteres!"),
 

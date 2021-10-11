@@ -2,7 +2,7 @@ import { Model, DataTypes, Sequelize, Optional } from "sequelize";
 import AppError from "../errors/AppError";
 
 
-export interface IAtributosUsuario{
+export interface IAtributosUsuario {
   id: number,
   nome: string,
   email: string,
@@ -10,9 +10,9 @@ export interface IAtributosUsuario{
   data_excluido: Date,
   tipo: 'A' | 'M' | 'V'
 }
-export interface IAtributosUsuarioCriacao extends Optional<IAtributosUsuario, 'id' | 'data_excluido'>{}
+export interface IAtributosUsuarioCriacao extends Optional<IAtributosUsuario, 'id' | 'data_excluido'> { }
 
-class Usuario extends Model<IAtributosUsuario, IAtributosUsuarioCriacao> implements IAtributosUsuario{
+class Usuario extends Model<IAtributosUsuario, IAtributosUsuarioCriacao> implements IAtributosUsuario {
 
   id!: number;
   nome!: string;
@@ -21,7 +21,7 @@ class Usuario extends Model<IAtributosUsuario, IAtributosUsuarioCriacao> impleme
   data_excluido!: Date;
   tipo!: "A" | "M" | "V";
 
-  static initialize(sequelize: Sequelize){
+  static initialize(sequelize: Sequelize) {
     Usuario.init({
       id: {
         type: DataTypes.INTEGER().UNSIGNED,
@@ -64,20 +64,20 @@ class Usuario extends Model<IAtributosUsuario, IAtributosUsuarioCriacao> impleme
         defaultValue: "V"
       }
     },
-    {
-      tableName: "usuario",
-      timestamps: true, // deletedAt precisa disso true
-      paranoid: true, // deletedAt precisa disso true
-      deletedAt: "data_excluido",
-      createdAt: false,
-      updatedAt: false,
-      sequelize,
-      defaultScope: {
-        attributes: {
-          exclude: ['senha'],
-        }
-      },
-    })
+      {
+        tableName: "usuario",
+        timestamps: true, // deletedAt precisa disso true
+        paranoid: true, // deletedAt precisa disso true
+        deletedAt: "data_excluido",
+        createdAt: false,
+        updatedAt: false,
+        sequelize,
+        defaultScope: {
+          attributes: {
+            exclude: ['senha'],
+          }
+        },
+      })
   }
 }
 
