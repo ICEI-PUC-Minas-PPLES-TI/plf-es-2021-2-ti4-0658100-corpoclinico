@@ -7,7 +7,7 @@ import autenticacaoJwt from './verificarJwtToken';
 import UsuarioController from '../controllers/UsuarioController';
 import MedicoController from '../controllers/MedicoController';
 import { upload } from '../helpers/files/Multer';
-import { documentosCriarMedico } from '../helpers/files/Documentos';
+import { documentosCriarMedico } from '../helpers/files/Documentos'; 
 
 // Iniciar controllers
 const usuarioController = new UsuarioController();
