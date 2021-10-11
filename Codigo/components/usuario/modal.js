@@ -14,6 +14,9 @@ export default {
         tipo: ''
       },
 
+      toastMensagem: '',
+      toast: false,
+
     }
   },
   watch:{
@@ -37,10 +40,11 @@ export default {
         this.$axios.$post('/usuario', usuario).then(response => {
           this.limpaDados();
           this.$emit('input', false) // Fecha modal
-          alert('Usuario Cadastrado!')
+          this.abreToast('Usuario Cadastrado!');
           this.$emit('listaUsuarios')
         }).catch(error => {
-          alert(JSON.stringify(error.response.data))
+
+          this.abreToast(error.response.data.erros)
           console.log(error)
         })
 
@@ -49,14 +53,12 @@ export default {
 
     },
 
-
     editUsuario(id) {
 
       this.$axios.$get('/usuario/' + id).then(response => {
         this.usuario = response;
       }).catch(error => {
-        console.log(error)
-        this.errored = true
+        alert(JSON.stringify(error.response.data))
       })
 
     },
@@ -70,14 +72,19 @@ export default {
         this.$axios.$put('/usuario/' + id, usuario).then(response => {
           this.limpaDados();
           this.$emit('input', false) // Fecha modal
-          alert('Usuario Atualizado!')
+          this.abreToast('Usuario Atualizado!');
+
         }).catch(error => {
-          alert(JSON.stringify(error.response.data))
-          console.log(error)
+          this.abreToast(error.response.data.erros);
         })
 
       }
 
+    },
+
+    abreToast(mensagem){
+      this.toastMensagem = mensagem;
+      this.toast = true;
     },
 
 
