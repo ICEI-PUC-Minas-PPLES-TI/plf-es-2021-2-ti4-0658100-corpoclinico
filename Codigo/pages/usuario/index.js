@@ -67,9 +67,7 @@ export default {
       this.$axios.$delete('/usuario/' + id).then(response => {
         this.abreToast('Usuario Deletado!');
       }).catch(error => {
-        alert(JSON.stringify(error.response.data))
-        this.abreToast(error.response.data);
-        console.log(error)
+        this.abreToast(error.response.data.erros[0]);
       })
 
       this.listaUsuarios();
