@@ -2,7 +2,7 @@ import * as yup from "yup";
 import { estados } from "../helpers/Siglas";
 import { celularRegEx, cpfRegEx, cepRegEx } from "./Regex";
 
-const categorias = ["E", "T", "C"];
+const categorias = ["C", "E", "T"];
 const escolaridades = ["BACHA", "ESPE", "MESTRE", "DOUTOR"];
 
 export const medicoCreateValidationScheme = yup.object().shape({
@@ -43,8 +43,8 @@ export const medicoCreateValidationScheme = yup.object().shape({
 
   cartao_sus: yup
     .string()
-    .max(25, "'cartao_sus' tamanho máximo de 25 caracteres!")
-    .nullable(),
+    .nullable()
+    .max(25, "'cartao_sus' tamanho máximo de 25 caracteres!"),
 
   categoria: yup
     .mixed()
@@ -52,43 +52,48 @@ export const medicoCreateValidationScheme = yup.object().shape({
       categorias,
       `'categoria' deve ser algum destes valores: ${categorias}.`
     )
-    .required("'categoria' obrigatório!")
-    .nullable(),
+    .required("'categoria' obrigatório!"),
 
   rg: yup
     .string()
-    .max(14, "'rg' tamanho máximo de 14 caracteres!")
-    .nullable(),
+    .nullable()
+    .max(14, "'rg' tamanho máximo de 14 caracteres!"),
 
   rg_orgao_emissor: yup
     .string()
-    .max(30, "'rg_orgao_emissor' tamanho máximo de 30 caracteres!")
-    .nullable(),
+    .nullable()
+    .max(30, "'rg_orgao_emissor' tamanho máximo de 30 caracteres!"),
 
-  rg_data_emissao: yup.date().nullable(),
+  rg_data_emissao: yup
+    .date()
+    .nullable()
+    .transform((curr, orig) => (orig === "" ? null : curr)),
 
-  dt_nascimento: yup.date().nullable(),
+  dt_nascimento: yup
+    .date()
+    .nullable()
+    .transform((curr, orig) => (orig === "" ? null : curr)),
 
   cpf: yup
     .string()
+    .nullable()
     .matches(cpfRegEx, "'cpf' inválido!")
-    .max(14, "'cpf' tamanho máximo de 14 caracteres!")
-    .nullable(),
+    .max(14, "'cpf' tamanho máximo de 14 caracteres!"),
 
   titulo_eleitoral: yup
     .string()
-    .max(12, "'titulo_eleitoral' tamanho máximo de 12 caracteres!")
-    .nullable(),
+    .nullable()
+    .max(12, "'titulo_eleitoral' tamanho máximo de 12 caracteres!"),
 
   zona: yup
     .string()
-    .max(3, "'zona' tamanho máximo de 3 caracteres!")
-    .nullable(),
+    .nullable()
+    .max(3, "'zona' tamanho máximo de 3 caracteres!"),
 
   secao: yup
     .string()
-    .max(4, "'secao' tamanho máximo de 4 caracteres!")
-    .nullable(),
+    .nullable()
+    .max(4, "'secao' tamanho máximo de 4 caracteres!"),
 
   logradouro: yup
     .string()
@@ -99,8 +104,8 @@ export const medicoCreateValidationScheme = yup.object().shape({
 
   complemento: yup
     .string()
-    .max(20, "'complemento' tamanho máximo de 20 caracteres!")
-    .nullable(),
+    .nullable()
+    .max(20, "'complemento' tamanho máximo de 20 caracteres!"),
 
   bairro: yup
     .string()
@@ -125,8 +130,8 @@ export const medicoCreateValidationScheme = yup.object().shape({
 
   sociedade_cientifica: yup
     .string()
-    .max(100, "'sociedade_cientifica' tamanho máximo de 100 caracteres!")
-    .nullable(),
+    .nullable()
+    .max(100, "'sociedade_cientifica' tamanho máximo de 100 caracteres!"),
 
   escolaridade_max: yup
     .mixed()
@@ -138,6 +143,7 @@ export const medicoCreateValidationScheme = yup.object().shape({
 });
 
 export const medicoUpdateValidationScheme = yup.object().shape({
+  // * Campos de médico
   crm: yup.string().max(20, "'crm' tamanho máximo de 20 caracteres!"),
 
   regiao: yup
@@ -153,6 +159,7 @@ export const medicoUpdateValidationScheme = yup.object().shape({
 
   cartao_sus: yup
     .string()
+    .nullable()
     .max(25, "'cartao_sus' tamanho máximo de 25 caracteres!"),
 
   categoria: yup
@@ -162,29 +169,46 @@ export const medicoUpdateValidationScheme = yup.object().shape({
       `'categoria' deve ser algum destes valores: ${categorias}.`
     ),
 
-  rg: yup.string().max(14, "'rg' tamanho máximo de 14 caracteres!"),
+  rg: yup
+    .string()
+    .nullable()
+    .max(14, "'rg' tamanho máximo de 14 caracteres!"),
 
   rg_orgao_emissor: yup
     .string()
+    .nullable()
     .max(30, "'rg_orgao_emissor' tamanho máximo de 30 caracteres!"),
 
-  rg_data_emissao: yup.date(),
+  rg_data_emissao: yup
+    .date()
+    .nullable()
+    .transform((curr, orig) => (orig === "" ? null : curr)),
 
-  dt_nascimento: yup.date(),
+  dt_nascimento: yup
+    .date()
+    .nullable()
+    .transform((curr, orig) => (orig === "" ? null : curr)),
 
   cpf: yup
     .string()
+    .nullable()
     .matches(cpfRegEx, "'cpf' inválido!")
     .max(14, "'cpf' tamanho máximo de 14 caracteres!"),
 
   titulo_eleitoral: yup
     .string()
-    .min(1, "'titulo_eleitoral' tamanho mínimo de 1 caractere.")
+    .nullable()
     .max(12, "'titulo_eleitoral' tamanho máximo de 12 caracteres!"),
 
-  zona: yup.string().max(3, "'zona' tamanho máximo de 3 caracteres!"),
+  zona: yup
+    .string()
+    .nullable()
+    .max(3, "'zona' tamanho máximo de 3 caracteres!"),
 
-  secao: yup.string().max(4, "'secao' tamanho máximo de 4 caracteres!"),
+  secao: yup
+    .string()
+    .nullable()
+    .max(4, "'secao' tamanho máximo de 4 caracteres!"),
 
   logradouro: yup
     .string()
@@ -194,6 +218,7 @@ export const medicoUpdateValidationScheme = yup.object().shape({
 
   complemento: yup
     .string()
+    .nullable()
     .max(20, "'complemento' tamanho máximo de 20 caracteres!"),
 
   bairro: yup.string().max(45, "'bairro' tamanho máximo de 45 caracteres!"),
@@ -211,6 +236,7 @@ export const medicoUpdateValidationScheme = yup.object().shape({
 
   sociedade_cientifica: yup
     .string()
+    .nullable()
     .max(100, "'sociedade_cientifica' tamanho máximo de 100 caracteres!"),
 
   escolaridade_max: yup

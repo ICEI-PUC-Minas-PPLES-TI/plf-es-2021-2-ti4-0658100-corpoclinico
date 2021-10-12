@@ -540,7 +540,8 @@
                 label="CRM (obrigatório)"
                 maxlength="20"
                 v-model="formData.crm"
-                :rules="[v => !!v || 'CRM obrigatório']"
+                :rules="[v => !!v || 'CRM obrigatório', v => (v && v.slice(-2).toLocaleUpperCase().match(/^[A-Z]+$/)) || 'CRM Inválido']"
+                hint="Ex: 000000/MG"
                 @blur="salvarEmCache"
               />
             </v-col>
@@ -800,10 +801,10 @@ export default {
         senha: null,
         celular: null,
         cpf: null,
-        dt_nascimento: null,
+        dt_nascimento: undefined,
         rg: null,
         rg_orgao_emissor: null,
-        rg_data_emissao: null,
+        rg_data_emissao: undefined,
         titulo_eleitoral: null,
         zona: null,
         secao: null,
@@ -933,7 +934,6 @@ export default {
       for (var key in info)
         formData.append(key, info[key])
       
-      console.log(info, formData)
       this.$axios
         .post('/medico', formData, {
           headers: {

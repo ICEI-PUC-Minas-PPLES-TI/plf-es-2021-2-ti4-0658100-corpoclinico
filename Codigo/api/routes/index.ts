@@ -8,8 +8,8 @@ import UsuarioController from '../controllers/UsuarioController';
 import MedicoController from '../controllers/MedicoController';
 import UnidadeController from '../controllers/UnidadeController';
 import EquipeController from '../controllers/EquipeController';
-import { upload } from '../helpers/files/Multer'; 
-import { documentosCriarMedico } from '../helpers/files/Documentos'; 
+import { upload } from '../helpers/files/MulterSettings'; 
+import { documentosCriarMedico } from '../helpers/files/DocumentosEnum'; 
 
 // Iniciar controllers
 const usuarioController = new UsuarioController();

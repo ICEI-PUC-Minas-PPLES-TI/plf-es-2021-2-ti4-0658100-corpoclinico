@@ -1,5 +1,5 @@
 import multer from "multer";
-import { extensoesPermitidas } from "./Documentos";
+import { extensoesPermitidas } from "./DocumentosEnum";
 import path from 'path';
 
 const armazenamento = multer.diskStorage({
