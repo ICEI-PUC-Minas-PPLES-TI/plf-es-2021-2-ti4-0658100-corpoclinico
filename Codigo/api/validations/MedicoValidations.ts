@@ -2,7 +2,7 @@ import * as yup from "yup";
 import { estados } from "../helpers/Siglas";
 import { celularRegEx, cpfRegEx, cepRegEx } from "./Regex";
 
-const categorias = ["E", "T", "C"];
+const categorias = ["C", "E", "T"];
 const escolaridades = ["BACHA", "ESPE", "MESTRE", "DOUTOR"];
 
 export const medicoCreateValidationScheme = yup.object().shape({
