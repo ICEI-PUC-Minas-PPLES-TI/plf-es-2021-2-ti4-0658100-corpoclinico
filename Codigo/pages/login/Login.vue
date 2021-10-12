@@ -79,7 +79,6 @@ export default {
                         email:this.email,
                         senha: this.senha
                     }).then(res=>{
-                        console.log(res)
                         document.cookie = `token=${res.data.acessoToken}`;
                     }).catch(err=>{
                         this.erroLogin="Dados não encontrados"
