@@ -10,18 +10,22 @@ import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRe
 import AppError from "../errors/AppError";
 import ArquivoService from "../services/ArquivoService";
 import Arquivo from "../models/Arquivo";
+import CandidaturaService from "../services/CandidaturaService";
+import { IAtributosCandidaturaCriacao } from "../models/Candidatura";
 
-interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao { }
+interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { }
 
 class MedicoController {
   private medicoService!: MedicoService;
   private usuarioSerive!: UsuarioService;
   private arquivoService!: ArquivoService;
+  private candidaturaService!: CandidaturaService;
 
   constructor() {
     this.medicoService = new MedicoService();
     this.usuarioSerive = new UsuarioService();
     this.arquivoService = new ArquivoService();
+    this.candidaturaService = new CandidaturaService();
   }
 
   public create: CreateRequestHandler<IAtributosMedicoUsuarioCriacao> = async (request, response) => {
@@ -39,7 +43,7 @@ class MedicoController {
     }
 
     const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
-
+    const { equipe_id, cnpj, faturamento, unidade_id } = request.body;
     const { nome, email, senha } = request.body;
     const password = bcrypt.hashSync(senha, 8);
 
@@ -79,8 +83,11 @@ class MedicoController {
         escolaridade_max,
       }
     )
-      .then((medico) => {
-        this.arquivoService.create(request.files, medico.id);
+      .then(async (medico) => {
+        await Promise.all([
+          this.arquivoService.create(request.files, medico.id),
+          this.candidaturaService.create({ cnpj, equipe_id, faturamento, medico_id: medico.id, unidade_id })
+        ])
         return response.status(201).json({
           criado: true,
           id: medico.id
