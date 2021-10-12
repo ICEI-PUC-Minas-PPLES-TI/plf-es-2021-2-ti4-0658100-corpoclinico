@@ -4,11 +4,15 @@
             <v-container class="fill-height" fluid fundoclaro>
                 <v-row align="center" justify="center" dense>
                     <v-col cols="12" sm="10" md="5" lg="4">
+
                         <v-card class="py-0" elevation="0">
+
                         <v-row class="py-4" align="center" justify="center">
                             <v-img  max-width="40%" :src="image" alt="corpo clinico"></v-img>
                         </v-row>
+
                             <v-card-text>
+
                                 <v-form ref="formulario" v-on:submit.prevent="handleSubmit" lazy-validation>
                                     
                                     <v-text-field label="Login" 
@@ -21,7 +25,9 @@
                                     <v-text-field ref="password"
                                     :error-messages="erroLogin"
                                     :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required]" 
-                                    label="Senha" name="senha" prepend-inner-icon="mdi-lock" 
+                                    label="Senha" 
+                                    name="senha" 
+                                    prepend-inner-icon="mdi-lock" 
                                     :type="show1 ? 'text' : 'password'" 
                                     outlined 
                                     class="mb-0 rounded-0" 
@@ -31,12 +37,15 @@
                                     <v-btn  @click.native="handleSubmit" class="rounded-0 mt-2" color="#25BAAE" x-large block dark > Entrar </v-btn>
 
                                     <v-card-actions class="text--secondary" >
-                                        Ainda não se candidatou?<a href="#" class="pl-2" style="color: #25BAAE">Candidatar-se</a>
+                                        Ainda não se candidatou?<a href="/medico/cadastro" class="pl-2" style="color: #25BAAE">Candidatar-se</a>
                                     </v-card-actions>
 
                                 </v-form>
+
                             </v-card-text>
+
                         </v-card>
+
                     </v-col>
                 </v-row>
             </v-container>
@@ -54,7 +63,7 @@ export default {
             senha:'',
             image:image,//logo do corpo clinico
             tipo:'',
-            show1: false,
+            show1: false, //mostrar a senha
             erroLogin:null,
             rules: {
                 required: value => !!value || 'Obrigatório.',
