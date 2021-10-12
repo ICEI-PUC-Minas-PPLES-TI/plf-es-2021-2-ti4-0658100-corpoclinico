@@ -10,11 +10,13 @@ const upload = multer({dest: './api/uploads/'});
 import UsuarioController from '../controllers/UsuarioController';
 import MedicoController from '../controllers/MedicoController';
 import EquipeController from '../controllers/EquipeController';
+import EspecialidadeController from '../controllers/EspecialidadeController';
 
 // Iniciar controllers
 const usuarioController = new UsuarioController();
 const medicoController = new MedicoController();
 const equipeController = new EquipeController();
+const especialidadeController = new EspecialidadeController();
 
 // Adicionar rotas
 // Usuario
@@ -36,6 +38,11 @@ router.get('/equipe/:id', equipeController.get )
 router.get('/equipe', equipeController.getAll)
 router.delete('/equipe/:id', equipeController.delete)
 router.put('/equipe/:id',  equipeController.update)
-
+// Especialidade
+router.post('/especialidade', especialidadeController.create)
+router.get('/especialidade/:id', especialidadeController.get )
+router.get('/especialidade', especialidadeController.getAll)
+router.delete('/especialidade/:id', especialidadeController.delete)
+router.put('/especialidade/:id',  especialidadeController.update)
 
 export default router;

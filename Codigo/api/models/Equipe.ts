@@ -7,9 +7,7 @@ export interface IAtributosEquipe {
   especialidade_id: number
 }
 export interface IAtributosEquipeCriacao
-  extends Optional<IAtributosEquipe, "id" | "especialidade_id"> {
-      especialidade: { identificacao: string }
-  }
+  extends Optional<IAtributosEquipe, "id"> {}
 
 class Equipe extends Model<IAtributosEquipe, IAtributosEquipeCriacao>
   implements IAtributosEquipe {

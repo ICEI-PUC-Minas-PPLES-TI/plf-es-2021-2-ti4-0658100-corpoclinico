@@ -3,20 +3,18 @@ import EquipeService from "../services/EquipeService";
 import { equipeCreateValidationScheme, equipeUpdateValidationScheme } from "../validations/EquipeValidations";
 
 import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
-
-interface IAtributosEquipeCriacaoRequest{
-    nome: string,
-    especialidade: string
-}
+import EspecialidadeService from "../services/EspecialidadeService";
 
 class EquipeController {
   private Service!: EquipeService;
+  private EspecialidadeService!: EspecialidadeService
 
   constructor(){
     this.Service = new EquipeService();
+    this.EspecialidadeService = new EspecialidadeService();
   }
 
-  public create: CreateRequestHandler<IAtributosEquipeCriacaoRequest> = async (request, response) => {
+  public create: CreateRequestHandler<IAtributosEquipeCriacao> = async (request, response) => {
       
     const scheme = equipeCreateValidationScheme;
 
@@ -31,9 +29,19 @@ class EquipeController {
       });
     }
 
-    const { nome, especialidade: identificacao } = request.body;
+    const { nome, especialidade_id } = request.body;
 
-    this.Service.create({ nome, especialidade: { identificacao } })
+    // vê se a especialidade existe
+    const especialidade = await this.EspecialidadeService.getById(especialidade_id);
+    if (!especialidade){
+      return response.status(422).json({
+        criado: false,
+        nome: "especialidade_id não existe no banco",
+        erros: ["especialidade_id não existe no banco"]
+      })
+    }
+
+    this.Service.create({ nome, especialidade_id })
     .then((equipe) => {
       return response.status(201).json({
         criado: true,
@@ -66,7 +74,7 @@ class EquipeController {
   }
 
   // URI de exemplo: http://localhost:3000/api/equipe/1
-  public update: UpddateRequestHandler<IAtributosEquipeCriacaoRequest> = async (request, response) => {
+  public update: UpddateRequestHandler<IAtributosEquipeCriacao> = async (request, response) => {
     
     const scheme = equipeUpdateValidationScheme
 
@@ -81,8 +89,21 @@ class EquipeController {
       });
     }
 
-    const { nome, especialidade: identificacao } = request.body;
+    const { nome, especialidade_id } = request.body;
     const id = Number(request.params.id)
+
+    // vê se a especialidade existe
+    if (especialidade_id){
+      const especialidade = await this.EspecialidadeService.getById(especialidade_id);
+      if (!especialidade){
+        return response.status(422).json({
+          atualizado: false,
+          nome: "especialidade_id não existe no banco",
+          erros: ["especialidade_id não existe no banco"]
+        })
+      }
+    }
+    
 
     const equipe = await this.Service.getById(id)
     if (!equipe) {
@@ -92,7 +113,7 @@ class EquipeController {
         erros: "O id que foi solicitado alteração não existe no banco de dados"
       });
     } else {
-      await this.Service.update({ ...equipe.get(), nome, especialidade: { identificacao } });
+      await this.Service.update({ id: equipe.get().id, nome, especialidade_id });
       response.status(200).json({
         atualizado: true,
         id: equipe.id
