@@ -39,13 +39,13 @@ export default {
         let usuario = JSON.parse(JSON.stringify(this.usuario))
         this.$axios.$post('/usuario', usuario).then(response => {
           this.limpaDados();
-          this.$emit('input', false) // Fecha modal
           this.abreToast('Usuario Cadastrado!');
+          this.$emit('input', false) // Fecha modal
           this.$emit('listaUsuarios')
         }).catch(error => {
 
-          this.abreToast(error.response.data.erros)
-          console.log(error)
+          this.abreToast(error.response.data.erros[0]);
+
         })
 
       }
@@ -58,7 +58,7 @@ export default {
       this.$axios.$get('/usuario/' + id).then(response => {
         this.usuario = response;
       }).catch(error => {
-        alert(JSON.stringify(error.response.data))
+        console.log(error);
       })
 
     },
@@ -71,11 +71,11 @@ export default {
 
         this.$axios.$put('/usuario/' + id, usuario).then(response => {
           this.limpaDados();
-          this.$emit('input', false) // Fecha modal
           this.abreToast('Usuario Atualizado!');
+          this.$emit('input', false) // Fecha modal
 
         }).catch(error => {
-          this.abreToast(error.response.data.erros);
+          this.abreToast(error.response.data.erros[0]);
         })
 
       }
@@ -97,8 +97,7 @@ export default {
         nome: '',
         email: '',
         senha: '',
-        senhaDuplicada: '',
-        tipo: 'A'
+        tipo: ''
       }
 
     }

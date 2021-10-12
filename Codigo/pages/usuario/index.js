@@ -19,14 +19,16 @@ export default {
           id: '',
           nome: '',
           email: '',
-          status: 'Ativo',
+          status: '',
           data_excluido: ''
         }
       ],
-      usuarioId: 0,
 
+      usuarioId: 0,
+      toast: false,
+      toastMensagem: '',
       modalAtivo: false,
-      teste: '',
+
     }
   },
   watch:{
@@ -46,7 +48,6 @@ export default {
 
       }).catch(error => {
         console.log(error)
-        this.errored = true
       })
 
     },
@@ -64,14 +65,20 @@ export default {
     deleteUsuario(id){
 
       this.$axios.$delete('/usuario/' + id).then(response => {
-        alert('Usuario Deletado!')
+        this.abreToast('Usuario Deletado!');
       }).catch(error => {
         alert(JSON.stringify(error.response.data))
+        this.abreToast(error.response.data);
         console.log(error)
       })
 
       this.listaUsuarios();
 
+    },
+
+    abreToast(mensagem) {
+      this.toastMensagem = mensagem;
+      this.toast = true;
     },
 
     formataStatus(dataExclusao){
