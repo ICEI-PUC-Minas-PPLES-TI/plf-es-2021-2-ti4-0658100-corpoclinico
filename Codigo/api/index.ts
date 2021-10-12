@@ -1,7 +1,7 @@
 import express from "express";
 import 'express-async-errors';
 import cors from "cors";
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -20,7 +20,7 @@ app.use(routes);
 
 db.connect();
 
-app.use([(err , request, response, next) => {
+app.use([(err, request, response, next) => {
   if (err instanceof AppError) {
     return response.status(err.statusCode).json({
       message: err.message

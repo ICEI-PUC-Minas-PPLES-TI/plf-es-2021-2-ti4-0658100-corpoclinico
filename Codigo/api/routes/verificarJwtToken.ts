@@ -3,7 +3,7 @@ import Usuario from "../models/Usuario";
 
 import { RequestHandler } from 'express'
 
-interface IAuthRequest{
+interface IAuthRequest {
   userId: number
 }
 // < params, response, body,  >
@@ -16,8 +16,8 @@ const verificarToken: RequestHandler = (req, res, next) => {
       message: "Token de autenticação não fornecido."
     });
   }
-  else{
-    token = Array.isArray(token) ? token[0] : token ; //garante que token é uma string
+  else {
+    token = Array.isArray(token) ? token[0] : token; //garante que token é uma string
     jwt.verify(token, process.env.SECRET_KEY ?? " ", (err, decoded) => {
       if (err) {
         return res.status(500).send({
