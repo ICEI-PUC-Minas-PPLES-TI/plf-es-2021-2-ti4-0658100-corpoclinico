@@ -66,11 +66,17 @@ export default {
 
       this.$axios.$delete('/usuario/' + id).then(response => {
         this.abreToast('Usuario Deletado!');
+        this.listaUsuarios();
+
       }).catch(error => {
-        this.abreToast(error.response.data.erros[0]);
+        if (Array.isArray(error.response.data.errors)) {
+          this.abreToast(error.response.data.errors[0]);
+        } else {
+          this.abreToast(error.response.data.errors);
+        }
+
       })
 
-      this.listaUsuarios();
 
     },
 

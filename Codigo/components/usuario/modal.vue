@@ -12,7 +12,7 @@
       <v-card>
         <v-card-title class="text-h5 usuario-modal-title">
           <h4>
-            <span> Novo Usuário </span>
+            <span> {{titulo}} </span>
           </h4>
           <v-btn icon @click="$emit('input', false)">
             <v-icon>mdi-close</v-icon>

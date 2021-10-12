@@ -6,6 +6,8 @@ export default {
       valid: true,
       show1: false,
 
+      titulo:'Novo Usuário',
+
       usuario: {
         id: '',
         nome: '',
@@ -23,6 +25,10 @@ export default {
     usuarioId: function(usuarioId){
       if(usuarioId){
         this.editUsuario(usuarioId);
+        this.titulo = 'Editar Usuário';
+      }else{
+        this.limpaDados();
+        this.titulo = 'Novo Usuário';
       }
     }
   },
@@ -44,7 +50,11 @@ export default {
           this.$emit('listaUsuarios')
         }).catch(error => {
 
-          this.abreToast(error.response.data.erros[0]);
+          if (Array.isArray(error.response.data.erros)) {
+            this.abreToast(error.response.data.erros[0]);
+          } else {
+            this.abreToast(error.response.data.erros);
+          }
 
         })
 
@@ -75,7 +85,11 @@ export default {
           this.$emit('input', false) // Fecha modal
 
         }).catch(error => {
-          this.abreToast(error.response.data.erros[0]);
+          if(Array.isArray(error.response.data.erros)){
+            this.abreToast(error.response.data.erros[0]);
+          }else{
+            this.abreToast(error.response.data.erros);
+          }
         })
 
       }
@@ -89,9 +103,6 @@ export default {
 
 
     limpaDados(){
-
-      this.$refs.formUsuario.reset();
-
       this.usuario = {
         id: '',
         nome: '',
@@ -100,6 +111,7 @@ export default {
         tipo: ''
       }
 
+      this.$refs.formUsuario.reset();
     }
 
   }
