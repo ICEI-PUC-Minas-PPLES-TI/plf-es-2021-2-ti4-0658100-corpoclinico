@@ -8,6 +8,7 @@ import Medico from '../models/Medico';
 
 // Importar modelos aqui
 import Usuario from "../models/Usuario";
+import Unidade from "../models/Unidade";
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ export default {
       // Iniciar modelos aqui
       Usuario.initialize(sequelize);
       Medico.initialize(sequelize);
+      Unidade.initialize(sequelize);
       Especialidade.initialize(sequelize);
       Equipe.initialize(sequelize);
       Arquivo.initialize(sequelize);

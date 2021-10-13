@@ -44,7 +44,7 @@ class UsuarioController {
         }
 
         const token = jwt.sign({ id: usuario.get().id }, process.env.SECRET_KEY ?? "fill-the-env-file.this-is-only-to-prevent-type-error", {
-          expiresIn: 604800 // 1 semana expira
+          expiresIn: 604800 * 4 // 4 semana expira
         });
 
         res.status(200).send({ autenticado: true, acessoToken: token });
@@ -62,7 +62,6 @@ class UsuarioController {
         .string()
         .email()
         .required("'email' obrigatório!").max(100, "'email' deve ter no máximo 100 caracteres!"),
-
       senha: yup
         .string()
         .required("'senha' obrigatória!")

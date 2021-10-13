@@ -6,6 +6,7 @@ import autenticacaoJwt from './verificarJwtToken';
 // Importar controllers
 import UsuarioController from '../controllers/UsuarioController';
 import MedicoController from '../controllers/MedicoController';
+import UnidadeController from '../controllers/UnidadeController';
 import EquipeController from '../controllers/EquipeController';
 import EspecialidadeController from '../controllers/EspecialidadeController';
 
@@ -15,6 +16,7 @@ import { documentosCriarMedico } from '../helpers/files/DocumentosEnum';
 // Iniciar controllers
 const usuarioController = new UsuarioController();
 const medicoController = new MedicoController();
+const unidadeController = new UnidadeController();
 const equipeController = new EquipeController();
 const especialidadeController = new EspecialidadeController();
 
@@ -46,5 +48,8 @@ router.get('/especialidade/:id', especialidadeController.get )
 router.get('/especialidade', especialidadeController.getAll)
 router.delete('/especialidade/:id', especialidadeController.delete)
 router.put('/especialidade/:id',  especialidadeController.update)
+
+router.get('/unidade/:id', [autenticacaoJwt.verificarToken], unidadeController.get)
+router.get('/unidade', unidadeController.getAll)
 
 export default router;

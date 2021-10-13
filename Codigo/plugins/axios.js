@@ -4,13 +4,13 @@ export default function({ $axios, req }) {
       if (cookies) {
         $axios.defaults.headers.common[
           'x-access-token'
-        ] = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjMzNzg2NDc0LCJleHAiOjE2MzQzOTEyNzR9.Uf2Fa-y1DiZKieeuz-dRz7jzMeia-W1CMtrN7y5GU5o`
+        ] = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjMzOTE4NjMyLCJleHAiOjE2MzYzMzc4MzJ9.F8wHvq8rS8q3ZA-9pNeT8f-ZTv2B9I7Ew38h7CCjkaE`
       }
     }
 
     $axios.onRequest(config => {
       if (!req)
-        config.headers.common['x-access-token'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjMzNzg2NDc0LCJleHAiOjE2MzQzOTEyNzR9.Uf2Fa-y1DiZKieeuz-dRz7jzMeia-W1CMtrN7y5GU5o'
+        config.headers.common['x-access-token'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjMzOTE4NjMyLCJleHAiOjE2MzYzMzc4MzJ9.F8wHvq8rS8q3ZA-9pNeT8f-ZTv2B9I7Ew38h7CCjkaE'
     })
 
     $axios.onError(error => {
