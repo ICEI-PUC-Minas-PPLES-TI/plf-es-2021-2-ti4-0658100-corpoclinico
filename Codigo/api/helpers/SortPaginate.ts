@@ -1,14 +1,14 @@
 import { OrderItem } from 'sequelize'
 
-interface ISortableQuery{
+interface ISortableQuery {
   atributo: string,
   ordem: 'ASC' | 'DESC'
 }
-interface IPaginatableQuery{
+interface IPaginatableQuery {
   limite: string,
   pagina: string
 }
-export interface ISortPaginateQuery extends Partial<ISortableQuery>, Partial<IPaginatableQuery>{}
+export interface ISortPaginateQuery extends Partial<ISortableQuery>, Partial<IPaginatableQuery> { }
 
 function SortPaginate(query: ISortPaginateQuery, atributos: string[], dadosCount: number) {
   const limite =

@@ -55,41 +55,19 @@ class UsuarioController {
   }
 
   public create: CreateRequestHandler = async (request, response) => {
-    const senhaRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
-    /*
-      /^
-        (?=.*\d)          // deve ter no mínimo 1 número
-        (?=.*[a-z])       // deve ter no mínimo 1 letra minúscula
-        (?=.*[A-Z])       // deve ter no mínimo 1 letra maiúscula
-        [a-zA-Z0-9]{8,}   // deve ter no mínimo 8 caracteres alfanuméricos
-      $/
-    */
-
-    // Em breve buscar dos tipos automaticamente no banco de dados.
-    const tipos = ["A", "M", "V"];
     const scheme = yup.object().shape({
-      nome: yup.string().required("Nome obrigatório!").max(120, "Nome deve ter no máximo 120 caracteres!"),
+      nome: yup.string().required("'nome' obrigatório!").max(120, "'nome' deve ter no máximo 120 caracteres!"),
 
       email: yup
         .string()
         .email()
-        .required("Email obrigatório!").max(100, "Nome deve ter no máximo 100 caracteres!"),
+        .required("'email' obrigatório!").max(100, "'email' deve ter no máximo 100 caracteres!"),
+
       senha: yup
         .string()
-        .required("Senha obrigatória!")
-        .matches(
-          senhaRegEx,
-          "Senha deve ter no mínimo 8 caracteres, 1 maiúsculo, 1 minúsculo e 1 número!"
-        ).max(64, "Nome deve ter no máximo 64 caracteres!"),
-      senhaRepetida: yup
-        .string()
-        .required("Senhas repetida é obrigatória!")
-        .oneOf([yup.ref("senha"), null], "Senhas devem ser iguais"),
-
-      tipo: yup
-        .mixed()
-        .oneOf(tipos, `Tipo deve ser algum destes: ${tipos}.`)
-        .required("Tipo obrigatório!")
+        .required("'senha' obrigatória!")
+        .min(8, "'senha' deve ter no mínimo 8 caracteres!")
+        .max(64, "'senha' deve ter no máximo 64 caracteres!")
     });
 
     // Validando com o esquema criado:
@@ -103,14 +81,14 @@ class UsuarioController {
       });
     }
 
-    const { nome, email, senha, tipo } = request.body;
+    const { nome, email, senha } = request.body;
     const password = bcrypt.hashSync(senha, 8);
 
     const usuario = Usuario.build({
       nome,
       email,
       senha: password,
-      tipo: tipo
+      tipo: "A"
     });
 
     usuario
@@ -164,31 +142,17 @@ class UsuarioController {
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
   public update: UpddateRequestHandler<IAtributosUsuario> = async (request, response) => {
-    const senhaRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
-    /*
-      /^
-        (?=.*\d)          // deve ter no mínimo 1 número
-        (?=.*[a-z])       // deve ter no mínimo 1 letra minúscula
-        (?=.*[A-Z])       // deve ter no mínimo 1 letra maiúscula
-        [a-zA-Z0-9]{8,}   // deve ter no mínimo 8 caracteres alfanuméricos
-      $/
-    */
-
-    const tipos = ["A", "M", "V"];
+    const tipos = ["A", "M", "CC", "DC", "DT"];
 
     const scheme = yup.object().shape({
-      nome: yup.string().max(120, "Nome deve ter no máximo 120 caracteres!"),
+      nome: yup.string().max(120, "'nome' deve ter no máximo 120 caracteres!"),
 
-      email: yup.string().email().max(100, "Nome deve ter no máximo 100 caracteres!"),
+      email: yup.string().email().max(100, "'email' deve ter no máximo 100 caracteres!"),
       senha: yup
         .string()
-        .matches(
-          senhaRegEx,
-          "Senha deve ter no mínimo 8 caracteres, 1 maiúsculo, 1 minúsculo, 1 número e 1 caracter especial!"
-        ).max(64, "Nome deve ter no máximo 64 caracteres!"),
-      senhaRepetida: yup
-        .string()
-        .oneOf([yup.ref("senha"), null], "Senhas devem ser iguais"),
+        .required("'senha' obrigatória!")
+        .min(8, "'senha' deve ter no mínimo 8 caracteres!")
+        .max(64, "'senha' deve ter no máximo 64 caracteres!"),
 
       tipo: yup.mixed().oneOf(tipos, `Tipo deve ser algum destes: ${tipos}.`)
     });
@@ -204,7 +168,7 @@ class UsuarioController {
       });
     }
 
-    const { nome, email, senha, tipo } = request.body;
+    const { nome, email, senha } = request.body;
 
     let passTemp = null;
     if (senha)
@@ -227,7 +191,7 @@ class UsuarioController {
         nome: nome ? nome : usuario.get().nome,
         email: email ? email : usuario.get().email,
         senha: password ? password : usuario.get().senha,
-        tipo: tipo ? tipo : usuario.get().tipo
+        tipo: "A"
       });
       response.status(200).json({
         atualizado: true,
@@ -242,7 +206,8 @@ class UsuarioController {
     const usuario = await Usuario.findOne({
       where: {
         id: request.params.id
-      }
+      },
+      paranoid: false
     });
     if (!usuario) {
       response.status(404).json(usuario);
@@ -255,17 +220,20 @@ class UsuarioController {
   // todos as querys são opicionais
   public getAll: GetAllRequestHandler<IAtributosUsuario> = async (request, response) => {
 
-    Usuario.findAndCountAll()
+    Usuario.findAndCountAll({
+      paranoid: false
+    })
       .then(dados => {
         const { paginas, ...SortPaginateOptions } = SortPaginate(
           request.query,
           Object.keys(
             Usuario.rawAttributes
           ) /* Todos os atributos de usuário */,
-          dados.count
+          dados.count,
         );
         Usuario.findAll({
           ...SortPaginateOptions,
+          paranoid: false
         })
           .then(usuarios => {
             response.status(200).json({
