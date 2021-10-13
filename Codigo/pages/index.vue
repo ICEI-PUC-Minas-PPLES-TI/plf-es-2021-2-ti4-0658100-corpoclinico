@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Login/>
+    Inicial
   </div>
 </template>
 
