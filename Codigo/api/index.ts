@@ -42,5 +42,4 @@ app.use([(err, request, response, next) => {
   }
 }]);
 
-
 export default app;

@@ -55,7 +55,6 @@ class UsuarioController {
   }
 
   public create: CreateRequestHandler = async (request, response) => {
-    // Em breve buscar dos tipos automaticamente no banco de dados.
     const scheme = yup.object().shape({
       nome: yup.string().required("'nome' obrigatório!").max(120, "'nome' deve ter no máximo 120 caracteres!"),
 
@@ -63,6 +62,7 @@ class UsuarioController {
         .string()
         .email()
         .required("'email' obrigatório!").max(100, "'email' deve ter no máximo 100 caracteres!"),
+
       senha: yup
         .string()
         .required("'senha' obrigatória!")
@@ -142,6 +142,8 @@ class UsuarioController {
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
   public update: UpddateRequestHandler<IAtributosUsuario> = async (request, response) => {
+    const tipos = ["A", "M", "CC", "DC", "DT"];
+
     const scheme = yup.object().shape({
       nome: yup.string().max(120, "'nome' deve ter no máximo 120 caracteres!"),
 
@@ -151,6 +153,8 @@ class UsuarioController {
         .required("'senha' obrigatória!")
         .min(8, "'senha' deve ter no mínimo 8 caracteres!")
         .max(64, "'senha' deve ter no máximo 64 caracteres!"),
+
+      tipo: yup.mixed().oneOf(tipos, `Tipo deve ser algum destes: ${tipos}.`)
     });
 
     // Validando com o esquema criado:
@@ -202,7 +206,8 @@ class UsuarioController {
     const usuario = await Usuario.findOne({
       where: {
         id: request.params.id
-      }
+      },
+      paranoid: false
     });
     if (!usuario) {
       response.status(404).json(usuario);
@@ -215,17 +220,20 @@ class UsuarioController {
   // todos as querys são opicionais
   public getAll: GetAllRequestHandler<IAtributosUsuario> = async (request, response) => {
 
-    Usuario.findAndCountAll()
+    Usuario.findAndCountAll({
+      paranoid: false
+    })
       .then(dados => {
         const { paginas, ...SortPaginateOptions } = SortPaginate(
           request.query,
           Object.keys(
             Usuario.rawAttributes
           ) /* Todos os atributos de usuário */,
-          dados.count
+          dados.count,
         );
         Usuario.findAll({
           ...SortPaginateOptions,
+          paranoid: false
         })
           .then(usuarios => {
             response.status(200).json({

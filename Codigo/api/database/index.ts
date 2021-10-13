@@ -38,6 +38,9 @@ export default {
       
 
       // Associações
+      Equipe.belongsTo(Especialidade, { foreignKey: 'especialidade_id'})
+      Especialidade.hasOne(Equipe, { foreignKey: 'id' })
+      
       Medico.belongsTo(Usuario, {
         foreignKey: 'usuario_id'
       });
