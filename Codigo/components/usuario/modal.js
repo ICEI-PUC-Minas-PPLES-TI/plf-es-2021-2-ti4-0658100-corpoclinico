@@ -6,6 +6,8 @@ export default {
       valid: true,
       show1: false,
 
+      titulo:'Novo Usuário',
+
       usuario: {
         id: '',
         nome: '',
@@ -14,12 +16,19 @@ export default {
         tipo: ''
       },
 
+      toastMensagem: '',
+      toast: false,
+
     }
   },
   watch:{
     usuarioId: function(usuarioId){
       if(usuarioId){
         this.editUsuario(usuarioId);
+        this.titulo = 'Editar Usuário';
+      }else{
+        this.limpaDados();
+        this.titulo = 'Novo Usuário';
       }
     }
   },
@@ -36,12 +45,17 @@ export default {
         let usuario = JSON.parse(JSON.stringify(this.usuario))
         this.$axios.$post('/usuario', usuario).then(response => {
           this.limpaDados();
+          this.abreToast('Usuario Cadastrado!');
           this.$emit('input', false) // Fecha modal
-          alert('Usuario Cadastrado!')
           this.$emit('listaUsuarios')
         }).catch(error => {
-          alert(JSON.stringify(error.response.data))
-          console.log(error)
+
+          if (Array.isArray(error.response.data.erros)) {
+            this.abreToast(error.response.data.erros[0]);
+          } else {
+            this.abreToast(error.response.data.erros);
+          }
+
         })
 
       }
@@ -49,14 +63,12 @@ export default {
 
     },
 
-
     editUsuario(id) {
 
       this.$axios.$get('/usuario/' + id).then(response => {
         this.usuario = response;
       }).catch(error => {
-        console.log(error)
-        this.errored = true
+        console.log(error);
       })
 
     },
@@ -69,31 +81,37 @@ export default {
 
         this.$axios.$put('/usuario/' + id, usuario).then(response => {
           this.limpaDados();
+          this.abreToast('Usuario Atualizado!');
           this.$emit('input', false) // Fecha modal
-          alert('Usuario Atualizado!')
+
         }).catch(error => {
-          alert(JSON.stringify(error.response.data))
-          console.log(error)
+          if(Array.isArray(error.response.data.erros)){
+            this.abreToast(error.response.data.erros[0]);
+          }else{
+            this.abreToast(error.response.data.erros);
+          }
         })
 
       }
 
     },
 
+    abreToast(mensagem){
+      this.toastMensagem = mensagem;
+      this.toast = true;
+    },
+
 
     limpaDados(){
-
-      this.$refs.formUsuario.reset();
-
       this.usuario = {
         id: '',
         nome: '',
         email: '',
         senha: '',
-        senhaDuplicada: '',
-        tipo: 'A'
+        tipo: ''
       }
 
+      this.$refs.formUsuario.reset();
     }
 
   }

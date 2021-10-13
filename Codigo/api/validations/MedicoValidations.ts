@@ -67,12 +67,18 @@ export const medicoCreateValidationScheme = yup.object().shape({
   rg_data_emissao: yup
     .date()
     .nullable()
-    .transform((curr, orig) => (orig === "" ? null : curr)),
+    .default(undefined)
+    .transform((curr, orig) =>
+      orig === "" || orig === undefined || orig === null ? null : curr
+    ),
 
   dt_nascimento: yup
     .date()
     .nullable()
-    .transform((curr, orig) => (orig === "" ? null : curr)),
+    .default(undefined)
+    .transform((curr, orig) =>
+      orig === "" || orig === undefined || orig === null ? null : curr
+    ),
 
   cpf: yup
     .string()
@@ -182,12 +188,18 @@ export const medicoUpdateValidationScheme = yup.object().shape({
   rg_data_emissao: yup
     .date()
     .nullable()
-    .transform((curr, orig) => (orig === "" ? null : curr)),
+    .default(undefined)
+    .transform((curr, orig) =>
+      orig === "" || orig === undefined || orig === null ? null : curr
+    ),
 
   dt_nascimento: yup
     .date()
     .nullable()
-    .transform((curr, orig) => (orig === "" ? null : curr)),
+    .default(undefined)
+    .transform((curr, orig) =>
+      orig === "" || orig === undefined || orig === null ? null : curr
+    ),
 
   cpf: yup
     .string()

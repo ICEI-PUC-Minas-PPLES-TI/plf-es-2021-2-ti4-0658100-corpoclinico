@@ -1,9 +1,9 @@
 
 import dotenv from 'dotenv';
 import { Sequelize } from "sequelize";
-import Arquivo from '../models/Arquivo';
 import Equipe from '../models/Equipe';
 import Especialidade from '../models/Especialidade';
+import Arquivo from '../models/Arquivo';
 import Medico from '../models/Medico';
 
 // Importar modelos aqui
@@ -32,9 +32,14 @@ export default {
       Usuario.initialize(sequelize);
       Medico.initialize(sequelize);
       Unidade.initialize(sequelize);
+      Especialidade.initialize(sequelize);
+      Equipe.initialize(sequelize);
       Arquivo.initialize(sequelize);
 
       // Associações
+      Equipe.belongsTo(Especialidade, { foreignKey: 'especialidade_id'})
+      Especialidade.hasOne(Equipe, { foreignKey: 'id' })
+      
       Medico.belongsTo(Usuario, {
         foreignKey: 'usuario_id'
       });
@@ -42,13 +47,6 @@ export default {
         foreignKey: 'medico_id'
       });
 
-      Especialidade.initialize(sequelize);
-      Equipe.initialize(sequelize);
-
-      // Fazer Associações aqui
-      Equipe.belongsTo(Especialidade, { foreignKey: 'especialidade_id'})
-      Especialidade.hasOne(Equipe, { foreignKey: 'id' })
-      
       if (process.env.NODE_ENV === "dev") {
         console.log(
           `Conexão com '${process.env.DB_HOST}/${process.env.DB_DATABASE}' estabelecida`

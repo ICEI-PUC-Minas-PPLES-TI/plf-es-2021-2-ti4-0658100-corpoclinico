@@ -1,30 +1,27 @@
 import { ISortPaginateQuery, SortPaginate } from "../helpers/SortPaginate";
-import Equipe, { IAtributosEquipeCriacao } from "../models/Equipe";
-import Especialidade from "../models/Especialidade";
+import Especialidade, { IAtributosEspecialidadeCriacao } from "../models/Especialidade";
 
-export default class EquipeService{
-    async create(equipe: IAtributosEquipeCriacao){
-        return Equipe.create(equipe)
+export default class EspecialidadeService{
+    async create(especialidade: IAtributosEspecialidadeCriacao){
+        return Especialidade.create(especialidade)
     }
-    async update(equipe: Partial<IAtributosEquipeCriacao>){
-        return Equipe.update(equipe, {
-            where: {id: equipe.id},
+    async update(especialidade: Partial<IAtributosEspecialidadeCriacao>){
+        return Especialidade.update(especialidade, {
+            where: {id: especialidade.id},
         });
     }
     async delete(id: number){
-        return Equipe.destroy({
+        return Especialidade.destroy({
             where: {id}
           })
     }
     async getById(id: number){
-        return Equipe.findOne({
+        return Especialidade.findOne({
             where: {id},
-            include: [ Especialidade ]
         })
     }
-
     async getAll( sortPaginate: ISortPaginateQuery, atributos: string[],  ){
-        return Equipe.findAndCountAll()
+        return Especialidade.findAndCountAll()
         .then(async (dados) => {
             const { paginas, ...SortPaginateOptions } = SortPaginate(
                 {...sortPaginate},
@@ -32,8 +29,7 @@ export default class EquipeService{
                 dados.count
             );
             return {
-                equipes: await Equipe.findAll({
-                    include: [ Especialidade ],
+                especialidades: await Especialidade.findAll({
                     ...SortPaginateOptions,
                 }),
                 count: dados.count,

@@ -36,6 +36,19 @@
             </template>
         </v-card-text>
     </v-card>
+
+      <v-snackbar
+      v-model="toast"
+      shaped
+      >
+      {{ toastMensagem }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="blue" text v-bind="attrs " @click="toast = false">
+          Ok
+        </v-btn>
+      </template>
+    </v-snackbar>
 </v-container>
 </template>
 
