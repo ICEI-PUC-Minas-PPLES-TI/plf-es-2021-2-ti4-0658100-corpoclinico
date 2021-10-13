@@ -8,6 +8,7 @@ import Medico from '../models/Medico';
 
 // Importar modelos aqui
 import Usuario from "../models/Usuario";
+import Candidatura from '../models/Candidatura';
 
 dotenv.config();
 
@@ -33,7 +34,7 @@ export default {
       Especialidade.initialize(sequelize);
       Equipe.initialize(sequelize);
       Arquivo.initialize(sequelize);
-
+      Candidatura.initialize(sequelize);
       
 
       // Associações

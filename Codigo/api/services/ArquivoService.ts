@@ -7,7 +7,7 @@ export default class ArquivoService {
     const arqString = JSON.stringify(arquivos).replace("[Object: null prototype] ", "");
     const arquivosObj = JSON.parse(arqString);
 
-    arquivosObj.doc_rg.forEach(async (rgFields: any) => {
+    arquivosObj.doc_rg?.forEach(async (rgFields: any) => {
       try {
         const nome_arquivo = rgFields.filename;
         const tipo = 'RG';
@@ -18,7 +18,7 @@ export default class ArquivoService {
       }
     });
 
-    arquivosObj.doc_cpf.forEach(async (cpfFields: any) => {
+    arquivosObj.doc_cpf?.forEach(async (cpfFields: any) => {
       try {
         const nome_arquivo = cpfFields.filename;
         const tipo = 'CPF';
@@ -29,7 +29,7 @@ export default class ArquivoService {
       }
     });
 
-    arquivosObj.doc_foto_txq.forEach(async (fotoTpQFields: any) => {
+    arquivosObj.doc_foto_txq?.forEach(async (fotoTpQFields: any) => {
       try {
         const nome_arquivo = fotoTpQFields.filename;
         const tipo = 'FOTO';
@@ -40,7 +40,7 @@ export default class ArquivoService {
       }
     });
 
-    arquivosObj.doc_comp_ender.forEach(async (compEnderFields: any) => {
+    arquivosObj.doc_comp_ender?.forEach(async (compEnderFields: any) => {
       try {
         const nome_arquivo = compEnderFields.filename;
         const tipo = 'CENDER';
@@ -51,7 +51,7 @@ export default class ArquivoService {
       }
     });
 
-    arquivosObj.doc_crm.forEach(async (crmFields: any) => {
+    arquivosObj.doc_crm?.forEach(async (crmFields: any) => {
       try {
         const nome_arquivo = crmFields.filename;
         const tipo = 'CRM';
@@ -62,7 +62,7 @@ export default class ArquivoService {
       }
     });
 
-    arquivosObj.doc_cert_quit_crmmg.forEach(async (certQuitCRMMGFields: any) => {
+    arquivosObj.doc_cert_quit_crmmg?.forEach(async (certQuitCRMMGFields: any) => {
       try {
         const nome_arquivo = certQuitCRMMGFields.filename;
         const tipo = 'CERTQ';
@@ -73,7 +73,7 @@ export default class ArquivoService {
       }
     });
 
-    arquivosObj.doc_term_vigi.forEach(async (termVigiFields: any) => {
+    arquivosObj.doc_term_vigi?.forEach(async (termVigiFields: any) => {
       try {
         const nome_arquivo = termVigiFields.filename;
         const tipo = 'TVIGI';
@@ -84,7 +84,7 @@ export default class ArquivoService {
       }
     });
 
-    arquivosObj.doc_term_compr.forEach(async (termCompFields: any) => {
+    arquivosObj.doc_term_compr?.forEach(async (termCompFields: any) => {
       try {
         const nome_arquivo = termCompFields.filename;
         const tipo = 'TSAIR';
@@ -95,7 +95,7 @@ export default class ArquivoService {
       }
     });
 
-    arquivosObj.docs_cert_form.forEach(async (certFormFields: any) => {
+    arquivosObj.docs_cert_form?.forEach(async (certFormFields: any) => {
       try {
         const nome_arquivo = certFormFields.filename;
         const tipo = 'FORM';
@@ -106,7 +106,7 @@ export default class ArquivoService {
       }
     });
 
-    arquivosObj.docs_cert_espec.forEach(async (certEspecFields: any) => {
+    arquivosObj.docs_cert_espec?.forEach(async (certEspecFields: any) => {
       try {
         const nome_arquivo = certEspecFields.filename;
         const tipo = 'FORM'; // ! @guizombas quando acabar o médico especialidade tem que integrar nessa parte tipo assim

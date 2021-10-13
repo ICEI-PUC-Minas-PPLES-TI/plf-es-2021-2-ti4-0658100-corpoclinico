@@ -87,7 +87,10 @@ class MedicoController {
         await Promise.all([
           this.arquivoService.create(request.files, medico.id),
           this.candidaturaService.create({ cnpj, equipe_id, faturamento, medico_id: medico.id, unidade_id })
-        ])
+        ]).catch(async (error)=>{
+          await this.medicoService.delete(medico.id, true);
+          throw error;
+        })
         return response.status(201).json({
           criado: true,
           id: medico.id

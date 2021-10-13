@@ -30,20 +30,18 @@ class Candidatura extends Model<IAtributosCandidatura, IAtributosCandidaturaCria
         id: {
           type: DataTypes.INTEGER().UNSIGNED,
           primaryKey: true,
+          allowNull: false,
           autoIncrement: true
         },
         cnpj: {
           type: DataTypes.CHAR(14),
         },
         faturamento: {
-          type: DataTypes.ENUM('PF', 'C')
+          type: DataTypes.ENUM('PF', 'C'),
+          allowNull: false,
         },
         equipe_id: {
             type: DataTypes.INTEGER.UNSIGNED,
-            references: {
-                model: Equipe,
-                key: 'id'
-            },
         },
         medico_id: {
           type: DataTypes.INTEGER.UNSIGNED,

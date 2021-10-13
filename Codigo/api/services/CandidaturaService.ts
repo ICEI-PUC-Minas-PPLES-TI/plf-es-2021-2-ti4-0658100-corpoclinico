@@ -5,7 +5,7 @@ import Medico from "../models/Medico";
 
 export default class CandidaturaService{
     async create(candidatura: IAtributosCandidaturaCriacao){
-        return Candidatura.create(candidatura)
+        return Candidatura.create({...candidatura})
     }
     async update(candidatura: Partial<IAtributosCandidaturaCriacao>){
         return Candidatura.update(candidatura, {
