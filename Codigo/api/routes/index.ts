@@ -11,7 +11,7 @@ import EquipeController from '../controllers/EquipeController';
 import EspecialidadeController from '../controllers/EspecialidadeController';
 
 import { upload } from '../helpers/files/MulterSettings'; 
-import { documentosCriarMedico } from '../helpers/files/DocumentosEnum';
+import { documentosCriarMedico } from '../helpers/files/DocumentosEnum'; 
 
 // Iniciar controllers
 const usuarioController = new UsuarioController();

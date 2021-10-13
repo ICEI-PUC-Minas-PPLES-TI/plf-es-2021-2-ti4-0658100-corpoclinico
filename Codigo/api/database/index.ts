@@ -8,6 +8,7 @@ import Medico from '../models/Medico';
 
 // Importar modelos aqui
 import Usuario from "../models/Usuario";
+import Candidatura from '../models/Candidatura';
 import Unidade from "../models/Unidade";
 
 dotenv.config();
@@ -35,6 +36,8 @@ export default {
       Especialidade.initialize(sequelize);
       Equipe.initialize(sequelize);
       Arquivo.initialize(sequelize);
+      Candidatura.initialize(sequelize);
+      
 
       // Associações
       Equipe.belongsTo(Especialidade, { foreignKey: 'especialidade_id'})
@@ -46,6 +49,8 @@ export default {
       Medico.hasMany(Arquivo, {
         foreignKey: 'medico_id'
       });
+      Equipe.belongsTo(Especialidade, { foreignKey: 'especialidade_id'})
+      Especialidade.hasOne(Equipe, { foreignKey: 'id' })
 
       if (process.env.NODE_ENV === "dev") {
         console.log(

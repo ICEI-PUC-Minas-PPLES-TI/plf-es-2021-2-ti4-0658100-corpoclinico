@@ -145,7 +145,23 @@ export const medicoCreateValidationScheme = yup.object().shape({
       escolaridades,
       `'escolaridade_max' deve ser algum destes valores: ${escolaridades}!`
     )
-    .required("'escolaridade_max' obrigatório!")
+    .required("'escolaridade_max' obrigatório!"),
+
+  // campos da candidatura
+  equipe_id: yup
+    .number()
+    .nullable(),
+  faturamento: yup
+    .mixed()
+    .oneOf(['PJ', 'C'])
+    .required('faturamento é necessário'),
+  unidade_id: yup
+    .number()
+    .nullable(),
+  cnpj: yup
+    .string()
+    .max(14)
+
 });
 
 export const medicoUpdateValidationScheme = yup.object().shape({

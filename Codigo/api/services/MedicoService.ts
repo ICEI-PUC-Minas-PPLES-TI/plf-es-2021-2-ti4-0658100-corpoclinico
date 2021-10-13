@@ -1,3 +1,4 @@
+import { Model, where } from "sequelize/types";
 import AppError from "../errors/AppError";
 import { ISortPaginateQuery, SortPaginate } from "../helpers/SortPaginate";
 import Medico, { IAtributosMedico, IAtributosMedicoCriacao } from "../models/Medico";
@@ -20,10 +21,15 @@ export default class MedicoService {
   }
 
   // * Não é soft-delete nem hard-delete, apenas volta o status para 0.
-  async delete(id: number) {
+  async delete(id: number, force?: boolean) {
     const medico = await Medico.findByPk(id);
     if (!medico) {
       throw new AppError("Médico não encontrado!", 404);
+    }
+    if (force){
+      medico.destroy({
+        force
+      })
     }
     medico.update({
       ativo: 0,
