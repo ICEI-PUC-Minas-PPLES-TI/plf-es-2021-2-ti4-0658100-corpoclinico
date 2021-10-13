@@ -67,7 +67,7 @@ class UsuarioController {
         .string()
         .required("'senha' obrigatória!")
         .min(8, "'senha' deve ter no mínimo 8 caracteres!")
-        .max(64, "'senha' deve ter no máximo 64 caracteres!"),
+        .max(64, "'senha' deve ter no máximo 64 caracteres!")
     });
 
     // Validando com o esquema criado:
@@ -145,11 +145,12 @@ class UsuarioController {
     const tipos = ["A", "M", "CC", "DC", "DT"];
 
     const scheme = yup.object().shape({
-      nome: yup.string().max(120, "Nome deve ter no máximo 120 caracteres!"),
+      nome: yup.string().max(120, "'nome' deve ter no máximo 120 caracteres!"),
 
-      email: yup.string().email().max(100, "Nome deve ter no máximo 100 caracteres!"),
+      email: yup.string().email().max(100, "'email' deve ter no máximo 100 caracteres!"),
       senha: yup
         .string()
+        .required("'senha' obrigatória!")
         .min(8, "'senha' deve ter no mínimo 8 caracteres!")
         .max(64, "'senha' deve ter no máximo 64 caracteres!"),
 
@@ -167,7 +168,7 @@ class UsuarioController {
       });
     }
 
-    const { nome, email, senha, tipo } = request.body;
+    const { nome, email, senha } = request.body;
 
     let passTemp = null;
     if (senha)
@@ -190,7 +191,7 @@ class UsuarioController {
         nome: nome ? nome : usuario.get().nome,
         email: email ? email : usuario.get().email,
         senha: password ? password : usuario.get().senha,
-        tipo: tipo ? tipo : usuario.get().tipo
+        tipo: "A"
       });
       response.status(200).json({
         atualizado: true,
