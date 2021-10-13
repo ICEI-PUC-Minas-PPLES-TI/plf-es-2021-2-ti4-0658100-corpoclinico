@@ -67,7 +67,7 @@ export default {
             erroLogin:null,
             rules: {
                 required: value => !!value || 'Obrigatório.',
-                emailValido:v => !v || /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail inválido. Ex: email@email.com'
+                emailValido:v => !v || /.+.@+..+/.test(v) || 'E-mail inválido. Ex: email@email.com'
             }
         }
     },
