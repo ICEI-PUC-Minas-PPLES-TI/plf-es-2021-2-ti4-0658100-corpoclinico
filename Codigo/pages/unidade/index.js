@@ -12,15 +12,23 @@ export default {
         { text: 'Nome', value: 'nome' },
         { text: 'Cidade', value: 'cidade' },
         { text: 'Bairro', value: 'bairro' },
-        { text: 'Logradouro', value: 'logradouro ' },
+        { text: 'Logradouro', value: 'logradouro' },
         { text: 'Ação', value: 'actions', sortable: false },
       ],
-      unidade: [
+      unidades: [
         {
-          id: '',
-          nome: '',
-          cidade: '',
-          logradouro: ''
+          id: '1',
+          nome: 'BH-Pampulha',
+          cidade: 'Belo Horizonte',
+          bairro:'Pampulha',
+          logradouro: 'Rua Faria Lobato'
+        },
+        {
+          id: '2',
+          nome: 'Serra',
+          cidade: 'Belo Horizonte',
+          bairro:'Serra',
+          logradouro: 'Rua Serra Papo'
         }
       ],
 
@@ -63,7 +71,20 @@ export default {
     },
 
     deleteUnidade(id){
-
+      console.log(this.unidades.length)
+      if(this.unidades.length==1){
+        this.unidades=[
+          {
+            id: '',
+            nome: '',
+            cidade: '',
+            bairro:'',
+            logradouro: ''
+          }
+        ]
+      }else{
+        this.unidades.splice(id-1,1);
+      }
       // this.$axios.$delete('/unidade/' + id).then(response => {
       //   this.abreToast('Unidade Deletada!');
       //   this.listaUsuarios();

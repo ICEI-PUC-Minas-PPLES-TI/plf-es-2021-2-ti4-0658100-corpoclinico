@@ -5,7 +5,6 @@ export default {
   data() {
     return {
       valid: true,
-      show1: false,
 
       titulo:'Nova Unidade',
       cep:'',
@@ -62,6 +61,10 @@ export default {
       localStorage.setItem('corpoclinico-medico', JSON.stringify(info))
     },
     submitUnidade() {
+          this.limpaDados();
+          this.abreToast('unidade cadastrada!')
+          this.$emit('input', false)
+          this.$emit('listaUnidade')
     //   if(this.unidade.id > 0){
     //     this.updateUsuario(this.unidade.id);
     //   }else{

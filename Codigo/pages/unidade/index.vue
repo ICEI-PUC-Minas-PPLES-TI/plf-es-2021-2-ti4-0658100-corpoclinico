@@ -7,7 +7,7 @@
                 <span class="text-h6">Unidades</span>
             </v-card-title>
             <v-card-actions>
-                <v-btn color="success" background="primary" @click="abreModal(0)">
+                <v-btn class="mr-2" color="success" background="primary" @click="abreModal(0)">
                     Criar Unidade
                 </v-btn>
                 <modal v-model="modalAtivo" v-bind:unidadeId="unidadeId" />

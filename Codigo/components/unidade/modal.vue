@@ -88,6 +88,7 @@
                <!-- Numero -->
                 <v-col :md="4" :sm="12" :xl="4" cols="12">
                   <v-text-field
+                    type="number"
                     v-model="unidade.numero"
                     :clearable="true"
                     hide-details="auto"
