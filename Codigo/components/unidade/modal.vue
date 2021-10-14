@@ -3,12 +3,13 @@
     <v-dialog
       v-model="value"
       scrollable
-      max-width="500px"
+      max-width="800px"
       transition="dialog-bottom-transition"
       class="unidade-modal"
       @click:outside="$emit('input', false)"
       @keydown.esc="$emit('input', false)"
     >
+
       <v-card>
         <v-card-title class="text-h5 unidade-modal-title">
           <h4>
@@ -21,7 +22,8 @@
         <v-card-text>
           <v-container fluids>
             <v-form ref="formUnidade" v-model="valid" lazy-validation>
-              <!-- Nome -->
+
+            <!-- Nome -->
               <v-row class="mx-auto">
                 <v-col :md="12" :sm="12" :xl="12" cols="12">
                   <v-text-field
@@ -33,9 +35,21 @@
                   />
                 </v-col>
               </v-row>
-              <!-- Cidade -->
-              <v-row class="mx-auto mt-3">
-                <v-col :md="12" :sm="12" :xl="12" cols="12">
+
+            <!--Cep-->
+            <v-row class="mx-auto">
+              <v-col :md="6" :sm="12" :xl="6" cols="12">
+                <v-text-field
+                  :hide-details="'auto'"
+                  v-mask="'#####-###'"
+                  v-model="cep"
+                  label="CEP (obrigatório)"
+                  :rules="[v => !!v || 'Cep é obrigatório', v => (v && v.length <= 9) || 'Maximo de 9 caracteres']"
+                  @blur="buscaCep"
+                />
+              </v-col>
+              <v-col :md="6" :sm="12" :xl="6" cols="12">
+                  <!-- Cidade -->
                   <v-text-field
                     v-model="unidade.cidade"
                     :clearable="true"
@@ -44,7 +58,8 @@
                     :rules="[v => !!v || 'Cidade é obrigatório', v => (v && v.length <= 100) || 'Maximo de 100 caracteres']"
                   />
                 </v-col>
-              </v-row>
+            </v-row>
+              
               <!-- Bairro -->
               <v-row class="mx-auto mb-3">
                 <v-col :md="12" :sm="12" :xl="12" cols="12">
@@ -60,7 +75,7 @@
               </v-row>
                <!-- Logradouro -->
               <v-row class="mx-auto mb-3">
-                <v-col :md="12" :sm="12" :xl="12" cols="12">
+                <v-col :md="8" :sm="12" :xl="8" cols="12">
                   <v-text-field
                     v-model="unidade.logradouro"
                     :clearable="true"
@@ -70,7 +85,19 @@
                     v => (v && v.length >= 8 ) || 'Minimo de 8 caracteres']"
                   />
                 </v-col>
+               <!-- Numero -->
+                <v-col :md="4" :sm="12" :xl="4" cols="12">
+                  <v-text-field
+                    v-model="unidade.numero"
+                    :clearable="true"
+                    hide-details="auto"
+                    label="Número"
+                    :rules="[v => !!v || 'Número é obrigatório']"
+                  />
+                </v-col>
               </v-row>
+
+                
               <!-- Botão de criar -->
               <v-row class="mx-auto" justify="space-between" >
                 <v-col class="text-center">

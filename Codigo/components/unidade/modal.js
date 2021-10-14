@@ -1,3 +1,4 @@
+import axios2 from 'axios';
 export default {
   name: 'modal',
   props: ['value', 'unidadeId'],
@@ -7,13 +8,14 @@ export default {
       show1: false,
 
       titulo:'Nova Unidade',
-
+      cep:'',
       unidade: [
         {
           id: '',
           nome: '',
           cidade: '',
-          logradouro: ''
+          logradouro: '',
+          numero:''
         }
       ],
 
@@ -37,7 +39,28 @@ export default {
 
   },
   methods: {
-
+    buscaCep(){
+      axios2
+        .get(`https://viacep.com.br/ws/${this.cep}/json`)
+        .then(res => {
+          if(!res.data.erro){
+            this.unidade.logradouro ||= res.data.logradouro
+            this.unidade.cidade ||= res.data.localidade
+            this.unidade.bairro ||= res.data.bairro
+          }
+          this.salvarEmCache()
+        })
+        .catch(err => {
+          console.log(err)
+          this.salvarEmCache()
+        })
+    },
+    salvarEmCache(){
+      let info = JSON.parse(JSON.stringify(this))
+      info.senha = null
+      localStorage.setItem('corpoclinico-medico-version', MODALV)
+      localStorage.setItem('corpoclinico-medico', JSON.stringify(info))
+    },
     submitUnidade() {
     //   if(this.unidade.id > 0){
     //     this.updateUsuario(this.unidade.id);
