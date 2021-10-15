@@ -106,14 +106,6 @@ export default {
       this.toast = true;
     },
 
-    formataStatus(dataExclusao){
-      if ( dataExclusao == null ){
-        return "ATIVO"
-      }else{
-        return "INATIVO"
-      }
-    }
-
   }
 
 }
