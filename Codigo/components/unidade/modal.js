@@ -1,7 +1,9 @@
 import axios2 from 'axios';
+import {mask} from 'vue-the-mask'
 export default {
   name: 'modal',
   props: ['value', 'unidadeId'],
+  directives: {mask},
   data() {
     return {
       valid: true,
@@ -139,7 +141,7 @@ export default {
       //   }
       // ],
 
-      // this.$refs.formUnidade.reset();
+      this.$refs.formUnidade.reset();
     }
 
   }

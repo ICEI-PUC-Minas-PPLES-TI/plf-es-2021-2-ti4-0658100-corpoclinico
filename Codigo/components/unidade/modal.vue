@@ -31,7 +31,8 @@
                     hide-details="auto"
                     :clearable="true"
                     label="Nome"
-                    :rules="[v => !!v || 'Nome é obrigatório', v => (v && v.length <= 120) || 'Maximo de 120 caracteres']"
+                    maxlength="40"
+                    :rules="[v => !!v || 'Nome é obrigatório', v => (v && v.length <= 120) || 'Maximo de 40 caracteres']"
                   />
                 </v-col>
               </v-row>
@@ -40,11 +41,12 @@
             <v-row class="mx-auto">
               <v-col :md="6" :sm="12" :xl="6" cols="12">
                 <v-text-field
+                  maxlength="9"
                   :hide-details="'auto'"
                   v-mask="'#####-###'"
                   v-model="cep"
                   label="CEP (obrigatório)"
-                  :rules="[v => !!v || 'Cep é obrigatório', v => (v && v.length <= 9) || 'Maximo de 9 caracteres']"
+                  :rules="[v => !!v || 'Cep é obrigatório', v => (v && v.length <= 9) || 'Maximo de 8 caracteres']"
                   @blur="buscaCep"
                 />
               </v-col>
@@ -88,12 +90,13 @@
                <!-- Numero -->
                 <v-col :md="4" :sm="12" :xl="4" cols="12">
                   <v-text-field
-                    type="number"
+                    maxlength="6"
                     v-model="unidade.numero"
                     :clearable="true"
                     hide-details="auto"
                     label="Número"
                     :rules="[v => !!v || 'Número é obrigatório']"
+                    
                   />
                 </v-col>
               </v-row>

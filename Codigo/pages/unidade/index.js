@@ -1,7 +1,8 @@
 import modal from '@/components/unidade/modal.vue'
-
+import {mask} from 'vue-the-mask'
 export default {
   'layout': 'cmedico',
+  directives: {mask},
   components: {
     modal,
   },
@@ -71,7 +72,6 @@ export default {
     },
 
     deleteUnidade(id){
-      console.log(this.unidades.length)
       if(this.unidades.length==1){
         this.unidades=[
           {
