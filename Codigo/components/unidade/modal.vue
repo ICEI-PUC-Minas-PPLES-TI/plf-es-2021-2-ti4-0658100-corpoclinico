@@ -46,7 +46,7 @@
                   v-mask="'#####-###'"
                   v-model="cep"
                   label="CEP (obrigatório)"
-                  :rules="[v => !!v || 'Cep é obrigatório', v => (v && v.length <= 9) || 'Maximo de 8 caracteres']"
+                  :rules="[v => !!v || 'Cep é obrigatório']"
                   @blur="buscaCep"
                 />
               </v-col>
