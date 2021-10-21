@@ -8,7 +8,9 @@ interface IPaginatableQuery {
   limite: string,
   pagina: string
 }
-export interface ISortPaginateQuery extends Partial<ISortableQuery>, Partial<IPaginatableQuery> { }
+export interface ISortPaginateQuery extends Partial<ISortableQuery>, Partial<IPaginatableQuery> {
+  [x: string]: any;
+}
 
 function SortPaginate(query: ISortPaginateQuery, atributos: string[], dadosCount: number) {
   const limite =
