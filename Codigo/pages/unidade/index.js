@@ -9,6 +9,7 @@ export default {
 
   data() {
     return {
+      dialog:false,
       headers: [
         { text: 'Nome', value: 'nome' },
         { text: 'Cidade', value: 'cidade' },
@@ -72,19 +73,24 @@ export default {
     },
 
     deleteUnidade(id){
-      if(this.unidades.length==1){
-        this.unidades=[
-          {
-            id: '',
-            nome: '',
-            cidade: '',
-            bairro:'',
-            logradouro: ''
-          }
-        ]
-      }else{
-        this.unidades.splice(id-1,1);
+      let respo = confirm("Deseja deletar a unidade?");
+      console.log(respo)
+      if(respo==true){
+        if(this.unidades.length==1){
+          this.unidades=[
+            {
+              id: '',
+              nome: '',
+              cidade: '',
+              bairro:'',
+              logradouro: ''
+            }
+          ]
+        }else{
+          this.unidades.splice(id-1,1);
+        }
       }
+      
       // this.$axios.$delete('/unidade/' + id).then(response => {
       //   this.abreToast('Unidade Deletada!');
       //   this.listaUsuarios();
