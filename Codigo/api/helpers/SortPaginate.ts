@@ -9,7 +9,7 @@ interface IPaginatableQuery {
   pagina: string
 }
 export interface ISortPaginateQuery extends Partial<ISortableQuery>, Partial<IPaginatableQuery> {
-  [x: string]: any;
+  [filtros: string]: any;
 }
 
 function SortPaginate(query: ISortPaginateQuery, atributos: string[], dadosCount: number) {

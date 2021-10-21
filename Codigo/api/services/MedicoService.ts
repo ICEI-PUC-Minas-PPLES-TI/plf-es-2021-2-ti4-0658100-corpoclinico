@@ -7,6 +7,7 @@ import Medico, {
   IAtributosMedicoCriacao
 } from "../models/Medico";
 import Usuario from "../models/Usuario";
+import { IGetAllMedicoFilter } from "../types/Requests";
 
 export default class MedicoService {
   async create(medico: IAtributosMedicoCriacao) {
@@ -54,15 +55,14 @@ export default class MedicoService {
     });
   }
 
-  async getAll(sortPaginate: ISortPaginateQuery, atributos: string[], filtros: Map<String, String>) {
+  async getAll(sortPaginate: ISortPaginateQuery, atributos: string[], filtros: IGetAllMedicoFilter) {
 
+    // Caso não seja passada uma dt_fim, será o dia de hoje
+    // Caso não seja passada uma dt_inicio, será 01/01/1970
     const todayDate = new Date().toISOString().slice(0, 10);
     const pastDate = new Date("1970-01-01").toISOString().slice(0, 10);
-    console.log(filtros.get("dt_fim") + " " + filtros.get("dt_inicio"))
-    const dataFim: any = filtros.get("dt_fim") ? filtros.get("dt_fim") : todayDate;
-    const dataInicio: any = filtros.get("dt_inicio") ? filtros.get("dt_inicio") : pastDate;
-
-    console.log(dataFim + " " + dataInicio)
+    const dataFim: any = filtros.dt_fim ? filtros.dt_fim : todayDate;
+    const dataInicio: any = filtros.dt_inicio ? filtros.dt_inicio : pastDate;
 
     return Medico.findAndCountAll({
       include: [
@@ -72,7 +72,7 @@ export default class MedicoService {
           attributes: ["email", "nome"],
           where: {
             nome: {
-              [Op.like]: `%${filtros.get("nome") ? filtros.get("nome") : ""}%`
+              [Op.like]: `%${filtros.nome ? filtros.nome : ""}%` /* Se não passar nome será todos */
             }
           }
         },
@@ -111,7 +111,7 @@ export default class MedicoService {
                 attributes: ["email", "nome"],
                 where: {
                   nome: {
-                    [Op.like]: `%${filtros.get("nome") ? filtros.get("nome") : ""}%`
+                    [Op.like]: `%${filtros.nome ? filtros.nome : ""}%` /* Se não passar nome será todos */
                   }
                 }
               },

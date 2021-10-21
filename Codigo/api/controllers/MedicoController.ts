@@ -12,8 +12,10 @@ import ArquivoService from "../services/ArquivoService";
 import Arquivo from "../models/Arquivo";
 import CandidaturaService from "../services/CandidaturaService";
 import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
+import { IGetAllMedicoFilter } from "../types/Requests";
 
 interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { }
+interface IGetHandlerGetFilter extends IAtributosMedico, IGetAllMedicoFilter { }
 
 class MedicoController {
   private medicoService!: MedicoService;
@@ -229,18 +231,14 @@ class MedicoController {
 
   // URI de exemplo: http://localhost:3000/api/medico?pagina=1&limite=5&atributo=nome&ordem=DESC
   // todos as querys são opicionais
-  public getAll: GetAllRequestHandler<IAtributosMedico> = async (request, response) => {
-    let filtros = new Map();
-    filtros.set("nome", request.query.nome);
-    filtros.set("email", request.query.email);
-    filtros.set("dt_inicio", request.query.dt_inicio);
-    filtros.set("dt_fim", request.query.dt_fim);
+  public getAll: GetAllRequestHandler<IGetHandlerGetFilter> = async (request, response) => {
+    const { nome, dt_inicio, dt_fim} = request.query;
 
     this.medicoService.getAll({
       ...request.query
     },
       Object.keys(Medico.rawAttributes),
-      filtros,
+      {nome, dt_inicio, dt_fim},
     )
       .then(({ medicos, count, paginas, offset }) => {
         response.status(200).json({
