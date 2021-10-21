@@ -74,7 +74,6 @@ export default {
 
     deleteUnidade(id){
       let respo = confirm("Deseja deletar a unidade?");
-      console.log(respo)
       if(respo==true){
         if(this.unidades.length==1){
           this.unidades=[
