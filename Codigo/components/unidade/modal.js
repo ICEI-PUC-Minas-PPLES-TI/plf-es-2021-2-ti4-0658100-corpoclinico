@@ -25,7 +25,7 @@ export default {
   watch: {
     unidadeId: function(unidadeId) {
       if (unidadeId) {
-        this.editUsuario(unidadeId);
+        this.editUnidade(unidadeId);
         this.titulo = "Editar Unidade";
       } else {
         this.limpaDados();
