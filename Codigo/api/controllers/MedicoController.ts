@@ -11,7 +11,7 @@ import AppError from "../errors/AppError";
 import ArquivoService from "../services/ArquivoService";
 import Arquivo from "../models/Arquivo";
 import CandidaturaService from "../services/CandidaturaService";
-import { IAtributosCandidaturaCriacao } from "../models/Candidatura";
+import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
 
 interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { }
 
@@ -140,30 +140,6 @@ class MedicoController {
   }
 
   // URI de exemplo: http://localhost:3000/api/medico/1
-  public get: GetRequestHandler<IAtributosMedico> = async (request, response) => {
-    const medico = await Medico.findOne({
-      where: {
-        id: request.params.id
-      },
-      include: [
-        {
-          model: Usuario,
-          attributes: ['email', 'nome']
-        },
-        {
-          model: Arquivo,
-          attributes: ['nome_arquivo', 'tipo']
-        }
-      ]
-    });
-
-    if (!medico)
-      response.status(404).json(medico);
-    else
-      response.status(200).json(medico);
-  }
-
-  // URI de exemplo: http://localhost:3000/api/medico/1
   public update: UpddateRequestHandler<IAtributosMedico> = async (request, response) => {
 
     const scheme = medicoUpdateValidationScheme
@@ -221,6 +197,34 @@ class MedicoController {
         id: medico.id
       });
     }
+  }
+
+  // URI de exemplo: http://localhost:3000/api/medico/1
+  public get: GetRequestHandler<IAtributosMedico> = async (request, response) => {
+    const medico = await Medico.findOne({
+      where: {
+        id: request.params.id
+      },
+      include: [
+        {
+          model: Usuario, as: 'usuario',
+          attributes: ['email', 'nome']
+        },
+        {
+          model: Arquivo, as: 'arquivos',
+          attributes: ['nome_arquivo', 'tipo']
+        },
+        {
+          model: Candidatura, as: 'candidatura',
+          
+        }
+      ]
+    });
+
+    if (!medico)
+      response.status(404).json(medico);
+    else
+      response.status(200).json(medico);
   }
 
   // URI de exemplo: http://localhost:3000/api/medico?pagina=1&limite=5&atributo=nome&ordem=DESC
