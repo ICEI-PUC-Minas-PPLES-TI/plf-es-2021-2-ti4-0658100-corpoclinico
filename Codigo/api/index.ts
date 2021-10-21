@@ -20,10 +20,11 @@ app.use(routes);
 
 db.connect();
 
-app.use([(err, request, response, next) => {
+app.use([(err, request, response, next) => {console.log(err)
   if (err instanceof AppError) {
     return response.status(err.statusCode).json({
-      message: err.message
+      message: err.message,
+      error: err.error
     });
   }
 
@@ -42,10 +43,12 @@ app.use([(err, request, response, next) => {
   }
 }]);
 
+
+
 export default app;
 
 if (require.main === module) {
-  app.use('/api', routes);
+  //app.use('/api', routes);
   const port = process.env.PORT || 3001;
   app.listen(port, () => {
     // eslint-disable-next-line no-console
