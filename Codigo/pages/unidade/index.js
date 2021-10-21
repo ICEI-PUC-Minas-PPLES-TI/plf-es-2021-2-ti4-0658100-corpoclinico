@@ -1,15 +1,16 @@
 import modal from '@/components/unidade/modal.vue'
+import deletar from '@/components/deletarDialog/deletar.vue'
 import {mask} from 'vue-the-mask'
 export default {
   'layout': 'cmedico',
   directives: {mask},
   components: {
     modal,
+    deletar,
   },
 
   data() {
     return {
-      dialog:false,
       headers: [
         { text: 'Nome', value: 'nome' },
         { text: 'Cidade', value: 'cidade' },
@@ -38,13 +39,17 @@ export default {
       toast: false,
       toastMensagem: '',
       modalAtivo: false,
+      dialog: false,
 
     }
   },
   watch:{
     modalAtivo: function (modalAtivo){
       modalAtivo ? false : this.listaUnidades();
-    }
+    },
+    dialog: function (dialog){
+      dialog ? false : this.listaUnidades();
+    },
   },
   mounted() {
     this.listaUnidades();
@@ -71,9 +76,18 @@ export default {
         this.unidadeId = 0;
       }
     },
+    abreDeleta(id){
+      if(id){
+        this.dialog = !this.dialog;
+        this.unidadeId = id;
+      }else{
+        this.dialog = !this.dialog;
+        this.unidadeId = 0;
+      }
+    },
 
     deleteUnidade(id){
-      let respo = confirm("Deseja deletar a unidade?");
+      let respo = confirm("Deseja eletar a unidade?");
       if(respo==true){
         if(this.unidades.length==1){
           this.unidades=[

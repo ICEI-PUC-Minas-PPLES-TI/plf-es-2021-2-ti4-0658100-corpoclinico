@@ -11,6 +11,7 @@
                     Criar Unidade
                 </v-btn>
                 <modal v-model="modalAtivo" v-bind:unidadeId="unidadeId" />
+                
             </v-card-actions>
         </div>
         <v-card-text class="text-h5 ">
@@ -23,9 +24,11 @@
                         <v-icon color="success" class="mr-2" @click="abreModal(item.id)">
                             mdi-square-edit-outline
                         </v-icon>
+                        
                         <v-icon color="success" @click="deleteUnidade(item.id)">
                             mdi-trash-can-outline
                         </v-icon>
+                        
                     </template>
                     <template v-slot:no-data>
                         <v-btn color="primary" @click="initialize">
@@ -50,6 +53,9 @@
       </template>
     </v-snackbar>
 </v-container>
+
+
+
 </template>
 
 <script src="./index.js"> </script>
