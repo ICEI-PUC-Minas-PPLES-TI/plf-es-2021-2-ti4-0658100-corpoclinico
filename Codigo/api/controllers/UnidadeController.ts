@@ -28,7 +28,6 @@ class UnidadeController {
     const unidade = await this.Service.create({ bairro, cep, cidade, logradouro, nome, numero })
     response.status(201).json({
       id: unidade.id,
-      criado: true
     })
   }
 
@@ -45,18 +44,12 @@ class UnidadeController {
     const { bairro, cep, cidade, logradouro, nome, numero } = request.body;
 
     await this.Service.update({ bairro, cep, cidade, logradouro, nome, numero, id: Number(request.params.id) });
-    response.status(201).json({
-      atualizado: true,
-      id: 0
-    });
+    response.status(201).json({});
   }
 
   public delete: DeleteRequestHandler = async (request,response) => {
     await this.Service.delete(Number(request.params.id));
-    response.status(200).json({
-      deletado: true,
-      dado: Number(request.params.id)
-    });
+    response.status(200).json({});
   }
 
   // URI de exemplo: http://localhost:3000/api/unidade/1

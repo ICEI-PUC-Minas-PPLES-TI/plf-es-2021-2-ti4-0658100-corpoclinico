@@ -34,13 +34,9 @@ class MedicoController {
     // Validando com o esquema criado:
     try {
       await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (erro: any) {
-      return response.status(422).json({
-        criado: false,
-        nome: erro.name, // => 'ValidationError'
-        erros: erro.errors
-      });
-    }
+    } catch (erro) {
+      throw new AppError("Erro na validação de um ou mais campos", 422, erro)
+    } 
 
     const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
     const { equipe_id, cnpj, faturamento, unidade_id } = request.body;
@@ -92,7 +88,6 @@ class MedicoController {
           throw error;
         })
         return response.status(201).json({
-          criado: true,
           id: medico.id
         });
       })
@@ -104,19 +99,15 @@ class MedicoController {
           },
           force: true
         });
-        return response.status(500).json({
-          criado: false,
-          nome: "Médico não criado!",
-          erros: erro.message,
-        });
+        throw new AppError("Médico não criado!", 500, erro);
       });
   }
 
   // URI de exemplo: http://localhost:3000/api/medico/1
   public delete: DeleteRequestHandler = async (request, response) => {
-    this.medicoService.delete(Number(request.params.id))
-      .then(medico => {
-        this.usuarioSerive.delete(Number(medico.get().usuario_id))
+    await this.medicoService.delete(Number(request.params.id))
+      .then(async (medico) => {
+        await this.usuarioSerive.delete(Number(medico.get().usuario_id))
           .then(usuarioDado => {
             const dado = Number(medico.get().id);
             return response.status(204).json({
@@ -124,19 +115,7 @@ class MedicoController {
               dado
             });
           })
-          .catch(function (error: AppError) {
-            return response.status(error.statusCode).json({
-              deletado: false,
-              errors: error.message
-            });
-          });
       })
-      .catch(function (error) {
-        return response.status(500).json({
-          deletado: false,
-          errors: error
-        });
-      });
   }
 
   // URI de exemplo: http://localhost:3000/api/medico/1
@@ -158,7 +137,7 @@ class MedicoController {
     });
 
     if (!medico)
-      response.status(404).json(medico);
+      throw new AppError("Medico não encontrado!", 404);
     else
       response.status(200).json(medico);
   }
@@ -183,11 +162,7 @@ class MedicoController {
 
     const medico = await this.medicoService.getById(Number(request.params.id))
     if (!medico) {
-      response.status(404).json({
-        atualizado: false,
-        nome: "Medico não encontrado",
-        erros: "O id que foi solicitado alteração não existe no banco de dados"
-      });
+      throw new AppError("Medico não encontrado!", 404);
     } else {
       await this.medicoService.update(
         {
@@ -216,10 +191,7 @@ class MedicoController {
           escolaridade_max,
         }
       );
-      response.status(200).json({
-        atualizado: true,
-        id: medico.id
-      });
+      response.status(200).json({});
     }
   }
 
@@ -227,25 +199,19 @@ class MedicoController {
   // todos as querys são opicionais
   public getAll: GetAllRequestHandler<IAtributosMedico> = async (request, response) => {
 
-    this.medicoService.getAll(
+    await this.medicoService.getAll(
       { ...request.query },
       Object.keys(Medico.rawAttributes)
     )
-      .then(({ medicos, count, paginas, offset }) => {
-        response.status(200).json({
-          dados: medicos,
-          quantidade: medicos.length,
-          total: count,
-          paginas: paginas,
-          offset: offset
-        });
-      })
-      .catch(error => {
-        response.status(500).json({
-          titulo: "Erro interno do servidor!",
-          error
-        });
+    .then(({ medicos, count, paginas, offset }) => {
+      response.status(200).json({
+        dados: medicos,
+        quantidade: medicos.length,
+        total: count,
+        paginas: paginas,
+        offset: offset
       });
+    })
   }
 }
 
