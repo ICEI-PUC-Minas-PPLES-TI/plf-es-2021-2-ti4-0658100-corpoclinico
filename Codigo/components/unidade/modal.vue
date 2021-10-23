@@ -44,7 +44,7 @@
                   maxlength="9"
                   :hide-details="'auto'"
                   v-mask="'#####-###'"
-                  v-model="cep"
+                  v-model="unidade.cep"
                   label="CEP (obrigatório)"
                   :rules="[v => !!v || 'Cep é obrigatório']"
                   @blur="buscaCep"

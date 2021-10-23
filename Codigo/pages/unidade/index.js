@@ -21,6 +21,7 @@ export default {
         {
           id: '',
           nome: '',
+          cep:'',
           cidade: '',
           bairro:'',
           logradouro: '',
@@ -80,7 +81,7 @@ export default {
     },
 
     deleteUnidade(id){
-      let respo = confirm("Deseja eletar a unidade?");
+      let respo = confirm("Deseja deletar a unidade?");
       if(respo==true){
         if(this.unidades.length==1){
           this.unidades=[

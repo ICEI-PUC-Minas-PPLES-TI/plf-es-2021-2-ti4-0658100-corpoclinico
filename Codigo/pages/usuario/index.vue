@@ -23,7 +23,7 @@
                         <v-icon color="success" class="mr-2" @click="abreModal(item.id)">
                             mdi-square-edit-outline
                         </v-icon>
-                        <v-icon color="success" @click="deleteUsuario(item.id)">
+                        <v-icon color="success" @click="abreDeleta(item.id)">
                             mdi-trash-can-outline
                         </v-icon>
                     </template>

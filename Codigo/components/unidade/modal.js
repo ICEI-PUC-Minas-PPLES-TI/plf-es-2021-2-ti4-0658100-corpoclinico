@@ -9,10 +9,10 @@ export default {
       valid: true,
 
       titulo: "Nova Unidade",
-      cep: "",
       unidade: {
         id: "",
         nome: "",
+        cep:"",
         cidade: "",
         logradouro: "",
         numero: "",
@@ -38,7 +38,7 @@ export default {
   methods: {
     buscaCep() {
       axios2
-        .get(`https://viacep.com.br/ws/${this.cep}/json`)
+        .get(`https://viacep.com.br/ws/${this.unidade.cep}/json`)
         .then(res => {
           if (!res.data.erro) {
             this.unidade.logradouro ||= res.data.logradouro;
@@ -110,8 +110,10 @@ export default {
         {
           id: '',
           nome: '',
+          cep:'',
           cidade: '',
-          logradouro: ''
+          logradouro: '',
+          numero:''
         }
       ],
 
