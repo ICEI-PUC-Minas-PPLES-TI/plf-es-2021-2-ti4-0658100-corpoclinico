@@ -5,13 +5,19 @@ import Usuario, { IAtributosUsuario, IAtributosUsuarioCriacao } from "../models/
 export default class UsuarioService {
 
   async create(usuario: IAtributosUsuarioCriacao) {
-    return Usuario.create(usuario);
+    return Usuario.create(usuario)
+    .catch((err)=>{
+      throw new AppError("Erro interno no servidor", 500, err)
+    })
   }
 
   async update(usuario: Partial<IAtributosUsuario>) {
     return Usuario.update(usuario, {
       where: { id: usuario.id }
-    });
+    })
+    .catch((err)=>{
+      throw new AppError("Erro interno no servidor", 500, err)
+    })
   }
 
   async delete(id: number) {
@@ -22,23 +28,37 @@ export default class UsuarioService {
     return Usuario.destroy({
       where: { id }
     })
-  }
-
-  async getById(id: number) {
-    return Usuario.findOne({
-      where: { id }
+    .catch((err)=>{
+      throw new AppError("Erro interno no servidor", 500, err)
     })
   }
 
-  async getBy(field: keyof Usuario, value: any) {
+  async getById(id: number, paranoid?: boolean) {
+    return Usuario.findOne({
+      where: { id },
+      paranoid
+    })
+    .catch((err)=>{
+      throw new AppError("Erro interno no servidor", 500, err)
+    })
+  }
+
+  async getBy(field: keyof IAtributosUsuario, value: any, atributes?: Array<keyof IAtributosUsuario>) {
     return Usuario.findOne({
       where: {
         [field]: value
       }
     })
+    .catch((err)=>{
+      throw new AppError("Erro interno no servidor", 500, err)
+    })
   }
 
-  async getAll(sortPaginate: ISortPaginateQuery, atributos: string[],) {
+  async getAll(sortPaginate: ISortPaginateQuery) {
+    const atributos = Object.keys(
+      Usuario.rawAttributes
+    ) /* Todos os atributos de usuário */
+
     return Usuario.findAndCountAll()
       .then(async (dados) => {
         const { paginas, ...SortPaginateOptions } = SortPaginate(
@@ -47,19 +67,18 @@ export default class UsuarioService {
           dados.count
         );
         return {
-          usuarios: await Usuario.findAll({
+          dados: await Usuario.findAll({
             attributes: atributos,
             ...SortPaginateOptions,
           }),
-          count: dados.count,
           paginas,
-          offset: SortPaginateOptions.offset
+          offset: SortPaginateOptions.offset,
+          total: dados.count
         }
       })
-      .catch((error) => {
-        console.log(error);
-        throw error;
-      });
+      .catch((err)=>{
+        throw new AppError("Erro interno no servidor", 500, err)
+      })
   }
 
 }

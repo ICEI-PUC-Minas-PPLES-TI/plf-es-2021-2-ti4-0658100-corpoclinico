@@ -1,3 +1,4 @@
+import AppError from "../errors/AppError";
 import { ISortPaginateQuery, SortPaginate } from "../helpers/SortPaginate";
 import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
 import Equipe from "../models/Equipe";
@@ -6,21 +7,33 @@ import Medico from "../models/Medico";
 export default class CandidaturaService{
     async create(candidatura: IAtributosCandidaturaCriacao){
         return Candidatura.create({...candidatura})
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
+        })
     }
     async update(candidatura: Partial<IAtributosCandidaturaCriacao>){
         return Candidatura.update(candidatura, {
             where: {id: candidatura.id},
-        });
+        })
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
+        })
     }
     async delete(id: number){
         return Candidatura.destroy({
             where: {id}
-          })
+        })
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
+        })
     }
     async getById(id: number){
         return Candidatura.findOne({
             where: {id},
             include: [ Medico, Equipe ]
+        })
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
         })
     }
     async getBy(key: keyof Candidatura, atributo: string){
@@ -28,6 +41,9 @@ export default class CandidaturaService{
             where: {
                 [key]: atributo
             }
+        })
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
         })
     }
 
@@ -48,9 +64,8 @@ export default class CandidaturaService{
                 offset: SortPaginateOptions.offset
             }
         })
-        .catch((error) => {
-            console.log(error);
-            throw error;
-        });
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
+        })
     }
 }

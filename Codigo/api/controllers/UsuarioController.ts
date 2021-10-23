@@ -7,6 +7,8 @@ import bcrypt from "bcryptjs";
 import { RequestHandler } from "express";
 import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
 import AppError from "../errors/AppError";
+import UsuarioService from "../services/UsuarioService";
+import { usuarioCreateValidation, usuarioUpdateValidation } from "../validations/UsuarioValidations";
 
 interface ILoginUsuario {
   email: string,
@@ -19,15 +21,17 @@ type SigninReponse = string | {
 }
 
 class UsuarioController {
+
+  Service!: UsuarioService;
+
+  constructor(){
+    this.Service = new UsuarioService();
+  }
+
   public signin: RequestHandler<never, SigninReponse, ILoginUsuario> = async (req, res) => {
     const { email, senha } = req.body;
 
-    await Usuario.findOne({
-      attributes: ['id', 'senha'],
-      where: {
-        email: email
-      }
-    })
+    await this.Service.getBy('email', email, ['id', 'senha'])
     .then(usuario => {
       if (!usuario) {
         return res.status(404).send("Usuario nao encontrado.");
@@ -47,19 +51,7 @@ class UsuarioController {
   }
 
   public create: CreateRequestHandler = async (request, response) => {
-    const scheme = yup.object().shape({
-      nome: yup.string().required("'nome' obrigatório!").max(120, "'nome' deve ter no máximo 120 caracteres!"),
-
-      email: yup
-        .string()
-        .email()
-        .required("'email' obrigatório!").max(100, "'email' deve ter no máximo 100 caracteres!"),
-      senha: yup
-        .string()
-        .required("'senha' obrigatória!")
-        .min(8, "'senha' deve ter no mínimo 8 caracteres!")
-        .max(64, "'senha' deve ter no máximo 64 caracteres!")
-    });
+    const scheme = usuarioCreateValidation;
 
     // Validando com o esquema criado:
     try {
@@ -71,62 +63,37 @@ class UsuarioController {
     const { nome, email, senha } = request.body;
     const password = bcrypt.hashSync(senha, 8);
 
-    const usuario = Usuario.build({
+    await this.Service.create({
       nome,
       email,
       senha: password,
       tipo: "A"
-    });
-
-    await usuario
-      .save()
-      .then(() => {
-        return response.status(201).json({
-          id: usuario.id
-        });
-      })
+    })
+    .then((usuario) => {
+      return response.status(201).json({
+        id: usuario.id
+      });
+    })
   }
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
   public delete: DeleteRequestHandler = async (request, response) => {
-    const usuario = await Usuario.findOne({
-      where: {
-        id: request.params.id
-      }
-    });
+    const usuario = await this.Service.getById( Number(request.params.id) );
     if (!usuario) {
       throw new AppError("Usuário não encontrado", 404)
     }
 
-    await Usuario.destroy({
-      where: {
-        id: request.params.id
-      }
+    await this.Service.delete(usuario.get().id)
+    .then(() => {
+      response.status(204).json({});
     })
-      .then(dado => {
-        response.status(204).json({
-          deletado: true,
-          dado
-        });
-      })
   }
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
   public update: UpddateRequestHandler<IAtributosUsuario> = async (request, response) => {
     const tipos = ["A", "M", "CC", "DC", "DT"];
 
-    const scheme = yup.object().shape({
-      nome: yup.string().max(120, "'nome' deve ter no máximo 120 caracteres!"),
-
-      email: yup.string().email().max(100, "'email' deve ter no máximo 100 caracteres!"),
-      senha: yup
-        .string()
-        .required("'senha' obrigatória!")
-        .min(8, "'senha' deve ter no mínimo 8 caracteres!")
-        .max(64, "'senha' deve ter no máximo 64 caracteres!"),
-
-      tipo: yup.mixed().oneOf(tipos, `Tipo deve ser algum destes: ${tipos}.`)
-    });
+    const scheme = usuarioUpdateValidation;
 
     // Validando com o esquema criado:
     try {
@@ -142,11 +109,7 @@ class UsuarioController {
       passTemp = bcrypt.hashSync(senha, 8);
     const password = passTemp;
 
-    const usuario = await Usuario.findOne({
-      where: {
-        id: request.params.id
-      }
-    });
+    const usuario = await this.Service.getById( Number(request.params.id) );
     if (!usuario) {
       throw new AppError('Usuario não encontrado', 404);
     } else {
@@ -156,22 +119,14 @@ class UsuarioController {
         senha: password ? password : usuario.get().senha,
         tipo: "A"
       });
-      response.status(200).json({
-        atualizado: true,
-        id: usuario.id
-      });
+      response.status(200).json({});
     }
   }
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
   public get: GetRequestHandler<IAtributosUsuario> = async (request, response) => {
 
-    const usuario = await Usuario.findOne({
-      where: {
-        id: request.params.id
-      },
-      paranoid: false
-    });
+    const usuario = await this.Service.getById(Number(request.params.id));
     if (!usuario) {
       throw new AppError('Usuario não encontrado', 404);
     } else {
@@ -183,31 +138,14 @@ class UsuarioController {
   // todos as querys são opicionais
   public getAll: GetAllRequestHandler<IAtributosUsuario> = async (request, response) => {
 
-    await Usuario.findAndCountAll({
-      paranoid: false
-    })
-      .then(async (dados) => {
-        const { paginas, ...SortPaginateOptions } = SortPaginate(
-          request.query,
-          Object.keys(
-            Usuario.rawAttributes
-          ) /* Todos os atributos de usuário */,
-          dados.count,
-        );
-        await Usuario.findAll({
-          ...SortPaginateOptions,
-          paranoid: false
-        })
-        .then(usuarios => {
-          response.status(200).json({
-            dados: usuarios,
-            quantidade: usuarios.length,
-            total: dados.count,
-            paginas: paginas,
-            offset: SortPaginateOptions.offset
-          });
-        })
-      })
+    await this.Service.getAll(request.query)
+    .then(dados => {
+      response.status(200).json({
+        ...dados,
+        quantidade: dados.dados.length
+      });
+    });
+    
   }
 }
 

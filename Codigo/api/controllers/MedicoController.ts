@@ -120,21 +120,16 @@ class MedicoController {
 
   // URI de exemplo: http://localhost:3000/api/medico/1
   public get: GetRequestHandler<IAtributosMedico> = async (request, response) => {
-    const medico = await Medico.findOne({
-      where: {
-        id: request.params.id
+    const medico = await this.medicoService.getById(Number(request.params.id), [
+      {
+        model: Usuario,
+        attributes: ['email', 'nome']
       },
-      include: [
-        {
-          model: Usuario,
-          attributes: ['email', 'nome']
-        },
-        {
-          model: Arquivo,
-          attributes: ['nome_arquivo', 'tipo']
-        }
-      ]
-    });
+      {
+        model: Arquivo,
+        attributes: ['nome_arquivo', 'tipo']
+      }
+    ]);
 
     if (!medico)
       throw new AppError("Medico não encontrado!", 404);
