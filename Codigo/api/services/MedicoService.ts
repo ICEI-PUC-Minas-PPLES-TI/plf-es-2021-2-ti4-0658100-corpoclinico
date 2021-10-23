@@ -1,11 +1,15 @@
-import { Model, where } from "sequelize/types";
+import { Op, Sequelize } from "sequelize";
 import AppError from "../errors/AppError";
 import { ISortPaginateQuery, SortPaginate } from "../helpers/SortPaginate";
-import Medico, { IAtributosMedico, IAtributosMedicoCriacao } from "../models/Medico";
+import Candidatura from "../models/Candidatura";
+import Medico, {
+  IAtributosMedico,
+  IAtributosMedicoCriacao
+} from "../models/Medico";
 import Usuario from "../models/Usuario";
+import { IGetAllMedicoFilter } from "../types/Requests";
 
 export default class MedicoService {
-
   async create(medico: IAtributosMedicoCriacao) {
     try {
       return Medico.create(medico);
@@ -26,13 +30,13 @@ export default class MedicoService {
     if (!medico) {
       throw new AppError("Médico não encontrado!", 404);
     }
-    if (force){
+    if (force) {
       medico.destroy({
         force
-      })
+      });
     }
     medico.update({
-      ativo: 0,
+      ativo: 0
     });
     return medico;
   }
@@ -40,7 +44,7 @@ export default class MedicoService {
   async getById(id: number) {
     return Medico.findOne({
       where: { id }
-    })
+    });
   }
 
   async getBy(field: keyof Medico, value: any) {
@@ -48,12 +52,49 @@ export default class MedicoService {
       where: {
         [field]: value
       }
-    })
+    });
   }
 
-  async getAll(sortPaginate: ISortPaginateQuery, atributos: string[],) {
-    return Medico.findAndCountAll()
-      .then(async (dados) => {
+  async getAll(sortPaginate: ISortPaginateQuery, atributos: string[], filtros: IGetAllMedicoFilter) {
+
+    // Caso não seja passada uma dt_fim, será o dia de hoje
+    // Caso não seja passada uma dt_inicio, será 01/01/1970
+    const todayDate = new Date().toISOString().slice(0, 10);
+    const pastDate = new Date("1970-01-01").toISOString().slice(0, 10);
+    const dataFim: any = filtros.dt_fim ? filtros.dt_fim : todayDate;
+    const dataInicio: any = filtros.dt_inicio ? filtros.dt_inicio : pastDate;
+
+    return Medico.findAndCountAll({
+      include: [
+        {
+          model: Usuario,
+          as: "usuario",
+          attributes: ["email", "nome"],
+          where: {
+            nome: {
+              [Op.like]: `%${filtros.nome ? filtros.nome : ""}%` /* Se não passar nome será todos */
+            }
+          }
+        },
+        {
+          model: Candidatura,
+          as: "candidatura",
+          attributes: [
+            "cnpj",
+            "faturamento",
+            "equipe_id",
+            "unidade_id",
+            "data_criado"
+          ],
+          where: {
+            data_criado: {
+              [Op.between]: [dataInicio, dataFim]
+            }
+          }
+        }
+      ]
+    })
+      .then(async dados => {
         const { paginas, ...SortPaginateOptions } = SortPaginate(
           { ...sortPaginate },
           atributos,
@@ -66,19 +107,40 @@ export default class MedicoService {
             include: [
               {
                 model: Usuario,
-                attributes: ['email', 'nome']
+                as: "usuario",
+                attributes: ["email", "nome"],
+                where: {
+                  nome: {
+                    [Op.like]: `%${filtros.nome ? filtros.nome : ""}%` /* Se não passar nome será todos */
+                  }
+                }
+              },
+              {
+                model: Candidatura,
+                as: "candidatura",
+                attributes: [
+                  "cnpj",
+                  "faturamento",
+                  "equipe_id",
+                  "unidade_id",
+                  "data_criado"
+                ],
+                where: {
+                  data_criado: {
+                    [Op.between]: [dataInicio, dataFim]
+                  }
+                }
               }
-            ]
+            ],
           }),
           count: dados.count,
           paginas,
           offset: SortPaginateOptions.offset
-        }
+        };
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error);
         throw error;
       });
   }
-
 }

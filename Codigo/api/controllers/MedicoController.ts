@@ -11,9 +11,11 @@ import AppError from "../errors/AppError";
 import ArquivoService from "../services/ArquivoService";
 import Arquivo from "../models/Arquivo";
 import CandidaturaService from "../services/CandidaturaService";
-import { IAtributosCandidaturaCriacao } from "../models/Candidatura";
+import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
+import { IGetAllMedicoFilter } from "../types/Requests";
 
 interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { }
+interface IGetHandlerGetFilter extends IAtributosMedico, IGetAllMedicoFilter { }
 
 class MedicoController {
   private medicoService!: MedicoService;
@@ -87,7 +89,7 @@ class MedicoController {
         await Promise.all([
           this.arquivoService.create(request.files, medico.id),
           this.candidaturaService.create({ cnpj, equipe_id, faturamento, medico_id: medico.id, unidade_id })
-        ]).catch(async (error)=>{
+        ]).catch(async (error) => {
           await this.medicoService.delete(medico.id, true);
           throw error;
         })
@@ -137,30 +139,6 @@ class MedicoController {
           errors: error
         });
       });
-  }
-
-  // URI de exemplo: http://localhost:3000/api/medico/1
-  public get: GetRequestHandler<IAtributosMedico> = async (request, response) => {
-    const medico = await Medico.findOne({
-      where: {
-        id: request.params.id
-      },
-      include: [
-        {
-          model: Usuario,
-          attributes: ['email', 'nome']
-        },
-        {
-          model: Arquivo,
-          attributes: ['nome_arquivo', 'tipo']
-        }
-      ]
-    });
-
-    if (!medico)
-      response.status(404).json(medico);
-    else
-      response.status(200).json(medico);
   }
 
   // URI de exemplo: http://localhost:3000/api/medico/1
@@ -223,13 +201,44 @@ class MedicoController {
     }
   }
 
+  // URI de exemplo: http://localhost:3000/api/medico/1
+  public get: GetRequestHandler<IAtributosMedico> = async (request, response) => {
+    const medico = await Medico.findOne({
+      where: {
+        id: request.params.id
+      },
+      include: [
+        {
+          model: Usuario, as: 'usuario',
+          attributes: ['email', 'nome']
+        },
+        {
+          model: Arquivo, as: 'arquivos',
+          attributes: ['id', 'nome_arquivo', 'tipo']
+        },
+        {
+          model: Candidatura, as: 'candidatura',
+          attributes: ['cnpj', 'faturamento', 'equipe_id', 'unidade_id', 'data_criado']
+        }
+      ]
+    });
+
+    if (!medico)
+      response.status(404).json(medico);
+    else
+      response.status(200).json(medico);
+  }
+
   // URI de exemplo: http://localhost:3000/api/medico?pagina=1&limite=5&atributo=nome&ordem=DESC
   // todos as querys são opicionais
-  public getAll: GetAllRequestHandler<IAtributosMedico> = async (request, response) => {
+  public getAll: GetAllRequestHandler<IGetHandlerGetFilter> = async (request, response) => {
+    const { nome, dt_inicio, dt_fim} = request.query;
 
-    this.medicoService.getAll(
-      { ...request.query },
-      Object.keys(Medico.rawAttributes)
+    this.medicoService.getAll({
+      ...request.query
+    },
+      Object.keys(Medico.rawAttributes),
+      {nome, dt_inicio, dt_fim},
     )
       .then(({ medicos, count, paginas, offset }) => {
         response.status(200).json({
