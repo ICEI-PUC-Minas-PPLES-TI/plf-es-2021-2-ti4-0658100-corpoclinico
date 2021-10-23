@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS `corpoclinico`.`unidade` (
   `logradouro` VARCHAR(100) NULL,
   `bairro` VARCHAR(45) NULL,
   `numero` SMALLINT NULL,
+  `ativo` TINYINT(1) DEFAULT 1,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 

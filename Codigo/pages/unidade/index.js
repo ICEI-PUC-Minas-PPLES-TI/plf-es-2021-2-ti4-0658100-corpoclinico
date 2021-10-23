@@ -1,9 +1,7 @@
 import modal from '@/components/unidade/modal.vue'
 import deletar from '@/components/deletarDialog/deletar.vue'
-import {mask} from 'vue-the-mask'
 export default {
   'layout': 'cmedico',
-  directives: {mask},
   components: {
     modal,
     deletar,
@@ -16,23 +14,18 @@ export default {
         { text: 'Cidade', value: 'cidade' },
         { text: 'Bairro', value: 'bairro' },
         { text: 'Logradouro', value: 'logradouro' },
+        { text: 'Ativo', value: 'ativo' },
         { text: 'Ação', value: 'actions', sortable: false },
       ],
       unidades: [
         {
-          id: '1',
-          nome: 'BH-Pampulha',
-          cidade: 'Belo Horizonte',
-          bairro:'Pampulha',
-          logradouro: 'Rua Faria Lobato'
+          id: '',
+          nome: '',
+          cidade: '',
+          bairro:'',
+          logradouro: '',
+          ativo:''
         },
-        {
-          id: '2',
-          nome: 'Serra',
-          cidade: 'Belo Horizonte',
-          bairro:'Serra',
-          logradouro: 'Rua Serra Papo'
-        }
       ],
 
       unidadeId: 0,
@@ -58,12 +51,12 @@ export default {
 
     listaUnidades() {
 
-      // this.$axios.$get('/unidade').then(response => {
-      //   this.unidades = response.dados;
-
-      // }).catch(error => {
-      //   console.log(error)
-      // })
+      this.$axios.$get('/unidade').then(response => {
+        this.unidades = response;
+        console.log(response);
+      }).catch(error => {
+        console.log(error)
+      })
 
     },
 

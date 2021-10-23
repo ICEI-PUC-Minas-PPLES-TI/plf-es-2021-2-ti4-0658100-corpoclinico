@@ -15,7 +15,8 @@ export default {
         nome: "",
         cidade: "",
         logradouro: "",
-        numero: ""
+        numero: "",
+        ativo:""
       },
 
       toastMensagem: "",
@@ -50,57 +51,53 @@ export default {
         });
     },
     submitUnidade() {
-      this.limpaDados();
-      this.abreToast("unidade cadastrada!");
-      this.$emit("input", false);
-      this.$emit("listaUnidade");
-      //   if(this.unidade.id > 0){
-      //     this.updateUsuario(this.unidade.id);
-      //   }else{
-      //   if (this.$refs.formUnidaded.validate()){
-      //     let unidade = JSON.parse(JSON.stringify(this.unidade))
-      //     this.$axios.$post('/unidade', unidade).then(response => {
-      //       this.limpaDados();
-      //       this.abreToast('Unidade Cadastrada!');
-      //       this.$emit('input', false) // Fecha modal
-      //       this.$emit('listaUnidade')
-      //     }).catch(error => {
+        if(this.unidade.id > 0){
+          this.updateUsuario(this.unidade.id);
+        }else{
+        if (this.$refs.formUnidaded.validate()){
+          let unidade = JSON.parse(JSON.stringify(this.unidade))
+          this.$axios.$post('/unidade', unidade).then(response => {
+            this.limpaDados();
+            this.abreToast('Unidade Cadastrada!');
+            this.$emit('input', false) // Fecha modal
+            this.$emit('listaUnidade')
+          }).catch(error => {
 
-      //       if (Array.isArray(error.response.data.erros)) {
-      //         this.abreToast(error.response.data.erros[0]);
-      //       } else {
-      //         this.abreToast(error.response.data.erros);
-      //       }
+            if (Array.isArray(error.response.data.erros)) {
+              this.abreToast(error.response.data.erros[0]);
+            } else {
+              this.abreToast(error.response.data.erros);
+            }
 
-      //     })
+          })
 
-      //   }
-      // }
+        }
+      }
     },
 
     editUnidade(id) {
-      // this.$axios.$get('/unidade/' + id).then(response => {
-      //   this.unidade = response;
-      // }).catch(error => {
-      //   console.log(error);
-      // })
+      this.$axios.$get('/unidade/' + id).then(response => {
+        this.unidade = response;
+      }).catch(error => {
+        console.log(error);
+      })
     },
 
     updateUnidade(id) {
-      // if (this.$refs.formUnidade.validate() && id ) {
-      //   let unidade = JSON.parse(JSON.stringify(this.unidade))
-      //   this.$axios.$put('/unidade/' + id, unidade).then(response => {
-      //     this.limpaDados();
-      //     this.abreToast('Unidade Atualizada!');
-      //     this.$emit('input', false) // Fecha modal
-      //   }).catch(error => {
-      //     if(Array.isArray(error.response.data.erros)){
-      //       this.abreToast(error.response.data.erros[0]);
-      //     }else{
-      //       this.abreToast(error.response.data.erros);
-      //     }
-      //   })
-      // }
+      if (this.$refs.formUnidade.validate() && id ) {
+        let unidade = JSON.parse(JSON.stringify(this.unidade))
+        this.$axios.$put('/unidade/' + id, unidade).then(response => {
+          this.limpaDados();
+          this.abreToast('Unidade Atualizada!');
+          this.$emit('input', false) // Fecha modal
+        }).catch(error => {
+          if(Array.isArray(error.response.data.erros)){
+            this.abreToast(error.response.data.erros[0]);
+          }else{
+            this.abreToast(error.response.data.erros);
+          }
+        })
+      }
     },
 
     abreToast(mensagem) {
@@ -109,14 +106,14 @@ export default {
     },
 
     limpaDados() {
-      // this.unidade= [
-      //   {
-      //     id: '',
-      //     nome: '',
-      //     cidade: '',
-      //     logradouro: ''
-      //   }
-      // ],
+      this.unidade= [
+        {
+          id: '',
+          nome: '',
+          cidade: '',
+          logradouro: ''
+        }
+      ],
 
       this.$refs.formUnidade.reset();
     }
