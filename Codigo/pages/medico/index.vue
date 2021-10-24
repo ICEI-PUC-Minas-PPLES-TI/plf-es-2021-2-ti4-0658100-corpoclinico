@@ -13,21 +13,42 @@
           </v-col>
           <v-col :md="3" :sm="12" :xl="12" cols="12">
             <v-select
-              v-model="pesquisa.status"
+              v-model="teste"
               label="Status"
               :items="status"
               item-text="text"
               item-value="value"
+              disabled
             />
           </v-col>
           <v-col :md="3" :sm="12" :xl="12" cols="12">
-            <v-text-field
-              v-model="pesquisa.dataCandidatura"
-              label="Data da candidatura"
-            />
+                  <v-menu
+                    v-model="menuDataCandidatura"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="pesquisa.dt_fim"
+                        hide-details="auto"
+                        label="Data da candidatura"
+                        append-icon="mdi-calendar"
+                        v-bind="attrs" v-on="on"
+                      >
+                      </v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="pesquisa.dt_fim"
+                    ></v-date-picker>
+                  </v-menu>
           </v-col>
           <v-col :md="3" :sm="12" :xl="12" cols="12">
-            <v-btn color="primary" background="primary"> Pesquisar </v-btn>
+            <v-btn color="primary" background="primary" @click="listaMedicos">
+              Pesquisar
+            </v-btn>
           </v-col>
         </v-row>
         <template>
@@ -36,9 +57,6 @@
               <v-icon color="success" class="mr-2" disabled>
                 mdi-square-edit-outline
               </v-icon>
-            </template>
-            <template v-slot:no-data>
-              <v-btn color="primary" @click="initialize"> Reset </v-btn>
             </template>
           </v-data-table>
         </template>
@@ -72,33 +90,39 @@ export default {
         { text: "Email", value: "usuario.email" },
         { text: "Telefone", value: "celular" },
         { text: "Status", value: "retorno.status" },
-        { text: "Data da candidatura", value: "dt_inscricao_crm" },
+        { text: "Data da candidatura", value: "candidatura.data_criado" },
         { text: "Ação", value: "actions", sortable: false },
       ],
       medicos: [
         {
           id: "",
-          celular: "31 97518234",
-          dt_inscricao_crm: "06/06/6666",
+          celular: "",
+
+          candidatura: {
+            id: "",
+            data_criado: "",
+          },
 
           usuario: {
             id: "",
-            nome: "Robsu",
-            email: "teste@email.com",
+            nome: "",
+            email: "",
           },
 
           retorno: {
             id: "",
-            status: "Aprovado",
+            status: "",
           },
         },
       ],
 
       pesquisa: {
         nome: "",
-        status: "",
-        dataCandidatura: "",
+        //status: "",
+        dt_inicio: "",
       },
+
+      teste: "",
 
       status: [
         {
@@ -116,35 +140,64 @@ export default {
       ],
 
       equipeId: 0,
+      menuDataCandidatura: false,
       toast: false,
       toastMensagem: "",
       modalAtivo: false,
       modalEspecialidadeAtivo: false,
     };
   },
-  watch: {
-    // modalAtivo: function (modalAtivo) {
-    //   modalAtivo ? false : this.listaMedicos();
-    // },
-  },
   mounted() {
     this.listaMedicos();
   },
   methods: {
     listaMedicos() {
-      // this.$axios
-      //   .$get("/equipe")
-      //   .then((response) => {
-      //     this.equipes = response.dados;
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   });
+      //this.pesquisa.dt_fim = this.pesquisa.dt_inicio;
+      let urlParams = new URLSearchParams(this.pesquisa).toString();
+      //nome=Jose&dt_inicio=2021-10-20&dt_fim=2021-10-21
+      this.$axios
+        .$get("/medico?" + urlParams)
+        .then((response) => {
+          if (response.dados) {
+            response.dados.forEach((medico) => {
+              medico.candidatura.data_criado = this.formataData(
+                medico.candidatura.data_criado
+              );
+              if (medico.retorno) {
+                medico.retorno.status = this.formataStatus(
+                  medico.retorno.status
+                );
+              } else {
+                medico.retorno = { status: "Pendente" };
+              }
+            });
+          }
+          this.medicos = response.dados;
+          //console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
 
     abreToast(mensagem) {
       this.toastMensagem = mensagem;
       this.toast = true;
+    },
+    formataData(data) {
+      if (!data) return null;
+        const [year, month, day] = data.split('-')
+        return `${day}/${month}/${year}`
+    },
+
+    formataStatus(status) {
+      if (status == "A") {
+        return "Aprovado";
+      } else if (status == "R") {
+        return "Reprovado";
+      } else {
+        return "Pendente";
+      }
     },
   },
 };
@@ -157,5 +210,11 @@ export default {
   align-items: center;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+.candidatura-modal-input-date
+  input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
 }
 </style>
