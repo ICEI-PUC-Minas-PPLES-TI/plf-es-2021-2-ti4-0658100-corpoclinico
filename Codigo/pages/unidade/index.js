@@ -54,7 +54,6 @@ export default {
 
       this.$axios.$get('/unidade').then(response => {
         this.unidades = response;
-        console.log(response);
       }).catch(error => {
         console.log(error)
       })
