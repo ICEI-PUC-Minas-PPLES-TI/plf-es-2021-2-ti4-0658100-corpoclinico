@@ -20,7 +20,7 @@ app.use(routes);
 
 db.connect();
 
-app.use([(err, request, response, next) => {console.log(err)
+app.use([(err, request, response, next) => {
   if (err instanceof AppError) {
     return response.status(err.statusCode).json({
       message: err.message,
@@ -31,14 +31,14 @@ app.use([(err, request, response, next) => {console.log(err)
   // Caso seja outro erro
   if (process.env.APP_DEBUG) {
     return response.status(500).json({
-      status: "Error",
+      error: err.error,
       message: err.message,
       stack: err.stack
     });
   } else {
     return response.status(500).json({
-      status: "Error",
-      message: `Internal server error ${err.message}`
+      message: `Erro interno no servidor!`,
+      error: err
     });
   }
 }]);

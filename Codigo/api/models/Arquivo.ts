@@ -37,12 +37,14 @@ class Arquivo extends Model<IAtributosArquivo, IAtributosArquivoCriacao> impleme
               where: { nome_arquivo: value },
               attributes: ["id"]
             })
-              .then(usuario => {
-                if (usuario.length != 0)
-                  next(new AppError("Falha ao cadastrar nome de arquivo (Duplicado)!"));
-                next();
-              })
-              .catch(onError => console.log(onError));
+            .then(usuario => {
+              if (usuario.length != 0)
+                next(new AppError("Falha ao cadastrar nome de arquivo (Duplicado)!", 422));
+              next();
+            })
+            .catch(error => {
+              throw new AppError("Erro interno no servidor")
+            });
           }
         }
       },
