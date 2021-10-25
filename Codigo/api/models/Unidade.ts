@@ -9,8 +9,9 @@ export interface IAtributosUnidade{
   logradouro: string,
   bairro: string,
   numero: number,
+  ativo: boolean
 }
-export interface IAtributosUnidadeCriacao extends Optional<IAtributosUnidade, 'id'>{}
+export interface IAtributosUnidadeCriacao extends Optional<IAtributosUnidade, 'id' | 'ativo'>{}
 
 class Unidade extends Model<IAtributosUnidade, IAtributosUnidadeCriacao> implements IAtributosUnidade{
 
@@ -21,6 +22,7 @@ class Unidade extends Model<IAtributosUnidade, IAtributosUnidadeCriacao> impleme
   logradouro!: string;
   bairro!: string;
   numero!: number;
+  ativo!: boolean;
 
   static initialize(sequelize: Sequelize){
     Unidade.init({
@@ -52,6 +54,10 @@ class Unidade extends Model<IAtributosUnidade, IAtributosUnidadeCriacao> impleme
       numero: {
         type: DataTypes.SMALLINT(),
         allowNull: true
+      },
+      ativo: {
+        type: DataTypes.TINYINT({length: 1}),
+        defaultValue: true
       }
     },
     {
