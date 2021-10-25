@@ -52,7 +52,7 @@ export default {
     },
     submitUnidade() {
         if(this.unidade.id > 0){
-          this.updateUsuario(this.unidade.id);
+          this.updateUnidade(this.unidade.id);
         }else{
           if (this.$refs.formUnidade.validate()){
             let unidade = JSON.parse(JSON.stringify(this.unidade))
@@ -86,12 +86,14 @@ export default {
 
     updateUnidade(id) {
       if (this.$refs.formUnidade.validate() && id ) {
-        let unidade = JSON.parse(JSON.stringify(this.unidade))
+        let unidade = JSON.parse(JSON.stringify(this.unidade));
         console.log(this.unidade);
+
         this.$axios.$put('/unidade/' + id, unidade).then(response => {
           this.limpaDados();
           this.abreToast('Unidade Atualizada!');
           this.$emit('input', false) // Fecha modal
+
         }).catch(error => {
           if(Array.isArray(error.response.data.erros)){
             this.abreToast(error.response.data.erros[0]);
@@ -108,7 +110,7 @@ export default {
     },
 
     limpaDados() {
-      this.unidade= [
+      this.unidade= 
         {
           id: '',
           nome: '',
@@ -116,8 +118,7 @@ export default {
           cidade: '',
           logradouro: '',
           numero:''
-        }
-      ],
+        },
 
       this.$refs.formUnidade.reset();
     }

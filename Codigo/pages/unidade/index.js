@@ -94,9 +94,7 @@ export default {
             }
     
           })
-        }else{
-          this.unidades.splice(id-1,1);
-        }   
+        }  
      
 
 
