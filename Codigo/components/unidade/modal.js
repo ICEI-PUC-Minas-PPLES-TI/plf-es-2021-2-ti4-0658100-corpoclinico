@@ -54,22 +54,23 @@ export default {
         if(this.unidade.id > 0){
           this.updateUsuario(this.unidade.id);
         }else{
-        if (this.$refs.formUnidaded.validate()){
-          let unidade = JSON.parse(JSON.stringify(this.unidade))
-          this.$axios.$post('/unidade', unidade).then(response => {
-            this.limpaDados();
-            this.abreToast('Unidade Cadastrada!');
-            this.$emit('input', false) // Fecha modal
-            this.$emit('listaUnidade')
-          }).catch(error => {
+          if (this.$refs.formUnidade.validate()){
+            let unidade = JSON.parse(JSON.stringify(this.unidade))
+            console.log(unidade);
+            this.$axios.$post('/unidade', unidade).then(response => {
+              this.limpaDados();
+              this.abreToast('Unidade Cadastrada!');
+              this.$emit('input', false) // Fecha modal
+              this.$emit('listaUnidade')
+            }).catch(error => {
 
-            if (Array.isArray(error.response.data.erros)) {
-              this.abreToast(error.response.data.erros[0]);
-            } else {
-              this.abreToast(error.response.data.erros);
-            }
+              if (Array.isArray(error.response.data.erros)) {
+                this.abreToast(error.response.data.erros[0]);
+              } else {
+                this.abreToast(error.response.data.erros);
+              }
 
-          })
+            })
 
         }
       }
@@ -86,6 +87,7 @@ export default {
     updateUnidade(id) {
       if (this.$refs.formUnidade.validate() && id ) {
         let unidade = JSON.parse(JSON.stringify(this.unidade))
+        console.log(this.unidade);
         this.$axios.$put('/unidade/' + id, unidade).then(response => {
           this.limpaDados();
           this.abreToast('Unidade Atualizada!');

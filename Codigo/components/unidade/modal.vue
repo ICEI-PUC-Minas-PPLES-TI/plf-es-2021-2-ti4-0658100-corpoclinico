@@ -43,7 +43,6 @@
                 <v-text-field
                   maxlength="9"
                   :hide-details="'auto'"
-                  v-mask="'#####-###'"
                   v-model="unidade.cep"
                   label="CEP (obrigatório)"
                   :rules="[v => !!v || 'Cep é obrigatório']"
