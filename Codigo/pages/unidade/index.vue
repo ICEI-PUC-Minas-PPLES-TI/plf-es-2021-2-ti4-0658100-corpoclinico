@@ -14,7 +14,7 @@
                 
             </v-card-actions>
         </div>
-        <v-card-text class="text-h5 ">
+        <v-card-text class="text-h5">
             <template>
                 <v-data-table :headers="headers" :items="unidades" :items-per-page="5" class="elevation-1">
                     <template v-slot:item.data_excluido="{ item }">

@@ -53,7 +53,15 @@ export default {
     listaUnidades() {
 
       this.$axios.$get('/unidade').then(response => {
+        console.log(response);
         this.unidades = response;
+        for(let i =0;i<response.length;i++){
+          if(this.unidades[i].ativo=='0'){
+            this.unidades[i].ativo='Desativada'
+          }else{
+            this.unidades[i].ativo='Ativa'
+          }
+        }
       }).catch(error => {
         console.log(error)
       })
@@ -85,7 +93,6 @@ export default {
           this.$axios.$delete('/unidade/' + id).then(response => {
             this.abreToast('Unidade Deletada!');
             this.listaUsuarios();
-    
           }).catch(error => {
             if (Array.isArray(error.response.data.errors)) {
               this.abreToast(error.response.data.errors[0]);
