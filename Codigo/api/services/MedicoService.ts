@@ -70,10 +70,11 @@ export default class MedicoService {
   async getAll(sortPaginate: ISortPaginateQuery, atributos: string[],) {
     return Medico.findAndCountAll()
       .then(async (dados) => {
+        const count: number = (dados.count) as any;
         const { paginas, ...SortPaginateOptions } = SortPaginate(
           { ...sortPaginate },
           atributos,
-          dados.count
+          count
         );
         return {
           medicos: await Medico.findAll({

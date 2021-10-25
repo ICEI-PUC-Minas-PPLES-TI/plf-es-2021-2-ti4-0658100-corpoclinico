@@ -90,10 +90,11 @@ class EspecialidadeController {
       atributos,
     )
     .then(({especialidades, count, paginas, offset}) => {
+      const total: number = (count) as any;
       response.status(200).json({
         dados: especialidades,
         quantidade: especialidades.length,
-        total: count,
+        total,
         paginas: paginas,
         offset: offset
       });
