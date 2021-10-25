@@ -34,16 +34,17 @@ export default class CandidaturaService{
     async getAll( sortPaginate: ISortPaginateQuery, atributos: string[] ){
         return Candidatura.findAndCountAll()
         .then(async (dados) => {
+            const count: number = (dados.count) as any;
             const { paginas, ...SortPaginateOptions } = SortPaginate(
                 {...sortPaginate},
                 atributos,
-                dados.count
+                count
             );
             return {
                 candidaturas: await Candidatura.findAll({
                     ...SortPaginateOptions,
                 }),
-                count: dados.count,
+                count,
                 paginas,
                 offset: SortPaginateOptions.offset
             }

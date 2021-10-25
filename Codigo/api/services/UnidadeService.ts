@@ -51,9 +51,7 @@ export default class UnidadeService {
   }
 
   async getAll() {
-    return Unidade.findAll({
-        attributes: ['id', 'nome']
-    })
+    return Unidade.findAll()
     .catch(error => {
         throw new AppError("Erro interno do servidor!", 500, error);
     });
