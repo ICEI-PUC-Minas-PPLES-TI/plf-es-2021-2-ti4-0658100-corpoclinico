@@ -56,7 +56,6 @@ export default {
         }else{
           if (this.$refs.formUnidade.validate()){
             let unidade = JSON.parse(JSON.stringify(this.unidade))
-            console.log(unidade);
             this.$axios.$post('/unidade', unidade).then(response => {
               this.limpaDados();
               this.abreToast('Unidade Cadastrada!');
