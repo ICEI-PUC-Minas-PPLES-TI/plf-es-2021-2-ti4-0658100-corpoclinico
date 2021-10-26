@@ -86,7 +86,6 @@ export default {
     updateUnidade(id) {
       if (this.$refs.formUnidade.validate() && id ) {
         let unidade = JSON.parse(JSON.stringify(this.unidade));
-        console.log(this.unidade);
 
         this.$axios.$put('/unidade/' + id, unidade).then(response => {
           this.limpaDados();

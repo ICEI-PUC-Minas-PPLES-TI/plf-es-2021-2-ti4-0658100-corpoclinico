@@ -53,7 +53,6 @@ export default {
     listaUnidades() {
 
       this.$axios.$get('/unidade').then(response => {
-        console.log(response);
         this.unidades = response;
         for(let i =0;i<response.length;i++){
           if(this.unidades[i].ativo=='0'){
