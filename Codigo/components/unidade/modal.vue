@@ -75,8 +75,7 @@
                     :clearable="true"
                     hide-details="auto"
                     label="Bairro"
-                    :rules="[v => !!v || 'Bairro é obrigatório',
-                    v => (v && v.length >= 8 ) || 'Minimo de 8 caracteres']"
+                    :rules="[v => !!v || 'Bairro é obrigatório']"
                   />
                 </v-col>
               </v-row>
@@ -88,8 +87,7 @@
                     :clearable="true"
                     hide-details="auto"
                     label="Logradouro"
-                    :rules="[v => !!v || 'Logradouro é obrigatório',
-                    v => (v && v.length >= 8 ) || 'Minimo de 8 caracteres']"
+                    :rules="[v => !!v || 'Logradouro é obrigatório']"
                   />
                 </v-col>
                <!-- Numero -->

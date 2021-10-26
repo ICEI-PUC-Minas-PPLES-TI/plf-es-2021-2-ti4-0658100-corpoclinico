@@ -25,7 +25,8 @@ export default {
           cidade: '',
           bairro:'',
           logradouro: '',
-          ativo:''
+          ativo:'',
+          isAtiva:true
         },
       ],
 
