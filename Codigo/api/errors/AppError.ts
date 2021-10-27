@@ -4,7 +4,7 @@ export default class AppError {
   error: any;
 
   // Erro que chegou
-  constructor(message: string, statusCode = 400, error?: any) {
+  constructor(message: string, statusCode = 500, error?: any) {
     this.message = message;
     this.statusCode = statusCode;
     this.error = error;

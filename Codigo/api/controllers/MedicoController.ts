@@ -145,12 +145,8 @@ class MedicoController {
     // Validando com o esquema criado:
     try {
       await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (err: any) {
-      return response.status(422).json({
-        atualizado: false,
-        nome: err.name, // => 'ValidationError'
-        erros: err.errors
-      });
+    } catch (err) {
+      throw new AppError("Houve um ou mais erros de validação", 422, err);
     }
 
     const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
@@ -203,7 +199,7 @@ class MedicoController {
       response.status(200).json({
         dados: medicos,
         quantidade: medicos.length,
-        total: total,
+        total,
         paginas: paginas,
         offset: offset
       });
