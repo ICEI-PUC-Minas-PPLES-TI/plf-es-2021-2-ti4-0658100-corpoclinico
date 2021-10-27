@@ -42,9 +42,9 @@ class UnidadeController {
       throw new AppError("Erro na validação de um ou mais campos", 422, erro)
     } 
 
-    const { bairro, cep, cidade, logradouro, nome, numero } = request.body;
+    const { bairro, cep, cidade, logradouro, nome, numero, ativo } = request.body;
 
-    await this.Service.update({ bairro, cep: cep?.replace(/\D/g, ''), cidade, logradouro, nome, numero, id: Number(request.params.id) });
+    await this.Service.update({ bairro, cep: cep?.replace(/\D/g, ''), cidade, logradouro, nome, numero, id: Number(request.params.id), ativo });
     response.status(201).json({
       atualizado: true,
       id: 0
