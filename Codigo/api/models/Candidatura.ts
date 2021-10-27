@@ -9,10 +9,11 @@ export interface IAtributosCandidatura {
   unidade_id: number,
   equipe_id: number,
   cnpj: string,
-  faturamento: 'PJ' | 'C'
+  faturamento: 'PJ' | 'C',
+  data_criado: Date,
 }
 export interface IAtributosCandidaturaCriacao
-  extends Optional<IAtributosCandidatura, "id"> {}
+  extends Optional<IAtributosCandidatura, "id" | "data_criado"> {}
 
 class Candidatura extends Model<IAtributosCandidatura, IAtributosCandidaturaCriacao>
   implements IAtributosCandidatura {
@@ -23,6 +24,7 @@ class Candidatura extends Model<IAtributosCandidatura, IAtributosCandidaturaCria
   equipe_id!: number;
   cnpj!: string;
   faturamento!: "PJ" | "C";
+  data_criado!: Date;
   
   static initialize(sequelize: Sequelize) {
     Candidatura.init(
@@ -56,12 +58,18 @@ class Candidatura extends Model<IAtributosCandidatura, IAtributosCandidaturaCria
               model: ,
               key: 'id'
           },*/
-        }
+        },
+        data_criado: {
+          type: DataTypes.DATE,
+          allowNull: false,
+          defaultValue: DataTypes.NOW
+        },
       },
       {
         tableName: "candidatura",
+        timestamps: false, // deletedAt precisa disso true
         deletedAt: false,
-        createdAt: false,
+        createdAt: "data_criado",
         updatedAt: false,
         sequelize
       }
