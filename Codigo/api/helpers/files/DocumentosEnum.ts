@@ -1,4 +1,4 @@
-const documentosCriarMedico = [
+const documentosMedico = [
   { name: 'doc_rg', maxCount: 1 },
   { name: 'doc_cpf', maxCount: 1 },
   { name: 'doc_foto_txq', maxCount: 1 },
@@ -40,6 +40,6 @@ const extensoesPermitidas = [
 ]
 
 export {
-  documentosCriarMedico,
+  documentosMedico,
   extensoesPermitidas
 }

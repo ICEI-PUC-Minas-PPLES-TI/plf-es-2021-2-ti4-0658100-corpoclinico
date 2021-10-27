@@ -11,7 +11,7 @@ import EquipeController from '../controllers/EquipeController';
 import EspecialidadeController from '../controllers/EspecialidadeController';
 
 import { upload } from '../helpers/files/MulterSettings'; 
-import { documentosCriarMedico } from '../helpers/files/DocumentosEnum'; 
+import { documentosMedico } from '../helpers/files/DocumentosEnum'; 
 
 // Iniciar controllers
 const usuarioController = new UsuarioController();
@@ -20,7 +20,7 @@ const unidadeController = new UnidadeController();
 const equipeController = new EquipeController();
 const especialidadeController = new EspecialidadeController();
 
-const multerUploadCriarMedico = upload.fields(documentosCriarMedico);
+const multerUploadMedico = upload.fields(documentosMedico);
 
 // Adicionar rotas
 // Usuario
@@ -31,11 +31,11 @@ router.get('/usuario', [autenticacaoJwt.verificarToken], usuarioController.getAl
 router.delete('/usuario/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], usuarioController.delete)
 router.put('/usuario/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], usuarioController.update)
 // Medico
-router.post('/medico', multerUploadCriarMedico, medicoController.create)
+router.post('/medico', multerUploadMedico, medicoController.create)
 router.get('/medico/:id', [autenticacaoJwt.verificarToken], medicoController.get)
 router.get('/medico', [autenticacaoJwt.verificarToken], medicoController.getAll)
 router.delete('/medico/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], medicoController.delete)
-router.put('/medico/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], medicoController.update)
+router.put('/medico/:id', multerUploadMedico, medicoController.update)
 // Equipe
 router.post('/equipe', equipeController.create)
 router.get('/equipe/:id', equipeController.get )

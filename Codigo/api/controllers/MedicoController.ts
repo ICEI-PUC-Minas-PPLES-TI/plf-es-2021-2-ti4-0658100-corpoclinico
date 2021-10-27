@@ -142,8 +142,7 @@ class MedicoController {
   }
 
   // URI de exemplo: http://localhost:3000/api/medico/1
-  public update: UpddateRequestHandler<IAtributosMedico> = async (request, response) => {
-
+  public update: UpddateRequestHandler<IAtributosMedicoUsuarioCriacao> = async (request, response) => {
     const scheme = medicoUpdateValidationScheme
 
     // Validando com o esquema criado:
@@ -158,47 +157,75 @@ class MedicoController {
     }
 
     const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
+    const { equipe_id, cnpj, faturamento, unidade_id } = request.body;
+    const { nome, email, senha } = request.body;
+    const password = bcrypt.hashSync(senha, 8);
+
+    const usuario = await this.usuarioSerive.getBy("email", email);
+    if (!usuario)
+      throw new AppError("Usuário não encontrado!", 404);
+
+    // const usuarioLogado = await this.usuarioSerive.getById(Number(request.headers.authorization));
+    const usuarioLogado = await this.usuarioSerive.getById(Number('3'));
+    if (usuarioLogado?.get().tipo !== "A" && usuario.id !== usuarioLogado?.get().id)
+      throw new AppError("Usuário logado não é admin ou não é o mesmo do médico em atualização cadastral!", 405);
+
+    usuario.update({
+      nome,
+      email,
+      senha: password
+    });
 
     const medico = await this.medicoService.getById(Number(request.params.id))
-    if (!medico) {
-      response.status(404).json({
-        atualizado: false,
-        nome: "Medico não encontrado",
-        erros: "O id que foi solicitado alteração não existe no banco de dados"
+    if (!medico)
+      throw new AppError("Medico não encontrado!", 404)
+
+    const candidatura = await this.candidaturaService.getBy("medico_id", medico?.get().id.toString());
+    if (!candidatura)
+      throw new AppError("Candidatura do médico não encontrada!", 404)
+
+    await medico.update(
+      {
+        crm,
+        regiao,
+        dt_inscricao_crm,
+        celular,
+        cartao_sus,
+        categoria,
+        rg,
+        rg_orgao_emissor,
+        rg_data_emissao,
+        dt_nascimento,
+        cpf,
+        titulo_eleitoral,
+        zona,
+        secao,
+        logradouro,
+        numero,
+        complemento,
+        bairro,
+        cidade,
+        estado,
+        cep,
+        sociedade_cientifica,
+        escolaridade_max,
+      }
+    )
+      .then(async (medico) => {
+        await Promise.all([
+          this.arquivoService.update(request.files, medico?.get().id),
+          this.candidaturaService.update({ id: candidatura[0].id, cnpj, equipe_id, faturamento, medico_id: medico.id, unidade_id }),
+        ]).catch(async (error) => {
+          throw new AppError("Candidatura e arquivos para médico não atualizados!", 500);
+        })
+        return response.status(201).json({
+          atualizado: true,
+          id: medico.id
+        });
+      })
+      .catch(async (erro) => {
+        throw new AppError("Médico não atualizado!" + erro, 500);
       });
-    } else {
-      await this.medicoService.update(
-        {
-          crm,
-          regiao,
-          dt_inscricao_crm,
-          celular,
-          cartao_sus,
-          categoria,
-          rg,
-          rg_orgao_emissor,
-          rg_data_emissao,
-          dt_nascimento,
-          cpf,
-          titulo_eleitoral,
-          zona,
-          secao,
-          logradouro,
-          numero,
-          complemento,
-          bairro,
-          cidade,
-          estado,
-          cep,
-          sociedade_cientifica,
-          escolaridade_max,
-        }
-      );
-      response.status(200).json({
-        atualizado: true,
-        id: medico.id
-      });
-    }
   }
 
   // URI de exemplo: http://localhost:3000/api/medico/1
@@ -232,13 +259,13 @@ class MedicoController {
   // URI de exemplo: http://localhost:3000/api/medico?pagina=1&limite=5&atributo=nome&ordem=DESC
   // todos as querys são opicionais
   public getAll: GetAllRequestHandler<IGetHandlerGetFilter> = async (request, response) => {
-    const { nome, dt_inicio, dt_fim} = request.query;
+    const { nome, dt_inicio, dt_fim } = request.query;
 
     this.medicoService.getAll({
       ...request.query
     },
       Object.keys(Medico.rawAttributes),
-      {nome, dt_inicio, dt_fim},
+      { nome, dt_inicio, dt_fim },
     )
       .then(({ medicos, count, paginas, offset }) => {
         response.status(200).json({
