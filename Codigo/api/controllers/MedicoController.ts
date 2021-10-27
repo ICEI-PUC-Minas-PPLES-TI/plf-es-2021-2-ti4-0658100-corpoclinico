@@ -176,28 +176,29 @@ class MedicoController {
       senha: password
     });
 
-    const medico = await this.medicoService.getById(Number(request.params.id))
-    if (!medico)
+    const medicoAlterado = await this.medicoService.getById(Number(request.params.id))
+    if (!medicoAlterado)
       throw new AppError("Medico não encontrado!", 404)
 
-    const candidatura = await this.candidaturaService.getBy("medico_id", medico?.get().id.toString());
+    const candidatura = await this.candidaturaService.getBy("medico_id", medicoAlterado?.get().id.toString());
     if (!candidatura)
       throw new AppError("Candidatura do médico não encontrada!", 404)
 
-    await medico.update(
+    await medicoAlterado.update(
       {
+        id: medicoAlterado?.get().id,
         crm,
         regiao,
         dt_inscricao_crm,
         celular,
-        cartao_sus,
+        cartao_sus: cartao_sus ? cartao_sus : null,
         categoria,
-        rg,
+        rg: rg ? rg : null,
         rg_orgao_emissor,
         rg_data_emissao,
         dt_nascimento,
-        cpf,
-        titulo_eleitoral,
+        cpf: cpf ? cpf : null,
+        titulo_eleitoral: titulo_eleitoral ? titulo_eleitoral : null,
         zona,
         secao,
         logradouro,
@@ -206,7 +207,7 @@ class MedicoController {
         bairro,
         cidade,
         estado,
-        cep,
+        cep: cep?.replace(/\D/g, ''),
         sociedade_cientifica,
         escolaridade_max,
       }
@@ -214,9 +215,9 @@ class MedicoController {
       .then(async (medico) => {
         await Promise.all([
           this.arquivoService.update(request.files, medico?.get().id),
-          this.candidaturaService.update({ id: candidatura[0].id, cnpj, equipe_id, faturamento, medico_id: medico.id, unidade_id }),
+          this.candidaturaService.update({ id: candidatura[0]?.get().id, cnpj, equipe_id, faturamento, medico_id: medico?.get().id, unidade_id }),
         ]).catch(async (error) => {
-          throw new AppError("Candidatura e arquivos para médico não atualizados!", 500);
+          throw new AppError("Candidatura e arquivos para médico não atualizados!" + error, 500);
         })
         return response.status(201).json({
           atualizado: true,
