@@ -8,10 +8,10 @@
 
       <v-card-text class="text-h5">
         <v-row>
-          <v-col :md="3" :sm="12" :xl="12" cols="12">
+          <v-col :md="6" :sm="12" :xl="6" cols="12">
             <v-text-field v-model="pesquisa.nome" label="Nome" />
           </v-col>
-          <v-col :md="3" :sm="12" :xl="12" cols="12">
+          <v-col :md="6" :sm="12" :xl="6" cols="12">
             <v-select
               v-model="teste"
               label="Status"
@@ -21,40 +21,70 @@
               disabled
             />
           </v-col>
-          <v-col :md="3" :sm="12" :xl="12" cols="12">
-                  <v-menu
-                    v-model="menuDataCandidatura"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-text-field
-                        v-model="pesquisa.dt_fim"
-                        hide-details="auto"
-                        label="Data da candidatura"
-                        append-icon="mdi-calendar"
-                        v-bind="attrs" v-on="on"
-                      >
-                      </v-text-field>
-                    </template>
-                    <v-date-picker
-                      v-model="pesquisa.dt_fim"
-                    ></v-date-picker>
-                  </v-menu>
+        </v-row>
+
+        <v-row>
+          <v-col :md="6" :sm="12" :xl="12" cols="12">
+            <v-menu
+              v-model="menuDataCandidatura"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              transition="scale-transition"
+              offset-y
+              min-width="auto"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  v-model="pesquisa.dt_inicio"
+                  hide-details="auto"
+                  label="Data da candidatura inicio"
+                  append-icon="mdi-calendar"
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                </v-text-field>
+              </template>
+              <v-date-picker v-model="pesquisa.dt_inicio"></v-date-picker>
+            </v-menu>
           </v-col>
-          <v-col :md="3" :sm="12" :xl="12" cols="12">
-            <v-btn color="primary" background="primary" @click="listaMedicos">
-              Pesquisar
-            </v-btn>
+          <v-col :md="6" :sm="12" :xl="12" cols="12">
+            <v-menu
+              v-model="menuDataCandidaturaFim"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              transition="scale-transition"
+              offset-y
+              min-width="auto"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  v-model="pesquisa.dt_fim"
+                  hide-details="auto"
+                  label="Data da candidatura fim"
+                  append-icon="mdi-calendar"
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                </v-text-field>
+              </template>
+              <v-date-picker v-model="pesquisa.dt_fim"></v-date-picker>
+            </v-menu>
+          </v-col>
+        </v-row>
+
+        <v-row class="mb-2">
+          <v-col :md="12" :sm="12" :xl="12" cols="12">
+            <div class="text-center">
+              <v-btn color="primary" background="primary" @click="listaMedicos">
+                Pesquisar
+              </v-btn>
+            </div>
           </v-col>
         </v-row>
         <template>
           <v-data-table :headers="headers" :items="medicos" :items-per-page="5">
             <template v-slot:item.actions="{ item }">
-              <v-icon color="success" class="mr-2" disabled>
+              <v-icon color="success" class="mr-2" @click="fazNada()">
                 mdi-square-edit-outline
               </v-icon>
             </template>
@@ -180,14 +210,18 @@ export default {
         });
     },
 
+    fazNada() {
+      console.log("não to pronto ainda");
+    },
+
     abreToast(mensagem) {
       this.toastMensagem = mensagem;
       this.toast = true;
     },
     formataData(data) {
       if (!data) return null;
-        const [year, month, day] = data.split('-')
-        return `${day}/${month}/${year}`
+      const [year, month, day] = data.split("-");
+      return `${day}/${month}/${year}`;
     },
 
     formataStatus(status) {
