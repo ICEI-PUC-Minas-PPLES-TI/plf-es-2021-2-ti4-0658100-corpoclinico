@@ -171,6 +171,7 @@ export default {
 
       equipeId: 0,
       menuDataCandidatura: false,
+      menuDataCandidaturaFim: false,
       toast: false,
       toastMensagem: "",
       modalAtivo: false,
