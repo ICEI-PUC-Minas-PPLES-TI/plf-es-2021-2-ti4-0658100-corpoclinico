@@ -4,6 +4,7 @@
       color="#007970"
       class="d-block d-md-none"
       dark
+      max-height="55px"
     >
       <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
       <v-toolbar-title>Cadastro de Corpo Clínico</v-toolbar-title>
