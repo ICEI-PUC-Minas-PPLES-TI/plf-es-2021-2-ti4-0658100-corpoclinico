@@ -61,10 +61,11 @@ export default class UsuarioService {
 
     return Usuario.findAndCountAll()
       .then(async (dados) => {
+        const count: number = (dados.count) as any;
         const { paginas, ...SortPaginateOptions } = SortPaginate(
           { ...sortPaginate },
           atributos,
-          dados.count
+          count
         );
         return {
           dados: await Usuario.findAll({

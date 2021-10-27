@@ -39,17 +39,18 @@ export default class EquipeService{
     async getAll( sortPaginate: ISortPaginateQuery, atributos: string[],  ){
         return Equipe.findAndCountAll()
         .then(async (dados) => {
+            const count: number = (dados.count) as any;
             const { paginas, ...SortPaginateOptions } = SortPaginate(
                 {...sortPaginate},
                 atributos,
-                dados.count
+                count
             );
             return {
                 equipes: await Equipe.findAll({
                     include: [ Especialidade ],
                     ...SortPaginateOptions,
                 }),
-                count: dados.count,
+                count: count,
                 paginas,
                 offset: SortPaginateOptions.offset
             }
