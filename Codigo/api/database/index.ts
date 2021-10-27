@@ -44,13 +44,22 @@ export default {
       Especialidade.hasOne(Equipe, { foreignKey: 'id' })
       
       Medico.belongsTo(Usuario, {
+        as: 'usuario',
         foreignKey: 'usuario_id'
       });
       Medico.hasMany(Arquivo, {
+        as: 'arquivos',
         foreignKey: 'medico_id'
       });
-      Equipe.belongsTo(Especialidade, { foreignKey: 'especialidade_id'})
-      Especialidade.hasOne(Equipe, { foreignKey: 'id' })
+
+      Medico.hasOne(Candidatura, {
+        as: 'candidatura',
+        foreignKey: 'medico_id'
+      })
+      Candidatura.belongsTo(Medico, {
+        foreignKey: 'medico_id'
+      })
+
 
       if (process.env.NODE_ENV === "dev") {
         console.log(
