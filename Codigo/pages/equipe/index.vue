@@ -17,8 +17,6 @@
           </v-btn>
         </v-card-actions>
 
-        <v-espacer></v-espacer>
-
         <v-card-actions>
           <v-btn color="success" background="primary" @click="abreModal(0)">
             Criar Equipe
