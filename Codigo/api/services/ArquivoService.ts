@@ -14,7 +14,7 @@ export default class ArquivoService {
         const rg = await this.gerar({ nome_arquivo, tipo, medico_id });
         return rg;
       } catch (erro) {
-        throw new AppError("Arquivo não criado!" + erro, 500);
+        throw new AppError("Arquivo não criado!", 500);
       }
     });
 
@@ -25,7 +25,7 @@ export default class ArquivoService {
         const cpf = await this.gerar({ nome_arquivo, tipo, medico_id });
         return cpf;
       } catch (erro) {
-        throw new AppError("Arquivo não criado!" + erro, 500);
+        throw new AppError("Arquivo não criado!", 500, erro);
       }
     });
 
@@ -36,7 +36,7 @@ export default class ArquivoService {
         const fotoTpQ = await this.gerar({ nome_arquivo, tipo, medico_id });
         return fotoTpQ;
       } catch (erro) {
-        throw new AppError("Arquivo não criado!" + erro, 500);
+        throw new AppError("Arquivo não criado!", 500, erro);
       }
     });
 
@@ -47,7 +47,7 @@ export default class ArquivoService {
         const compEnder = await this.gerar({ nome_arquivo, tipo, medico_id });
         return compEnder;
       } catch (erro) {
-        throw new AppError("Arquivo não criado!" + erro, 500);
+        throw new AppError("Arquivo não criado!", 500, erro);
       }
     });
 
@@ -58,7 +58,7 @@ export default class ArquivoService {
         const crm = await this.gerar({ nome_arquivo, tipo, medico_id });
         return crm;
       } catch (erro) {
-        throw new AppError("Arquivo não criado!" + erro, 500);
+        throw new AppError("Arquivo não criado!", 500, erro);
       }
     });
 
@@ -69,7 +69,7 @@ export default class ArquivoService {
         const certQuitCRMMG = await this.gerar({ nome_arquivo, tipo, medico_id });
         return certQuitCRMMG;
       } catch (erro) {
-        throw new AppError("Arquivo não criado!" + erro, 500);
+        throw new AppError("Arquivo não criado!", 500, erro);
       }
     });
 
@@ -80,7 +80,7 @@ export default class ArquivoService {
         const termVigi = await this.gerar({ nome_arquivo, tipo, medico_id });
         return termVigi;
       } catch (erro) {
-        throw new AppError("Arquivo não criado!" + erro, 500);
+        throw new AppError("Arquivo não criado!", 500, erro);
       }
     });
 
@@ -91,7 +91,7 @@ export default class ArquivoService {
         const termComp = await this.gerar({ nome_arquivo, tipo, medico_id });
         return termComp;
       } catch (erro) {
-        throw new AppError("Arquivo não criado!" + erro, 500);
+        throw new AppError("Arquivo não criado!", 500, erro);
       }
     });
 
@@ -102,7 +102,7 @@ export default class ArquivoService {
         const certForm = await this.gerar({ nome_arquivo, tipo, medico_id });
         return certForm;
       } catch (erro) {
-        throw new AppError("Arquivo não criado!" + erro, 500);
+        throw new AppError("Arquivo não criado!", 500, erro);
       }
     });
 
@@ -113,7 +113,7 @@ export default class ArquivoService {
         const certEspec = await this.gerar({ nome_arquivo, tipo, medico_id });
         return certEspec;
       } catch (erro) {
-        throw new AppError("Arquivo não criado!" + erro, 500);
+        throw new AppError("Arquivo não criado!", 500, erro);
       }
     });
 
@@ -123,7 +123,7 @@ export default class ArquivoService {
     try {
       return Arquivo.create(arquivo);
     } catch (erro) {
-      throw new AppError("Arquivo não criado!" + erro, 500);
+      throw new AppError("Arquivo não criado!", 500, erro);
     }
   }
 

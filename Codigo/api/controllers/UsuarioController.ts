@@ -140,8 +140,10 @@ class UsuarioController {
 
     await this.Service.getAll(request.query)
     .then(dados => {
+      const total: number = (dados.total) as any;
       response.status(200).json({
         ...dados,
+        total,
         quantidade: dados.dados.length
       });
     });

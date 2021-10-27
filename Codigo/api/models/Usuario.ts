@@ -43,7 +43,7 @@ class Usuario extends Model<IAtributosUsuario, IAtributosUsuarioCriacao> impleme
             })
               .then(usuario => {
                 if (usuario.length != 0)
-                  next(new AppError("Email já cadastrado!"));
+                  throw new AppError("Email já cadastrado!", 422);
                 next();
               })
               .catch(onError => console.log(onError));
