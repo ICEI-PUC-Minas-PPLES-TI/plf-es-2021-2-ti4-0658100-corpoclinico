@@ -184,21 +184,23 @@ class MedicoController {
     if (!candidatura)
       throw new AppError("Candidatura do médico não encontrada!", 404)
 
-    await medicoAlterado.update(
+    // console.log(usuario, usuarioLogado, medico, candidatura)
+
+    await this.medicoService.update(
       {
         id: medicoAlterado?.get().id,
         crm,
         regiao,
         dt_inscricao_crm,
         celular,
-        cartao_sus: cartao_sus ? cartao_sus : null,
+        cartao_sus,
         categoria,
-        rg: rg ? rg : null,
+        rg,
         rg_orgao_emissor,
         rg_data_emissao,
         dt_nascimento,
-        cpf: cpf ? cpf : null,
-        titulo_eleitoral: titulo_eleitoral ? titulo_eleitoral : null,
+        cpf,
+        titulo_eleitoral,
         zona,
         secao,
         logradouro,
@@ -215,13 +217,14 @@ class MedicoController {
       .then(async (medico) => {
         await Promise.all([
           this.arquivoService.update(request.files, medico?.get().id),
+          console.log(medico),
           this.candidaturaService.update({ id: candidatura[0]?.get().id, cnpj, equipe_id, faturamento, medico_id: medico?.get().id, unidade_id }),
         ]).catch(async (error) => {
           throw new AppError("Candidatura e arquivos para médico não atualizados!" + error, 500);
         })
         return response.status(201).json({
           atualizado: true,
-          id: medico.id
+          id: medico?.get().id
         });
       })
       .catch(async (erro) => {

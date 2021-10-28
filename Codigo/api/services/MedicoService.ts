@@ -19,9 +19,11 @@ export default class MedicoService {
   }
 
   async update(medico: Partial<IAtributosMedico>) {
-    return Medico.update(medico, {
-      where: { id: medico.id }
-    });
+    const alterado = await Medico.findByPk(medico.id);
+    if (!alterado)
+      throw new AppError("Médico não encontrado!", 404);
+    await alterado.update(medico);
+    return alterado;
   }
 
   // * Não é soft-delete nem hard-delete, apenas volta o status para 0.
