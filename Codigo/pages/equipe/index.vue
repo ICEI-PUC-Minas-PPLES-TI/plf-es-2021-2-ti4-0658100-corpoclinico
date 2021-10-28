@@ -64,7 +64,6 @@ import modalEquipe from "@/components/equipe/modal.vue";
 import modalEspecialidade from "@/components/especialidade/modal.vue";
 
 export default {
-  layout: "cmedico",
   components: {
     modalEquipe,
     modalEspecialidade,
