@@ -25,7 +25,7 @@
 
             <!-- Nome -->
               <v-row class="mx-auto">
-                <v-col :md="10" :sm="10" :xl="10" cols="12">
+                <v-col :md="12" :sm="12" :xl="12" cols="12">
                   <v-text-field
                     v-model="unidade.nome"
                     hide-details="auto"
@@ -34,12 +34,6 @@
                     maxlength="40"
                     :rules="[v => !!v || 'Nome é obrigatório', v => (v && v.length <= 120) || 'Maximo de 40 caracteres']"
                   />
-                </v-col>
-                <v-col :md="2" :sm="2" :xl="2" cols="12">
-                    <v-switch
-                      v-model="unidade.isAtiva"
-                      label="Ativa"
-                    ></v-switch>
                 </v-col>
               </v-row>
 
@@ -93,7 +87,7 @@
                <!-- Numero -->
                 <v-col :md="4" :sm="12" :xl="4" cols="12">
                   <v-text-field
-                    maxlength="6"
+                    maxlength="5"
                     v-model="unidade.numero"
                     :clearable="true"
                     hide-details="auto"

@@ -16,7 +16,6 @@ export default {
         logradouro: "",
         numero: "",
         ativo:"",
-        isAtiva:true,
       },
 
       toastMensagem: "",

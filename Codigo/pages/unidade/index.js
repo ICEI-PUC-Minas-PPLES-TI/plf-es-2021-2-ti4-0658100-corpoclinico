@@ -26,7 +26,6 @@ export default {
           bairro:'',
           logradouro: '',
           ativo:'',
-          isAtiva:true
         },
       ],
 
@@ -55,13 +54,6 @@ export default {
 
       this.$axios.$get('/unidade').then(response => {
         this.unidades = response;
-        for(let i =0;i<response.length;i++){
-          if(this.unidades[i].ativo=='0'){
-            this.unidades[i].ativo='Inativa'
-          }else{
-            this.unidades[i].ativo='Ativa'
-          }
-        }
       }).catch(error => {
         console.log(error)
       })
@@ -92,7 +84,7 @@ export default {
       if(respo==true){ 
           this.$axios.$delete('/unidade/' + id).then(response => {
             this.abreToast('Unidade Deletada!');
-            this.listaUsuarios();
+            this.listaUnidades();
           }).catch(error => {
             if (Array.isArray(error.response.data.errors)) {
               this.abreToast(error.response.data.errors[0]);
