@@ -184,8 +184,6 @@ class MedicoController {
     if (!candidatura)
       throw new AppError("Candidatura do médico não encontrada!", 404)
 
-    // console.log(usuario, usuarioLogado, medico, candidatura)
-
     await this.medicoService.update(
       {
         id: medicoAlterado?.get().id,
@@ -217,7 +215,6 @@ class MedicoController {
       .then(async (medico) => {
         await Promise.all([
           this.arquivoService.update(request.files, medico?.get().id),
-          console.log(medico),
           this.candidaturaService.update({ id: candidatura[0]?.get().id, cnpj, equipe_id, faturamento, medico_id: medico?.get().id, unidade_id }),
         ]).catch(async (error) => {
           throw new AppError("Candidatura e arquivos para médico não atualizados!" + error, 500);

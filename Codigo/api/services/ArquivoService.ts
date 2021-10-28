@@ -243,8 +243,23 @@ export default class ArquivoService {
     });
   }
 
+  async deleteById(id : number) {
+    try {
+      await Arquivo.destroy({
+        where: {
+          id: id
+        },
+        force: true
+      });
+      console.log(id)
+    } catch (erro) {
+      throw new AppError("Arquivo não criado! " + erro, 404);
+    }
+  }
+
   // TODO @Lucas-Angelo problema aqui irá apagar todas as especialidades quando atualizar uma, tem que criar formacao
   async deleteByTipo(tipo : string, medico_id : number) {
+    if(tipo!="FORM")
     try {
       const arquivo = await Arquivo.findOne({
         where: {
@@ -259,7 +274,7 @@ export default class ArquivoService {
         force: true
       });
     } catch (erro) {
-      throw new AppError("Arquivo não criado! " + erro, 500);
+      throw new AppError("Arquivo não criado! " + erro, 404);
     }
   }
 

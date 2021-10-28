@@ -9,6 +9,7 @@ import MedicoController from '../controllers/MedicoController';
 import UnidadeController from '../controllers/UnidadeController';
 import EquipeController from '../controllers/EquipeController';
 import EspecialidadeController from '../controllers/EspecialidadeController';
+import ArquivoController from '../controllers/ArquivoController';
 
 import { upload } from '../helpers/files/MulterSettings'; 
 import { documentosMedico } from '../helpers/files/DocumentosEnum'; 
@@ -19,6 +20,7 @@ const medicoController = new MedicoController();
 const unidadeController = new UnidadeController();
 const equipeController = new EquipeController();
 const especialidadeController = new EspecialidadeController();
+const arquivoController = new ArquivoController();
 
 const multerUploadMedico = upload.fields(documentosMedico);
 
@@ -48,8 +50,10 @@ router.get('/especialidade/:id', especialidadeController.get )
 router.get('/especialidade', especialidadeController.getAll)
 router.delete('/especialidade/:id', especialidadeController.delete)
 router.put('/especialidade/:id',  especialidadeController.update)
-
+// Unidade
 router.get('/unidade/:id', [autenticacaoJwt.verificarToken], unidadeController.get)
 router.get('/unidade', unidadeController.getAll)
+// Arquivo
+router.delete('/arquivo/:id', arquivoController.delete)
 
 export default router;
