@@ -223,7 +223,6 @@ export default class ArquivoService {
       try {
         const nome_arquivo = certFormFields.filename;
         const tipo = 'FORM';
-        await this.deleteByTipo(tipo, medico_id);
         const certForm = await this.gerar({ nome_arquivo, tipo, medico_id });
         return certForm;
       } catch (erro) {
