@@ -115,14 +115,14 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
                 where: { cartao_sus: value },
                 attributes: ["id"]
               })
-                .then(medico => {
-                  if (medico.length != 0 && value != null)
-                    next(new AppError("'cartao_sus' já cadastrado!", 422));
-                  next();
-                })
-                .catch(error => {
-                  throw new AppError("Erro interno no servidor")
-                });
+              .then(medico => {
+                if (medico.length != 0 && value != null)
+                  next(new AppError("'cartao_sus' já cadastrado!", 422));
+                next();
+              })
+              .catch(error => {
+                next( new AppError("Erro interno no servidor") );
+              });
             }
           }
         },
@@ -139,14 +139,14 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
                 where: { rg: value },
                 attributes: ["id"]
               })
-                .then(medico => {
-                  if (medico.length != 0 && value != null)
-                    next(new AppError("'rg' já cadastrado!", 422));
-                  next();
-                })
-                .catch(error => {
-                  throw new AppError("Erro interno no servidor")
-                });
+              .then(medico => {
+                if (medico.length != 0 && value != null)
+                  next(new AppError("'rg' já cadastrado!", 422));
+                next();
+              })
+              .catch(error => {
+                next( new AppError("Erro interno no servidor") )
+              });
             }
           }
         },
@@ -177,7 +177,7 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
                   next();
                 })
                 .catch(error => {
-                  throw new AppError("Erro interno no servidor")
+                  next( new AppError("Erro interno no servidor") )
                 });
             }
           }
@@ -197,7 +197,7 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
                   next();
                 })
                 .catch(error => {
-                  throw new AppError("Erro interno no servidor")
+                  next( new AppError("Erro interno no servidor") )
                 });
             }
           }

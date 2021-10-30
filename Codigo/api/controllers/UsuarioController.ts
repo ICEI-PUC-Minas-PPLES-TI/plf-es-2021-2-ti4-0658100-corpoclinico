@@ -36,7 +36,6 @@ class UsuarioController {
       if (!usuario) {
         throw new AppError("Usuário não encontrado", 404);
       }
-      console.log(usuario, usuario.get());
       const senhaValida = bcrypt.compareSync(senha, usuario.get().senha);
       if (!senhaValida) {
         throw new AppError("Senha incorreta!", 401);
@@ -54,11 +53,7 @@ class UsuarioController {
     const scheme = usuarioCreateValidation;
 
     // Validando com o esquema criado:
-    try {
-      await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (erro) {
-      throw new AppError("Erro na validação de um ou mais campos", 422, erro)
-    }
+    await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
     const { nome, email, senha } = request.body;
     const password = bcrypt.hashSync(senha, 8);
@@ -96,11 +91,7 @@ class UsuarioController {
     const scheme = usuarioUpdateValidation;
 
     // Validando com o esquema criado:
-    try {
-      await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (err) {
-      throw new AppError("Erro na validação de um ou mais campos", 422, err)
-    }
+    await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
     const { nome, email, senha } = request.body;
 

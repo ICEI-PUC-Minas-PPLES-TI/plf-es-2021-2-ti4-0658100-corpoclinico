@@ -35,11 +35,8 @@ class MedicoController {
     const scheme = medicoCreateValidationScheme;
 
     // Validando com o esquema criado:
-    try {
-      await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (erro) {
-      throw new AppError("Erro na validação de um ou mais campos", 422, erro)
-    } 
+    
+    await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
     const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
     const { equipe_id, cnpj, faturamento, unidade_id } = request.body;
@@ -127,11 +124,7 @@ class MedicoController {
     const scheme = medicoUpdateValidationScheme
 
     // Validando com o esquema criado:
-    try {
-      await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (err) {
-      throw new AppError("Houve um ou mais erros de validação", 422, err);
-    }
+    await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
     const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
 

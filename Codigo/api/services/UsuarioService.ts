@@ -44,7 +44,6 @@ export default class UsuarioService {
   }
 
   async getBy(field: keyof IAtributosUsuario, value: any, attributes?: Array<keyof IAtributosUsuario>) {
-    console.log(field, value);
     return Usuario.findOne({
       where: {
         [field]: value

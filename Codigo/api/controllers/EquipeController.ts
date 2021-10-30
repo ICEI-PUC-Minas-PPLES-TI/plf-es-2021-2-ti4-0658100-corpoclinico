@@ -20,11 +20,8 @@ class EquipeController {
     const scheme = equipeCreateValidationScheme;
 
     // Validando com o esquema criado:
-    try {
-      await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (erro) {
-      throw new AppError("Erro na validação de um ou mais campos", 422, erro)
-    } 
+    await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
+
 
     const { nome, especialidade_id } = request.body;
 
@@ -56,11 +53,7 @@ class EquipeController {
     const scheme = equipeUpdateValidationScheme
 
     // Validando com o esquema criado:
-    try {
-      await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (erro) {
-      throw new AppError("Erro na validação de um ou mais campos", 422, erro)
-    } 
+    await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
     const { nome, especialidade_id } = request.body;
     const id = Number(request.params.id)
