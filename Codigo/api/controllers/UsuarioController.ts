@@ -34,9 +34,9 @@ class UsuarioController {
     await this.Service.getBy('email', email, ['id', 'senha'])
     .then(usuario => {
       if (!usuario) {
-        return res.status(404).send("Usuario nao encontrado.");
+        throw new AppError("Usuário não encontrado", 404);
       }
-
+      console.log(usuario, usuario.get());
       const senhaValida = bcrypt.compareSync(senha, usuario.get().senha);
       if (!senhaValida) {
         throw new AppError("Senha incorreta!", 401);

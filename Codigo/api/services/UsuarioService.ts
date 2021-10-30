@@ -43,11 +43,13 @@ export default class UsuarioService {
     })
   }
 
-  async getBy(field: keyof IAtributosUsuario, value: any, atributes?: Array<keyof IAtributosUsuario>) {
+  async getBy(field: keyof IAtributosUsuario, value: any, attributes?: Array<keyof IAtributosUsuario>) {
+    console.log(field, value);
     return Usuario.findOne({
       where: {
         [field]: value
-      }
+      },
+      attributes
     })
     .catch((err)=>{
       throw new AppError("Erro interno no servidor", 500, err)

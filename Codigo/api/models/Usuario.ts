@@ -37,16 +37,19 @@ class Usuario extends Model<IAtributosUsuario, IAtributosUsuarioCriacao> impleme
         allowNull: false,
         validate: {
           isUnique: (value: string, next: ((err?: AppError) => void)) => {
+            console.log(value);
             Usuario.findAll({
               where: { email: value },
               attributes: ["id"]
             })
               .then(usuario => {
                 if (usuario.length != 0)
-                  next(new AppError("Email já cadastrado!"));
+                  throw new AppError("Email já cadastrado!");
                 next();
               })
-              .catch(onError => console.log(onError));
+              .catch(error=>{
+                throw new AppError("Erro interno no servidor", 500, error)
+              })
           }
         }
       },
