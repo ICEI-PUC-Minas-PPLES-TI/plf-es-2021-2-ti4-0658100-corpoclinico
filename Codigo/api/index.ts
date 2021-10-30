@@ -24,7 +24,7 @@ app.use([(err, request, response, next) => {
   if (err instanceof AppError) {
     return response.status(err.statusCode).json({
       message: err.message,
-      error: err.error
+      error: err.error ?? err
     });
   }
 
