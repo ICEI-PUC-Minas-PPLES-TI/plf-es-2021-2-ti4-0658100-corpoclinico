@@ -33,7 +33,10 @@
                 mdi-square-edit-outline
               </v-icon>
 
-              <v-icon color="success" @click="deleteUnidade(item.id)">
+              <v-icon  v-if="item.ativo==1"  color="success" @click="deleteUnidade(item.id)">
+                mdi-trash-can-outline
+              </v-icon>
+              <v-icon  v-if="item.ativo==0"  color="grey">
                 mdi-trash-can-outline
               </v-icon>
             </template>
