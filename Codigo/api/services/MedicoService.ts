@@ -95,10 +95,11 @@ export default class MedicoService {
       ]
     })
       .then(async dados => {
+        const count: number = dados.count as any;
         const { paginas, ...SortPaginateOptions } = SortPaginate(
           { ...sortPaginate },
           atributos,
-          dados.count
+          count
         );
         return {
           medicos: await Medico.findAll({

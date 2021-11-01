@@ -1,0 +1,10 @@
+// esse tsconfig é usado apenas no standalone ( npm run api )
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "esModuleInterop": true
+    },
+    "exclude": [
+        "node_modules"
+    ],
+}
