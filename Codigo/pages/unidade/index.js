@@ -1,10 +1,8 @@
 import modal from '@/components/unidade/modal.vue'
-import deletar from '@/components/deletarDialog/deletar.vue'
 export default {
   'layout': 'cmedico',
   components: {
     modal,
-    deletar,
   },
 
   data() {
