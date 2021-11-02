@@ -65,15 +65,6 @@ export default {
         this.unidadeId = 0;
       }
     },
-    abreDeleta(id){
-      if(id){
-        this.dialog = !this.dialog;
-        this.unidadeId = id;
-      }else{
-        this.dialog = !this.dialog;
-        this.unidadeId = 0;
-      }
-    },
 
     ativaUnidade(id) {
         let unidade = {
