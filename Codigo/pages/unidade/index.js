@@ -78,12 +78,12 @@ export default {
     },
 
     ativaUnidade(id) {
-        let unidade = JSON.parse(JSON.stringify(this.unidades[id-1]))
-        unidade.ativo=true
-        console.log(unidade);
+        let unidade = {
+          ativo:true
+        }
         this.$axios.$put('/unidade/' + id,unidade).then(response => {
           this.$emit('listaUnidade')
-          this.abreToast('Unidade Atualizada!');
+          this.abreToast('Unidade Ativa!');
           }).catch(error => {
             console.log("Erro:");
           console.error(error)
@@ -92,7 +92,7 @@ export default {
 
     deleteUnidade(id){
           this.$axios.$delete('/unidade/' + id).then(response => {
-            this.abreToast('Unidade Desativada!');
+            this.abreToast('Unidade Inativa!');
             this.listaUnidades();
           }).catch(error => {
             if (Array.isArray(error.response.data.errors)) {
