@@ -26,18 +26,27 @@
             :items-per-page="5"
           >
             <template v-slot:item.ativo="{ item }">
-              {{ item.ativo ? "Ativo" : "Inativo" }}
+              <v-switch 
+                v-if=" item.ativo==0 "
+                color="success"
+                inset
+                v-model="item.ativo"
+                @change="ativaUnidade(item.id)"
+              ></v-switch>
+              <v-switch 
+                v-if=" item.ativo==1 "
+                color="success"
+                inset
+                v-model="item.ativo"
+                @change="deleteUnidade(item.id)"
+              ></v-switch>
             </template>
             <template v-slot:item.actions="{ item }">
+            
               <v-icon color="success" class="mr-2" @click="abreModal(item.id)">
                 mdi-square-edit-outline
               </v-icon>
 
-              <v-icon  v-if="item.ativo==1"  color="success" @click="deleteUnidade(item.id)">
-                mdi-trash-can-outline
-              </v-icon>
-              <v-icon  v-if="item.ativo==0"  color="grey">
-                mdi-trash-can-outline
               </v-icon>
             </template>
             <template v-slot:no-data>

@@ -41,9 +41,7 @@ export default {
     modalAtivo: function (modalAtivo){
       modalAtivo ? false : this.listaUnidades();
     },
-    dialog: function (dialog){
-      dialog ? false : this.listaUnidades();
-    },
+
   },
   mounted() {
     this.listaUnidades();
@@ -79,11 +77,21 @@ export default {
       }
     },
 
+    ativaUnidade(id) {
+        let unidade = this.unidades[id-1]
+        unidade.ativo=true
+        this.$axios.$put('/unidade/' + id,unidade).then(response => {
+          this.$emit('listaUnidade')
+          this.abreToast('Unidade Atualizada!');
+          }).catch(error => {
+            console.log("Erro:");
+          console.error(error)
+        })
+    },
+
     deleteUnidade(id){
-      let respo = confirm("Deseja deletar a unidade?");
-      if(respo==true){ 
           this.$axios.$delete('/unidade/' + id).then(response => {
-            this.abreToast('Unidade Deletada!');
+            this.abreToast('Unidade Desativada!');
             this.listaUnidades();
           }).catch(error => {
             if (Array.isArray(error.response.data.errors)) {
@@ -93,10 +101,6 @@ export default {
             }
     
           })
-        }  
-     
-
-
     },
 
     abreToast(mensagem) {
