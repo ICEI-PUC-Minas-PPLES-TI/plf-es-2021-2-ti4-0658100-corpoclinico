@@ -78,8 +78,9 @@ export default {
     },
 
     ativaUnidade(id) {
-        let unidade = this.unidades[id-1]
+        let unidade = JSON.parse(JSON.stringify(this.unidades[id-1]))
         unidade.ativo=true
+        console.log(unidade);
         this.$axios.$put('/unidade/' + id,unidade).then(response => {
           this.$emit('listaUnidade')
           this.abreToast('Unidade Atualizada!');
