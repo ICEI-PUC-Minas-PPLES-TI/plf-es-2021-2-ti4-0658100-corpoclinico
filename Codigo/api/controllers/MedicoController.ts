@@ -1,6 +1,7 @@
 import Medico, { IAtributosMedico, IAtributosMedicoCriacao } from "../models/Medico";
 import MedicoService from "../services/MedicoService";
 import { medicoCreateValidationScheme, medicoUpdateValidationScheme } from "../validations/MedicoValidations";
+import jwt from "jsonwebtoken";
 
 import Usuario, { IAtributosUsuarioCriacao } from "../models/Usuario";
 import UsuarioService from "../services/UsuarioService";
@@ -159,14 +160,38 @@ class MedicoController {
     const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
     const { equipe_id, cnpj, faturamento, unidade_id } = request.body;
     const { nome, email, senha } = request.body;
-    const password = bcrypt.hashSync(senha, 8);
 
-    const usuario = await this.usuarioSerive.getBy("email", email);
+    let senhaTemp;
+    if (senha)
+      senhaTemp = bcrypt.hashSync(senha, 8);
+    const password = senhaTemp;
+
+    let token = request.headers["x-access-token"];
+
+    if (!token) {
+      throw new AppError("Usuário não autenticado!", 401);
+    }
+    let idLogado;
+    token = Array.isArray(token) ? token[0] : token; //garante que token é uma string
+    jwt.verify(token, process.env.SECRET_KEY ?? " ", (err, decoded) => {
+      if (err) {
+        throw new AppError("Falha ao autenticar o token. Erro -> !", 500);
+      }
+      idLogado = decoded?.id;
+    })
+
+    if(!idLogado)
+      throw new AppError("Usuário não autenticado!", 401);
+
+    const medicoAlterado = await this.medicoService.getById(Number(request.params.id))
+    if (!medicoAlterado)
+      throw new AppError("Medico não encontrado!", 404);
+
+    const usuario = await this.usuarioSerive.getById(Number(medicoAlterado?.get().usuario_id));
     if (!usuario)
       throw new AppError("Usuário não encontrado!", 404);
 
-    // const usuarioLogado = await this.usuarioSerive.getById(Number(request.headers.authorization));
-    const usuarioLogado = await this.usuarioSerive.getById(Number('3'));
+    const usuarioLogado = await this.usuarioSerive.getById(Number(idLogado));
     if (usuarioLogado?.get().tipo !== "A" && usuario.id !== usuarioLogado?.get().id)
       throw new AppError("Usuário logado não é admin ou não é o mesmo do médico em atualização cadastral!", 405);
 
@@ -176,13 +201,10 @@ class MedicoController {
       senha: password
     });
 
-    const medicoAlterado = await this.medicoService.getById(Number(request.params.id))
-    if (!medicoAlterado)
-      throw new AppError("Medico não encontrado!", 404)
-
+    let candidaturaExiste = true;
     const candidatura = await this.candidaturaService.getBy("medico_id", medicoAlterado?.get().id.toString());
     if (!candidatura)
-      throw new AppError("Candidatura do médico não encontrada!", 404)
+      candidaturaExiste = false;
 
     await this.medicoService.update(
       {
@@ -259,7 +281,7 @@ class MedicoController {
 
   // URI de exemplo: http://localhost:3000/api/medico?pagina=1&limite=5&atributo=nome&ordem=DESC
   // todos as querys são opicionais
-  public getAll: GetAllRequestHandler<IGetHandlerGetFilter> = async (request, response) => {
+  public getAll: GetAllRequestHandler<IAtributosMedico, IGetHandlerGetFilter> = async (request, response) => {
     const { nome, dt_inicio, dt_fim } = request.query;
 
     this.medicoService.getAll({

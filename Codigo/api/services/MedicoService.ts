@@ -92,7 +92,8 @@ export default class MedicoService {
             data_criado: {
               [Op.between]: [dataInicio, dataFim]
             }
-          }
+          },
+          required:false,
         }
       ]
     })
@@ -103,38 +104,7 @@ export default class MedicoService {
           dados.count
         );
         return {
-          medicos: await Medico.findAll({
-            attributes: atributos,
-            ...SortPaginateOptions,
-            include: [
-              {
-                model: Usuario,
-                as: "usuario",
-                attributes: ["email", "nome"],
-                where: {
-                  nome: {
-                    [Op.like]: `%${filtros.nome ? filtros.nome : ""}%` /* Se não passar nome será todos */
-                  }
-                }
-              },
-              {
-                model: Candidatura,
-                as: "candidatura",
-                attributes: [
-                  "cnpj",
-                  "faturamento",
-                  "equipe_id",
-                  "unidade_id",
-                  "data_criado"
-                ],
-                where: {
-                  data_criado: {
-                    [Op.between]: [dataInicio, dataFim]
-                  }
-                }
-              }
-            ],
-          }),
+          medicos: dados.rows,
           count: dados.count,
           paginas,
           offset: SortPaginateOptions.offset
