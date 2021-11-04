@@ -21,7 +21,7 @@ class UnidadeController {
 
     const { bairro, cep, cidade, logradouro, nome, numero } = request.body;
 
-    const unidade = await this.Service.create({ bairro, cep, cidade, logradouro, nome, numero })
+    const unidade = await this.Service.create({ bairro, cep: cep?.replace(/\D/g, ''), cidade, logradouro, nome, numero })
     response.status(201).json({
       id: unidade.id,
     })
@@ -33,9 +33,9 @@ class UnidadeController {
     // Validando com o esquema criado:
           await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
-    const { bairro, cep, cidade, logradouro, nome, numero } = request.body;
+    const { bairro, cep, cidade, logradouro, nome, numero, ativo } = request.body;
 
-    await this.Service.update({ bairro, cep, cidade, logradouro, nome, numero, id: Number(request.params.id) });
+    await this.Service.update({ bairro, cep: cep?.replace(/\D/g, ''), cidade, logradouro, nome, numero, id: Number(request.params.id), ativo });
     response.status(201).json({});
   }
 
