@@ -1,7 +1,6 @@
 import modal from '@/components/usuario/modal.vue'
 
 export default {
-  'layout': 'cmedico',
   components: {
     modal,
   },

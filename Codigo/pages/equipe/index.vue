@@ -17,8 +17,6 @@
           </v-btn>
         </v-card-actions>
 
-        <v-espacer></v-espacer>
-
         <v-card-actions>
           <v-btn color="success" background="primary" @click="abreModal(0)">
             Criar Equipe
@@ -66,7 +64,6 @@ import modalEquipe from "@/components/equipe/modal.vue";
 import modalEspecialidade from "@/components/especialidade/modal.vue";
 
 export default {
-  layout: "cmedico",
   components: {
     modalEquipe,
     modalEspecialidade,
