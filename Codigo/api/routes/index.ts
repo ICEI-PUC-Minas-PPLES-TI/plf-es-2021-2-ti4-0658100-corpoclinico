@@ -29,7 +29,7 @@ router.post('/usuario', usuarioController.create)
 router.get('/usuario/:id', [autenticacaoJwt.verificarToken], usuarioController.get)
 router.get('/usuario', [autenticacaoJwt.verificarToken], usuarioController.getAll)
 router.delete('/usuario/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], usuarioController.delete)
-router.put('/usuario/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], usuarioController.update)
+router.put('/usuario/:id',  usuarioController.update)
 // Medico
 router.post('/medico', multerUploadCriarMedico, medicoController.create)
 router.get('/medico/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], medicoController.get)

@@ -50,7 +50,7 @@ class MedicoController {
       tipo: "M",
     });
 
-    this.medicoService.create(
+    await this.medicoService.create(
       {
         // Atributos de médico
         usuario_id: usuario.id,
@@ -85,7 +85,7 @@ class MedicoController {
           this.candidaturaService.create({ cnpj, equipe_id, faturamento, medico_id: medico.id, unidade_id })
         ]).catch(async (error) => {
           await this.medicoService.delete(medico.id, true);
-          throw error;
+          throw new AppError("Erro interno no servidor", 500, error);
         })
         return response.status(201).json({
           id: medico.id

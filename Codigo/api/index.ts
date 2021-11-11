@@ -34,7 +34,7 @@ app.use([(err, request, response, next) => {
   }
   else if (err instanceof YupError) {
     return response.status(422).json({
-      message: err.message,
+      message: "Erro na validação dos campos",
       error: err.errors
     })
   }

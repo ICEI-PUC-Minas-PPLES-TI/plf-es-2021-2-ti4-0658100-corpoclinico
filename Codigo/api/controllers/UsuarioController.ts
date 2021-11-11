@@ -104,12 +104,14 @@ class UsuarioController {
     if (!usuario) {
       throw new AppError('Usuario não encontrado', 404);
     } else {
-      usuario.update({
+      await usuario.update({
         nome: nome ? nome : usuario.get().nome,
         email: email ? email : usuario.get().email,
         senha: password ? password : usuario.get().senha,
         tipo: "A"
-      });
+      }).catch((err)=>{
+        throw new AppError("Erro interno no servidor", 500, err);
+      })
       response.status(200).json({});
     }
   }

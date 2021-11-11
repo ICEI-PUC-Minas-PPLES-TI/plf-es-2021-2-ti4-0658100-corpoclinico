@@ -41,6 +41,9 @@ class EquipeController {
 
   // URI de exemplo: http://localhost:3000/api/equipe/1
   public delete: DeleteRequestHandler = async (request, response) => {
+    const equipe = await this.Service.getById(Number(request.params.id));
+    if (!equipe)
+      throw new AppError("Equipe não encontrada", 404);
     await this.Service.delete(Number(request.params.id))
     .then(dado => {
       response.status(204).json({});
