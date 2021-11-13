@@ -1,6 +1,7 @@
 import Medico, { IAtributosMedico, IAtributosMedicoCriacao } from "../models/Medico";
 import MedicoService from "../services/MedicoService";
 import { medicoCreateValidationScheme, medicoUpdateValidationScheme } from "../validations/MedicoValidations";
+import jwt from "jsonwebtoken";
 
 import Usuario, { IAtributosUsuarioCriacao } from "../models/Usuario";
 import UsuarioService from "../services/UsuarioService";
@@ -13,9 +14,10 @@ import Arquivo from "../models/Arquivo";
 import CandidaturaService from "../services/CandidaturaService";
 import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
 import { IGetAllMedicoFilter } from "../types/Requests";
+import { ISortPaginateQuery } from "../helpers/SortPaginate";
 
 interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { }
-interface IGetHandlerGetFilter extends IAtributosMedico, IGetAllMedicoFilter { }
+interface IGetHandlerGetFilter extends ISortPaginateQuery, IGetAllMedicoFilter { }
 
 class MedicoController {
   private medicoService!: MedicoService;
@@ -34,15 +36,8 @@ class MedicoController {
     const scheme = medicoCreateValidationScheme;
 
     // Validando com o esquema criado:
-    try {
-      await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (erro: any) {
-      return response.status(422).json({
-        criado: false,
-        nome: erro.name, // => 'ValidationError'
-        erros: erro.errors
-      });
-    }
+
+    await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
     const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
     const { equipe_id, cnpj, faturamento, unidade_id } = request.body;
@@ -56,7 +51,7 @@ class MedicoController {
       tipo: "M",
     });
 
-    this.medicoService.create(
+    await this.medicoService.create(
       {
         // Atributos de médico
         usuario_id: usuario.id,
@@ -91,10 +86,9 @@ class MedicoController {
           this.candidaturaService.create({ cnpj, equipe_id, faturamento, medico_id: medico.id, unidade_id })
         ]).catch(async (error) => {
           await this.medicoService.delete(medico.id, true);
-          throw error;
+          throw new AppError("Erro interno no servidor", 500, error);
         })
         return response.status(201).json({
-          criado: true,
           id: medico.id
         });
       })
@@ -106,19 +100,15 @@ class MedicoController {
           },
           force: true
         });
-        return response.status(500).json({
-          criado: false,
-          nome: "Médico não criado!",
-          erros: erro.message,
-        });
+        throw new AppError("Médico não criado!", 500, erro);
       });
   }
 
   // URI de exemplo: http://localhost:3000/api/medico/1
   public delete: DeleteRequestHandler = async (request, response) => {
-    this.medicoService.delete(Number(request.params.id))
-      .then(medico => {
-        this.usuarioSerive.delete(Number(medico.get().usuario_id))
+    await this.medicoService.delete(Number(request.params.id))
+      .then(async (medico) => {
+        await this.usuarioSerive.delete(Number(medico.get().usuario_id))
           .then(usuarioDado => {
             const dado = Number(medico.get().id);
             return response.status(204).json({
@@ -126,79 +116,108 @@ class MedicoController {
               dado
             });
           })
-          .catch(function (error: AppError) {
-            return response.status(error.statusCode).json({
-              deletado: false,
-              errors: error.message
-            });
-          });
       })
-      .catch(function (error) {
-        return response.status(500).json({
-          deletado: false,
-          errors: error
-        });
-      });
   }
 
   // URI de exemplo: http://localhost:3000/api/medico/1
-  public update: UpddateRequestHandler<IAtributosMedico> = async (request, response) => {
-
+  public update: UpddateRequestHandler<IAtributosMedicoUsuarioCriacao> = async (request, response) => {
     const scheme = medicoUpdateValidationScheme
 
     // Validando com o esquema criado:
-    try {
-      await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (err: any) {
-      return response.status(422).json({
-        atualizado: false,
-        nome: err.name, // => 'ValidationError'
-        erros: err.errors
-      });
-    }
+    await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
     const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
+    const { equipe_id, cnpj, faturamento, unidade_id } = request.body;
+    const { nome, email, senha } = request.body;
 
-    const medico = await this.medicoService.getById(Number(request.params.id))
-    if (!medico) {
-      response.status(404).json({
-        atualizado: false,
-        nome: "Medico não encontrado",
-        erros: "O id que foi solicitado alteração não existe no banco de dados"
-      });
-    } else {
-      await this.medicoService.update(
-        {
-          crm,
-          regiao,
-          dt_inscricao_crm,
-          celular,
-          cartao_sus,
-          categoria,
-          rg,
-          rg_orgao_emissor,
-          rg_data_emissao,
-          dt_nascimento,
-          cpf,
-          titulo_eleitoral,
-          zona,
-          secao,
-          logradouro,
-          numero,
-          complemento,
-          bairro,
-          cidade,
-          estado,
-          cep,
-          sociedade_cientifica,
-          escolaridade_max,
-        }
-      );
-      response.status(200).json({
-        atualizado: true,
-        id: medico.id
-      });
+    let senhaTemp;
+    if (senha)
+      senhaTemp = bcrypt.hashSync(senha, 8);
+    const password = senhaTemp;
+
+    let token = request.headers["x-access-token"];
+
+    if (!token) {
+      throw new AppError("Usuário não autenticado!", 401);
     }
+    let idLogado;
+    token = Array.isArray(token) ? token[0] : token; //garante que token é uma string
+    jwt.verify(token, process.env.SECRET_KEY ?? " ", (err, decoded) => {
+      if (err) {
+        throw new AppError("Falha ao autenticar o token. Erro -> !", 500);
+      }
+      idLogado = decoded?.id;
+    })
+
+    if(!idLogado)
+      throw new AppError("Usuário não autenticado!", 401);
+
+    const medicoAlterado = await this.medicoService.getById(Number(request.params.id))
+    if (!medicoAlterado)
+      throw new AppError("Medico não encontrado!", 404);
+
+    const usuario = await this.usuarioSerive.getById(Number(medicoAlterado?.get().usuario_id));
+    if (!usuario)
+      throw new AppError("Usuário não encontrado!", 404);
+
+    const usuarioLogado = await this.usuarioSerive.getById(Number(idLogado));
+    if (usuarioLogado?.get().tipo !== "A" && usuario?.get().id !== usuarioLogado?.get().id)
+      throw new AppError("Usuário logado não é admin ou não é o mesmo do médico em atualização cadastral!", 405);
+
+    usuario.update({
+      nome,
+      email,
+      senha: password
+    });
+
+    let candidaturaExiste = true;
+    const candidatura = await this.candidaturaService.getBy("medico_id", medicoAlterado?.get().id.toString());
+    if (!candidatura)
+      candidaturaExiste = false;
+
+    await this.medicoService.update(
+      {
+        id: medicoAlterado?.get().id,
+        crm,
+        regiao,
+        dt_inscricao_crm,
+        celular,
+        cartao_sus,
+        categoria,
+        rg,
+        rg_orgao_emissor,
+        rg_data_emissao,
+        dt_nascimento,
+        cpf,
+        titulo_eleitoral,
+        zona,
+        secao,
+        logradouro,
+        numero,
+        complemento,
+        bairro,
+        cidade,
+        estado,
+        cep: cep?.replace(/\D/g, ''),
+        sociedade_cientifica,
+        escolaridade_max,
+      }
+    )
+      .then(async (medico) => {
+        await Promise.all([
+          this.arquivoService.update(request.files, medico?.get().id),
+          this.candidaturaService.update({ id: candidatura[0]?.get().id, cnpj, equipe_id, faturamento, medico_id: medico?.get().id, unidade_id }),
+        ]).catch(async (error) => {
+          throw new AppError("Candidatura e arquivos para médico não atualizados!" + error, 500);
+        })
+        return response.status(201).json({
+          atualizado: true,
+          id: medico?.get().id
+        });
+      })
+      .catch(async (erro) => {
+        throw new AppError("Médico não atualizado!" + erro, 500);
+      });
   }
 
   // URI de exemplo: http://localhost:3000/api/medico/1
@@ -224,38 +243,32 @@ class MedicoController {
     });
 
     if (!medico)
-      response.status(404).json(medico);
+      throw new AppError("Medico não encontrado!", 404);
     else
       response.status(200).json(medico);
   }
 
   // URI de exemplo: http://localhost:3000/api/medico?pagina=1&limite=5&atributo=nome&ordem=DESC
   // todos as querys são opicionais
-  public getAll: GetAllRequestHandler<IGetHandlerGetFilter> = async (request, response) => {
-    const { nome, dt_inicio, dt_fim} = request.query;
+  public getAll: GetAllRequestHandler<IAtributosMedico, IGetHandlerGetFilter> = async (request, response) => {
+    const { nome, dt_inicio, dt_fim } = request.query;
 
-    this.medicoService.getAll({
+    await this.medicoService.getAll({
       ...request.query
     },
       Object.keys(Medico.rawAttributes),
-      {nome, dt_inicio, dt_fim},
+      { nome, dt_inicio, dt_fim },
     )
-      .then(({ medicos, count, paginas, offset }) => {
-        const total: number = (count) as any;
-        response.status(200).json({
-          dados: medicos,
-          quantidade: medicos.length,
-          total: total,
-          paginas: paginas,
-          offset: offset
-        });
-      })
-      .catch(error => {
-        response.status(500).json({
-          titulo: "Erro interno do servidor!",
-          error
-        });
+    .then(({ medicos, count, paginas, offset }) => {
+      const total: number = (count) as any;
+      response.status(200).json({
+        dados: medicos,
+        quantidade: medicos.length,
+        total,
+        paginas: paginas,
+        offset: offset
       });
+    })
   }
 }
 

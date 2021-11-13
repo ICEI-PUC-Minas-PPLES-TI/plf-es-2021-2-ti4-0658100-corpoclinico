@@ -17,18 +17,13 @@ class UnidadeController {
     const scheme = unidadeCreateValidationScheme;
 
     // Validando com o esquema criado:
-    try {
-      await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (erro) {
-      throw new AppError("Erro na validação de um ou mais campos", 422, erro)
-    } 
+    await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
     const { bairro, cep, cidade, logradouro, nome, numero } = request.body;
 
     const unidade = await this.Service.create({ bairro, cep: cep?.replace(/\D/g, ''), cidade, logradouro, nome, numero })
     response.status(201).json({
       id: unidade.id,
-      criado: true
     })
   }
 
@@ -36,27 +31,17 @@ class UnidadeController {
     const scheme = unidadeCreateValidationScheme;
 
     // Validando com o esquema criado:
-    try {
-      await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (erro) {
-      throw new AppError("Erro na validação de um ou mais campos", 422, erro)
-    } 
+          await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
     const { bairro, cep, cidade, logradouro, nome, numero, ativo } = request.body;
 
     await this.Service.update({ bairro, cep: cep?.replace(/\D/g, ''), cidade, logradouro, nome, numero, id: Number(request.params.id), ativo });
-    response.status(201).json({
-      atualizado: true,
-      id: 0
-    });
+    response.status(201).json({});
   }
 
   public delete: DeleteRequestHandler = async (request,response) => {
     await this.Service.delete(Number(request.params.id));
-    response.status(200).json({
-      deletado: true,
-      dado: Number(request.params.id)
-    });
+    response.status(200).json({});
   }
 
   // URI de exemplo: http://localhost:3000/api/unidade/1

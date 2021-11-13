@@ -41,12 +41,14 @@ class Usuario extends Model<IAtributosUsuario, IAtributosUsuarioCriacao> impleme
               where: { email: value },
               attributes: ["id"]
             })
-              .then(usuario => {
-                if (usuario.length != 0)
-                  next(new AppError("Email já cadastrado!"));
-                next();
-              })
-              .catch(onError => console.log(onError));
+            .then(usuario => {
+              if (usuario.length != 0)
+                next (new AppError("Email já cadastrado!", 422));
+              next();
+            })
+            .catch(error=>{
+              next (new AppError("Erro interno no servidor", 500, error))
+            })
           }
         }
       },

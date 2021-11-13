@@ -1,3 +1,4 @@
+import AppError from "../errors/AppError";
 import { ISortPaginateQuery, SortPaginate } from "../helpers/SortPaginate";
 import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
 import Equipe from "../models/Equipe";
@@ -6,32 +7,47 @@ import Medico from "../models/Medico";
 export default class CandidaturaService{
     async create(candidatura: IAtributosCandidaturaCriacao){
         return Candidatura.create({...candidatura})
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
+        })
     }
     async update(candidatura: Partial<IAtributosCandidaturaCriacao>){
         return Candidatura.update(candidatura, {
             where: {id: candidatura.id},
-        });
-    }
-    async delete(id: number){
-        return Candidatura.destroy({
-            where: {id}
-          })
-    }
-    async getById(id: number){
-        return Candidatura.findOne({
-            where: {id},
-            include: [ Medico, Equipe ]
+        })
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
         })
     }
-    async getBy(key: keyof Candidatura, atributo: string){
+    async delete(id: number) {
+        return Candidatura.destroy({
+            where: {id}
+        })
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
+        })
+    }
+    async getById(id: number) {
+        return Candidatura.findOne({
+            where: { id },
+            include: [Medico, Equipe]
+        })
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
+        })
+    }
+    async getBy(key: keyof Candidatura, atributo: string) {
         return Candidatura.findAll({
             where: {
                 [key]: atributo
             }
         })
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
+        })
     }
 
-    async getAll( sortPaginate: ISortPaginateQuery, atributos: string[] ){
+    async getAll(sortPaginate: ISortPaginateQuery, atributos: string[]) {
         return Candidatura.findAndCountAll()
         .then(async (dados) => {
             const count: number = (dados.count) as any;
@@ -49,9 +65,8 @@ export default class CandidaturaService{
                 offset: SortPaginateOptions.offset
             }
         })
-        .catch((error) => {
-            console.log(error);
-            throw error;
-        });
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
+        })
     }
 }

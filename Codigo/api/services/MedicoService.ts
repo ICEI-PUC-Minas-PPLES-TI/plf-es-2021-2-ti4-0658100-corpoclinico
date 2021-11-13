@@ -1,3 +1,4 @@
+import { Includeable, Model, where } from "sequelize/types";
 import { Op, Sequelize } from "sequelize";
 import AppError from "../errors/AppError";
 import { ISortPaginateQuery, SortPaginate } from "../helpers/SortPaginate";
@@ -14,14 +15,16 @@ export default class MedicoService {
     try {
       return Medico.create(medico);
     } catch (erro) {
-      throw new AppError("Usuário não criado!" + erro, 500);
+      throw new AppError("Usuário não criado!", 500, erro);
     }
   }
 
   async update(medico: Partial<IAtributosMedico>) {
-    return Medico.update(medico, {
-      where: { id: medico.id }
-    });
+    const alterado = await Medico.findByPk(medico.id);
+    if (!alterado)
+      throw new AppError("Médico não encontrado!", 404);
+    await alterado.update(medico);
+    return alterado;
   }
 
   // * Não é soft-delete nem hard-delete, apenas volta o status para 0.
@@ -30,21 +33,31 @@ export default class MedicoService {
     if (!medico) {
       throw new AppError("Médico não encontrado!", 404);
     }
-    if (force) {
-      medico.destroy({
-        force
-      });
+    try {
+      if (force){
+        medico.destroy({
+          force
+        })
+      }
+      else {
+        medico.update({
+          ativo: 0,
+        });
+      }
+    } catch (error) {
+      throw new AppError("Erro interno no servidor!", 500, error);
     }
-    medico.update({
-      ativo: 0
-    });
+
     return medico;
   }
 
-  async getById(id: number) {
+  async getById(id: number, include?: Includeable | Includeable[]) {
     return Medico.findOne({
       where: { id }
-    });
+    })
+    .catch (erro => {
+      throw new AppError("Erro interno no servidor!", 500, erro);
+    })
   }
 
   async getBy(field: keyof Medico, value: any) {
@@ -52,7 +65,10 @@ export default class MedicoService {
       where: {
         [field]: value
       }
-    });
+    })
+    .catch (erro => {
+      throw new AppError("Erro interno no servidor!", 500, erro);
+    })
   }
 
   async getAll(sortPaginate: ISortPaginateQuery, atributos: string[], filtros: IGetAllMedicoFilter) {
@@ -90,7 +106,8 @@ export default class MedicoService {
             data_criado: {
               [Op.between]: [dataInicio, dataFim]
             }
-          }
+          },
+          required:false,
         }
       ]
     })
@@ -102,46 +119,14 @@ export default class MedicoService {
           count
         );
         return {
-          medicos: await Medico.findAll({
-            attributes: atributos,
-            ...SortPaginateOptions,
-            include: [
-              {
-                model: Usuario,
-                as: "usuario",
-                attributes: ["email", "nome"],
-                where: {
-                  nome: {
-                    [Op.like]: `%${filtros.nome ? filtros.nome : ""}%` /* Se não passar nome será todos */
-                  }
-                }
-              },
-              {
-                model: Candidatura,
-                as: "candidatura",
-                attributes: [
-                  "cnpj",
-                  "faturamento",
-                  "equipe_id",
-                  "unidade_id",
-                  "data_criado"
-                ],
-                where: {
-                  data_criado: {
-                    [Op.between]: [dataInicio, dataFim]
-                  }
-                }
-              }
-            ],
-          }),
+          medicos: dados.rows,
           count: dados.count,
           paginas,
           offset: SortPaginateOptions.offset
         };
       })
-      .catch(error => {
-        console.log(error);
-        throw error;
-      });
+      .catch (erro => {
+        throw new AppError("Erro interno no servidor!", 500, erro);
+      })
   }
 }

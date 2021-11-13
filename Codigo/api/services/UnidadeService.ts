@@ -37,6 +37,9 @@ export default class UnidadeService {
     return Unidade.findOne({
       where: { id }
     })
+    .catch (erro => {
+      throw new AppError("Erro interno no servidor!", 500, erro);
+    })
   }
 
   async getBy(field: keyof Unidade, value: any) {
