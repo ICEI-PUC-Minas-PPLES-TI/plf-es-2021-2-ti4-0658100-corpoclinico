@@ -192,7 +192,7 @@ class MedicoController {
       throw new AppError("Usuário não encontrado!", 404);
 
     const usuarioLogado = await this.usuarioSerive.getById(Number(idLogado));
-    if (usuarioLogado?.get().tipo !== "A" && usuario.id !== usuarioLogado?.get().id)
+    if (usuarioLogado?.get().tipo !== "A" && usuario?.get().id !== usuarioLogado?.get().id)
       throw new AppError("Usuário logado não é admin ou não é o mesmo do médico em atualização cadastral!", 405);
 
     usuario.update({
