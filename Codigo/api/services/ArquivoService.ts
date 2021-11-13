@@ -1,5 +1,6 @@
 import AppError from "../errors/AppError";
 import Arquivo, { IAtributosArquivoCriacao } from "../models/Arquivo";
+import MedicoFormacaoService from "./MedicoFormacaoService";
 
 export default class ArquivoService {
 
@@ -100,6 +101,8 @@ export default class ArquivoService {
         const nome_arquivo = certFormFields.filename;
         const tipo = 'FORM';
         const certForm = await this.gerar({ nome_arquivo, tipo, medico_id });
+        const medicoFormacaoService = new MedicoFormacaoService();
+        // const medicoFormacao = medicoFormacaoService.create()
         return certForm;
       } catch (erro) {
         throw new AppError("Arquivo não criado!" + erro, 500);
