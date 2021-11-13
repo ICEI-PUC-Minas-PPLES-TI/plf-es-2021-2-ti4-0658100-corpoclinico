@@ -6,7 +6,7 @@ import { ISortPaginateQuery } from '../helpers/SortPaginate'
 
 export type CreateRequestHandler<TRequestBody = any> = RequestHandler<never, CreateResponse, TRequestBody>;
 
-export type GetAllRequestHandler<TModel> = RequestHandler<never, ReadResponse<TModel>, never, ISortPaginateQuery>;
+export type GetAllRequestHandler<TModel, TQuery=ISortPaginateQuery> = RequestHandler<never, ReadResponse<TModel>, never, TQuery>;
 
 export type GetRequestHandler<TModel> = RequestHandler<{ id: string }, TModel | undefined | null>
 

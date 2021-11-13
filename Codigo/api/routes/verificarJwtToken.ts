@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import Usuario from "../models/Usuario";
 
 import { RequestHandler } from 'express'
+import AppError from "../errors/AppError";
 
 interface IAuthRequest {
   userId: number
@@ -11,19 +12,16 @@ const verificarToken: RequestHandler = (req, res, next) => {
   let token = req.headers["x-access-token"];
 
   if (!token) {
-    return res.status(403).send({
-      autenticado: false,
-      message: "Token de autenticação não fornecido."
-    });
+    throw new AppError("Token de autenticação não fornecido.", 401);
   }
   else {
     token = Array.isArray(token) ? token[0] : token; //garante que token é uma string
     jwt.verify(token, process.env.SECRET_KEY ?? " ", (err, decoded) => {
       if (err) {
-        return res.status(500).send({
+        throw new AppError("Falha ao autenticar o token.", 401, {
           autenticado: false,
-          message: "Falha ao autenticar o token. Erro -> " + err
-        });
+          error: err
+        })
       }
       req.headers.authorization = decoded?.id;
       next();
@@ -40,9 +38,8 @@ const isAdmin: RequestHandler = (req, res, next) => {
       next();
       return;
     }
-
-    res.status(403).send("Necessita de ser um usuário administrador!");
-    return;
+    else
+      throw new AppError("Necessita de ser um usuário administrador!", 403)
   });
 };
 

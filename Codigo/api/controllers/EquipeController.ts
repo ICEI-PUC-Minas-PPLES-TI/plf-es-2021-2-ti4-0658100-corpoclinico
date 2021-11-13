@@ -4,6 +4,7 @@ import { equipeCreateValidationScheme, equipeUpdateValidationScheme } from "../v
 
 import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
 import EspecialidadeService from "../services/EspecialidadeService";
+import AppError from "../errors/AppError";
 
 class EquipeController {
   private Service!: EquipeService;
@@ -19,58 +20,34 @@ class EquipeController {
     const scheme = equipeCreateValidationScheme;
 
     // Validando com o esquema criado:
-    try {
-      await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (erro: any) {
-      return response.status(422).json({
-        criado: false,
-        nome: erro.name, // => 'ValidationError'
-        erros: erro.errors
-      });
-    }
+    await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
+
 
     const { nome, especialidade_id } = request.body;
 
     // vê se a especialidade existe
     const especialidade = await this.EspecialidadeService.getById(especialidade_id);
     if (!especialidade){
-      return response.status(422).json({
-        criado: false,
-        nome: "especialidade_id não existe no banco",
-        erros: ["especialidade_id não existe no banco"]
-      })
+      throw new AppError("Erro na validação de um ou mais campos", 422, "especialidade_id não existe no banco")
     }
 
-    this.Service.create({ nome, especialidade_id })
+    await this.Service.create({ nome, especialidade_id })
     .then((equipe) => {
       return response.status(201).json({
-        criado: true,
         id: equipe.id
       });
     })
-    .catch((erro) => {
-      return response.status(500).json({
-        criado: false,
-        erros: erro.message
-      });
-    });
   }
 
   // URI de exemplo: http://localhost:3000/api/equipe/1
   public delete: DeleteRequestHandler = async (request, response) => {
-    this.Service.delete(Number(request.params.id))
+    const equipe = await this.Service.getById(Number(request.params.id));
+    if (!equipe)
+      throw new AppError("Equipe não encontrada", 404);
+    await this.Service.delete(Number(request.params.id))
     .then(dado => {
-      response.status(204).json({
-        deletado: true,
-        dado
-      });
+      response.status(204).json({});
     })
-    .catch(function(error) {
-      response.status(500).json({
-        deletado: false,
-        errors: error
-      });
-    });
   }
 
   // URI de exemplo: http://localhost:3000/api/equipe/1
@@ -79,15 +56,7 @@ class EquipeController {
     const scheme = equipeUpdateValidationScheme
 
     // Validando com o esquema criado:
-    try {
-      await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (err: any) {
-      return response.status(422).json({
-        atualizado: false,
-        nome: err.name, // => 'ValidationError'
-        erros: err.errors
-      });
-    }
+    await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
     const { nome, especialidade_id } = request.body;
     const id = Number(request.params.id)
@@ -96,28 +65,17 @@ class EquipeController {
     if (especialidade_id){
       const especialidade = await this.EspecialidadeService.getById(especialidade_id);
       if (!especialidade){
-        return response.status(422).json({
-          atualizado: false,
-          nome: "especialidade_id não existe no banco",
-          erros: ["especialidade_id não existe no banco"]
-        })
+        throw new AppError("Erro na validação de um ou mais campos", 422, "especialidade_id não existe no banco");
       }
     }
     
 
     const equipe = await this.Service.getById(id)
     if (!equipe) {
-      response.status(404).json({
-        atualizado: false,
-        nome: "Equipe não encontrada",
-        erros: "O id que foi solicitado alteração não existe no banco de dados"
-      });
+      throw new AppError('Unidade não encontrada', 404);
     } else {
       await this.Service.update({ id: equipe.get().id, nome, especialidade_id });
-      response.status(200).json({
-        atualizado: true,
-        id: equipe.id
-      });
+      response.status(200).json({});
     }
   }
 
@@ -126,7 +84,7 @@ class EquipeController {
 
     const equipe = await this.Service.getById(Number(request.params.id))
     if (!equipe) {
-      response.status(404).json(equipe);
+      throw new AppError('Equipe não encontrada', 404);
     } else {
       response.status(200).json(equipe);
     }
@@ -140,7 +98,7 @@ class EquipeController {
         "nome",
     ];
 
-    this.Service.getAll(
+    await this.Service.getAll(
       {...request.query},
       atributos,
     )
@@ -153,12 +111,6 @@ class EquipeController {
         offset: offset
       });
     })
-    .catch(error => {
-      response.status(500).json({
-        titulo: "Erro interno do servidor!",
-        error
-      });
-    });
   }
 }
 
