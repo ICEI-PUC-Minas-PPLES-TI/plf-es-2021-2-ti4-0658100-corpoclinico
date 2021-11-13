@@ -10,6 +10,7 @@ import Medico from '../models/Medico';
 import Usuario from "../models/Usuario";
 import Candidatura from '../models/Candidatura';
 import Unidade from "../models/Unidade";
+import Retorno from '../models/Retorno';
 
 dotenv.config();
 
@@ -37,7 +38,7 @@ export default {
       Equipe.initialize(sequelize);
       Arquivo.initialize(sequelize);
       Candidatura.initialize(sequelize);
-      
+      Retorno.initialize(sequelize);
 
       // Associações
       Equipe.belongsTo(Especialidade, { foreignKey: 'especialidade_id'})
@@ -59,6 +60,15 @@ export default {
       Candidatura.belongsTo(Medico, {
         foreignKey: 'medico_id'
       })
+
+      Retorno.belongsTo(Usuario, {
+        as: 'avaliador',
+        foreignKey: 'avaliador_id'
+      });
+      Retorno.belongsTo(Candidatura, {
+        as: 'candidatura',
+        foreignKey: 'candidatura_id'
+      });
 
 
       if (process.env.NODE_ENV === "dev") {

@@ -3,10 +3,38 @@ import { ISortPaginateQuery, SortPaginate } from "../helpers/SortPaginate";
 import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
 import Equipe from "../models/Equipe";
 import Medico from "../models/Medico";
+import EquipeService from "./EquipeService";
+import RetornoService from "./RetornoService";
+import UsuarioService from "./UsuarioService";
 
 export default class CandidaturaService{
+    equipeService!: EquipeService;
+    retornoService!: RetornoService;
+    usuarioService!: UsuarioService;
+
+    constructor(){
+        this.equipeService = new EquipeService();
+        this.retornoService = new RetornoService();
+    }
+
     async create(candidatura: IAtributosCandidaturaCriacao){
         return Candidatura.create({...candidatura})
+        .then(async (candidatura)=>{
+            const { equipe_id, id: candidatura_id } = candidatura.get();
+            const equipe = await this.equipeService.getById( equipe_id );
+            const avaliador_id = equipe.get().usuario_id;
+
+            
+            return Promise.all([
+                this.retornoService.create({
+                    avaliador_id,
+                    candidatura_id,
+                    status: 'P',
+                }),
+                
+            ])
+            
+        })
         .catch (erro => {
             throw new AppError("Erro interno no servidor!", 500, erro);
         })
