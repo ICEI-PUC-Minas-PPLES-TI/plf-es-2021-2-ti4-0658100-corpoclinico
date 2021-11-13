@@ -52,7 +52,10 @@ router.delete('/especialidade/:id', especialidadeController.delete)
 router.put('/especialidade/:id',  especialidadeController.update)
 // Unidade
 router.get('/unidade/:id', [autenticacaoJwt.verificarToken], unidadeController.get)
+router.put('/unidade/:id', unidadeController.update)
+router.delete('/unidade/:id', unidadeController.delete)
 router.get('/unidade', unidadeController.getAll)
+router.post('/unidade', unidadeController.create)
 // Arquivo
 router.delete('/arquivo/:id', arquivoController.delete)
 

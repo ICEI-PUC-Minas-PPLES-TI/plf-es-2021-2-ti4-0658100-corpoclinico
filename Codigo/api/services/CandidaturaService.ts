@@ -34,24 +34,25 @@ export default class CandidaturaService {
 
     async getAll(sortPaginate: ISortPaginateQuery, atributos: string[]) {
         return Candidatura.findAndCountAll()
-            .then(async (dados) => {
-                const { paginas, ...SortPaginateOptions } = SortPaginate(
-                    { ...sortPaginate },
-                    atributos,
-                    dados.count
-                );
-                return {
-                    candidaturas: await Candidatura.findAll({
-                        ...SortPaginateOptions,
-                    }),
-                    count: dados.count,
-                    paginas,
-                    offset: SortPaginateOptions.offset
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-                throw error;
-            });
+        .then(async (dados) => {
+            const count: number = (dados.count) as any;
+            const { paginas, ...SortPaginateOptions } = SortPaginate(
+                {...sortPaginate},
+                atributos,
+                count
+            );
+            return {
+                candidaturas: await Candidatura.findAll({
+                    ...SortPaginateOptions,
+                }),
+                count,
+                paginas,
+                offset: SortPaginateOptions.offset
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            throw error;
+        });
     }
 }

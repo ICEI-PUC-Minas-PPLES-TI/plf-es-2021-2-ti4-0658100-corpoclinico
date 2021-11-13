@@ -291,10 +291,11 @@ class MedicoController {
       { nome, dt_inicio, dt_fim },
     )
       .then(({ medicos, count, paginas, offset }) => {
+        const total: number = (count) as any;
         response.status(200).json({
           dados: medicos,
           quantidade: medicos.length,
-          total: count,
+          total: total,
           paginas: paginas,
           offset: offset
         });
