@@ -1,3 +1,4 @@
+import { Includeable, Model, where } from "sequelize/types";
 import { Op, Sequelize } from "sequelize";
 import AppError from "../errors/AppError";
 import { ISortPaginateQuery, SortPaginate } from "../helpers/SortPaginate";
@@ -14,14 +15,17 @@ export default class MedicoService {
     try {
       return Medico.create(medico);
     } catch (erro) {
-      throw new AppError("Usuário não criado!" + erro, 500);
+      throw new AppError("Usuário não criado!", 500, erro);
     }
   }
 
   async update(medico: Partial<IAtributosMedico>) {
     return Medico.update(medico, {
       where: { id: medico.id }
-    });
+    })
+    .catch (erro => {
+      throw new AppError("Erro interno no servidor!", 500, erro);
+    })
   }
 
   // * Não é soft-delete nem hard-delete, apenas volta o status para 0.
@@ -30,21 +34,31 @@ export default class MedicoService {
     if (!medico) {
       throw new AppError("Médico não encontrado!", 404);
     }
-    if (force) {
-      medico.destroy({
-        force
-      });
+    try {
+      if (force){
+        medico.destroy({
+          force
+        })
+      }
+      else {
+        medico.update({
+          ativo: 0,
+        });
+      }
+    } catch (error) {
+      throw new AppError("Erro interno no servidor!", 500, error);
     }
-    medico.update({
-      ativo: 0
-    });
+    
     return medico;
   }
 
-  async getById(id: number) {
+  async getById(id: number, include?: Includeable | Includeable[]) {
     return Medico.findOne({
       where: { id }
-    });
+    })
+    .catch (erro => {
+      throw new AppError("Erro interno no servidor!", 500, erro);
+    })
   }
 
   async getBy(field: keyof Medico, value: any) {
@@ -52,7 +66,10 @@ export default class MedicoService {
       where: {
         [field]: value
       }
-    });
+    })
+    .catch (erro => {
+      throw new AppError("Erro interno no servidor!", 500, erro);
+    })
   }
 
   async getAll(sortPaginate: ISortPaginateQuery, atributos: string[], filtros: IGetAllMedicoFilter) {
@@ -139,9 +156,8 @@ export default class MedicoService {
           offset: SortPaginateOptions.offset
         };
       })
-      .catch(error => {
-        console.log(error);
-        throw error;
-      });
+      .catch (erro => {
+        throw new AppError("Erro interno no servidor!", 500, erro);
+      })
   }
 }

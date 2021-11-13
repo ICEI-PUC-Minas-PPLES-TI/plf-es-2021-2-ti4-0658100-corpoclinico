@@ -7,6 +7,8 @@ import bcrypt from "bcryptjs";
 import { RequestHandler } from "express";
 import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
 import AppError from "../errors/AppError";
+import UsuarioService from "../services/UsuarioService";
+import { usuarioCreateValidation, usuarioUpdateValidation } from "../validations/UsuarioValidations";
 
 interface ILoginUsuario {
   email: string,
@@ -14,158 +16,82 @@ interface ILoginUsuario {
 }
 
 type SigninReponse = string | {
-  autenticado: boolean,
   acessoToken: string | null,
   razao?: "Senha incorreta!"
 }
 
 class UsuarioController {
+
+  Service!: UsuarioService;
+
+  constructor(){
+    this.Service = new UsuarioService();
+  }
+
   public signin: RequestHandler<never, SigninReponse, ILoginUsuario> = async (req, res) => {
     const { email, senha } = req.body;
 
-    Usuario.findOne({
-      attributes: ['id', 'senha'],
-      where: {
-        email: email
+    await this.Service.getBy('email', email, ['id', 'senha'])
+    .then(usuario => {
+      if (!usuario) {
+        throw new AppError("Usuário não encontrado", 404);
       }
-    })
-      .then(usuario => {
-        if (!usuario) {
-          return res.status(404).send("Usuario nao encontrado.");
-        }
+      const senhaValida = bcrypt.compareSync(senha, usuario.get().senha);
+      if (!senhaValida) {
+        throw new AppError("Senha incorreta!", 401);
+      }
 
-        const senhaValida = bcrypt.compareSync(senha, usuario.get().senha);
-        if (!senhaValida) {
-          return res.status(401).send({
-            autenticado: false,
-            acessoToken: null,
-            razao: "Senha incorreta!"
-          });
-        }
-
-        const token = jwt.sign({ id: usuario.get().id }, process.env.SECRET_KEY ?? "fill-the-env-file.this-is-only-to-prevent-type-error", {
-          expiresIn: 604800 * 4 // 4 semana expira
-        });
-
-        res.status(200).send({ autenticado: true, acessoToken: token });
-      })
-      .catch(err => {
-        res.status(500).send("Erro -> " + err);
+      const token = jwt.sign({ id: usuario.get().id }, process.env.SECRET_KEY ?? "fill-the-env-file.this-is-only-to-prevent-type-error", {
+        expiresIn: 604800 * 4 // 4 semana expira
       });
+
+      res.status(200).send({ acessoToken: token });
+    })
   }
 
   public create: CreateRequestHandler = async (request, response) => {
-    const scheme = yup.object().shape({
-      nome: yup.string().required("'nome' obrigatório!").max(120, "'nome' deve ter no máximo 120 caracteres!"),
-
-      email: yup
-        .string()
-        .email()
-        .required("'email' obrigatório!").max(100, "'email' deve ter no máximo 100 caracteres!"),
-      senha: yup
-        .string()
-        .required("'senha' obrigatória!")
-        .min(8, "'senha' deve ter no mínimo 8 caracteres!")
-        .max(64, "'senha' deve ter no máximo 64 caracteres!")
-    });
+    const scheme = usuarioCreateValidation;
 
     // Validando com o esquema criado:
-    try {
-      await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (erro: any) {
-      return response.status(422).json({
-        criado: false,
-        nome: erro.name, // => 'ValidationError'
-        erros: erro.errors
-      });
-    }
+    await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
     const { nome, email, senha } = request.body;
     const password = bcrypt.hashSync(senha, 8);
 
-    const usuario = Usuario.build({
+    await this.Service.create({
       nome,
       email,
       senha: password,
       tipo: "A"
-    });
-
-    usuario
-      .save()
-      .then(() => {
-        return response.status(201).json({
-          criado: true,
-          id: usuario.id
-        });
-      })
-      .catch((erro) => {
-        return response.status(500).json({
-          criado: false,
-          erros: erro.message
-        });
+    })
+    .then((usuario) => {
+      return response.status(201).json({
+        id: usuario.id
       });
+    })
   }
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
   public delete: DeleteRequestHandler = async (request, response) => {
-    const usuario = await Usuario.findOne({
-      where: {
-        id: request.params.id
-      }
-    });
+    const usuario = await this.Service.getById( Number(request.params.id) );
     if (!usuario) {
-      return response.status(404).json({
-        deletado: false,
-        errors: "ID de usuário não encontrado!"
-      });
+      throw new AppError("Usuário não encontrado", 404)
     }
 
-    await Usuario.destroy({
-      where: {
-        id: request.params.id
-      }
+    await this.Service.delete(usuario.get().id)
+    .then(() => {
+      response.status(204).json({});
     })
-      .then(dado => {
-        response.status(204).json({
-          deletado: true,
-          dado
-        });
-      })
-      .catch(function (error) {
-        response.status(500).json({
-          deletado: false,
-          errors: error
-        });
-      });
   }
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
   public update: UpddateRequestHandler<IAtributosUsuario> = async (request, response) => {
     const tipos = ["A", "M", "CC", "DC", "DT"];
 
-    const scheme = yup.object().shape({
-      nome: yup.string().max(120, "'nome' deve ter no máximo 120 caracteres!"),
-
-      email: yup.string().email().max(100, "'email' deve ter no máximo 100 caracteres!"),
-      senha: yup
-        .string()
-        .required("'senha' obrigatória!")
-        .min(8, "'senha' deve ter no mínimo 8 caracteres!")
-        .max(64, "'senha' deve ter no máximo 64 caracteres!"),
-
-      tipo: yup.mixed().oneOf(tipos, `Tipo deve ser algum destes: ${tipos}.`)
-    });
+    const scheme = usuarioUpdateValidation;
 
     // Validando com o esquema criado:
-    try {
-      await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
-    } catch (err: any) {
-      return response.status(422).json({
-        atualizado: false,
-        nome: err.name, // => 'ValidationError'
-        erros: err.errors
-      });
-    }
+    await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
     const { nome, email, senha } = request.body;
 
@@ -174,42 +100,28 @@ class UsuarioController {
       passTemp = bcrypt.hashSync(senha, 8);
     const password = passTemp;
 
-    const usuario = await Usuario.findOne({
-      where: {
-        id: request.params.id
-      }
-    });
+    const usuario = await this.Service.getById( Number(request.params.id) );
     if (!usuario) {
-      response.status(404).json({
-        atualizado: false,
-        nome: "Usuario não encontrado",
-        erros: "O id que foi solicitado alteração não existe no banco de dados"
-      });
+      throw new AppError('Usuario não encontrado', 404);
     } else {
-      usuario.update({
+      await usuario.update({
         nome: nome ? nome : usuario.get().nome,
         email: email ? email : usuario.get().email,
         senha: password ? password : usuario.get().senha,
         tipo: "A"
-      });
-      response.status(200).json({
-        atualizado: true,
-        id: usuario.id
-      });
+      }).catch((err)=>{
+        throw new AppError("Erro interno no servidor", 500, err);
+      })
+      response.status(200).json({});
     }
   }
 
   // URI de exemplo: http://localhost:3000/api/usuario/1
   public get: GetRequestHandler<IAtributosUsuario> = async (request, response) => {
 
-    const usuario = await Usuario.findOne({
-      where: {
-        id: request.params.id
-      },
-      paranoid: false
-    });
+    const usuario = await this.Service.getById(Number(request.params.id));
     if (!usuario) {
-      response.status(404).json(usuario);
+      throw new AppError('Usuario não encontrado', 404);
     } else {
       response.status(200).json(usuario);
     }
@@ -219,43 +131,16 @@ class UsuarioController {
   // todos as querys são opicionais
   public getAll: GetAllRequestHandler<IAtributosUsuario> = async (request, response) => {
 
-    Usuario.findAndCountAll({
-      paranoid: false
-    })
-      .then(dados => {
-        const { paginas, ...SortPaginateOptions } = SortPaginate(
-          request.query,
-          Object.keys(
-            Usuario.rawAttributes
-          ) /* Todos os atributos de usuário */,
-          dados.count,
-        );
-        Usuario.findAll({
-          ...SortPaginateOptions,
-          paranoid: false
-        })
-          .then(usuarios => {
-            response.status(200).json({
-              dados: usuarios,
-              quantidade: usuarios.length,
-              total: dados.count,
-              paginas: paginas,
-              offset: SortPaginateOptions.offset
-            });
-          })
-          .catch(error => {
-            response.status(500).json({
-              titulo: "Erro interno do servidor!",
-              error
-            });
-          });
-      })
-      .catch(function (error) {
-        response.status(500).json({
-          titulo: "Erro interno do servidor!",
-          error
-        });
+    await this.Service.getAll(request.query)
+    .then(dados => {
+      const total: number = (dados.total) as any;
+      response.status(200).json({
+        ...dados,
+        total,
+        quantidade: dados.dados.length
       });
+    });
+    
   }
 }
 

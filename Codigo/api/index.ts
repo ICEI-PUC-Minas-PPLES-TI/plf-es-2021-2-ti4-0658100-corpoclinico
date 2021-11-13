@@ -12,33 +12,44 @@ const app = express();
 import routes from "./routes";
 import AppError from "./errors/AppError"
 import db from "./database";
+import { ValidationError as YupError } from "yup";
 
 // Import API Routes
 app.use(cors());
 app.use(express.json());
-app.use(routes);
+// se tiver no modo standalone tem que indicar o caminho das rotas
+if (require.main === module)
+  app.use('/api', routes);
+else
+  app.use(routes);
 
 db.connect();
 
-app.use([(err, request, response, next) => {console.log(err)
+app.use([(err, request, response, next) => {
   if (err instanceof AppError) {
     return response.status(err.statusCode).json({
       message: err.message,
-      error: err.error
+      error: err.error ?? err
     });
+  }
+  else if (err instanceof YupError) {
+    return response.status(422).json({
+      message: "Erro na validação dos campos",
+      error: err.errors
+    })
   }
 
   // Caso seja outro erro
   if (process.env.APP_DEBUG) {
     return response.status(500).json({
-      status: "Error",
+      error: err.error,
       message: err.message,
       stack: err.stack
     });
   } else {
     return response.status(500).json({
-      status: "Error",
-      message: `Internal server error ${err.message}`
+      message: `Erro interno no servidor!`,
+      error: err
     });
   }
 }]);
@@ -47,6 +58,7 @@ app.use([(err, request, response, next) => {console.log(err)
 
 export default app;
 
+// standalone para npm run api
 if (require.main === module) {
   //app.use('/api', routes);
   const port = process.env.PORT || 3001;
