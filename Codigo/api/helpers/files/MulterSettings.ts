@@ -1,6 +1,7 @@
 import multer from "multer";
 import { extensoesPermitidas } from "./DocumentosEnum";
 import path from 'path';
+import AppError from "../../errors/AppError";
 
 const armazenamento = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -19,7 +20,7 @@ const upload = multer({
     var ext = path.extname(file.originalname).toLowerCase();
     if (!extensoesPermitidas.includes(ext)
     ) {
-      return callback(new Error(`Somente estas extensões de arquivos são permitidas: ${extensoesPermitidas}`))
+      return callback(new AppError(`Somente estas extensões de arquivos são permitidas: ${extensoesPermitidas}`, 400))
     }
     callback(null, true)
   },

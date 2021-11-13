@@ -85,10 +85,12 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
               })
                 .then(medico => {
                   if (medico.length != 0)
-                    next(new AppError("'crm' já cadastrado!"));
+                    next(new AppError("'crm' já cadastrado!", 422));
                   next();
                 })
-                .catch(onError => console.log(onError));
+                .catch(error => {
+                  throw new AppError("Erro interno no servidor")
+                });
             }
           }
         },
@@ -113,12 +115,14 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
                 where: { cartao_sus: value },
                 attributes: ["id"]
               })
-                .then(medico => {
-                  if (medico.length != 0 && value != null)
-                    next(new AppError("'cartao_sus' já cadastrado!"));
-                  next();
-                })
-                .catch(onError => console.log(onError));
+              .then(medico => {
+                if (medico.length != 0 && value != null)
+                  next(new AppError("'cartao_sus' já cadastrado!", 422));
+                next();
+              })
+              .catch(error => {
+                next( new AppError("Erro interno no servidor") );
+              });
             }
           }
         },
@@ -135,12 +139,14 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
                 where: { rg: value },
                 attributes: ["id"]
               })
-                .then(medico => {
-                  if (medico.length != 0 && value != null)
-                    next(new AppError("'rg' já cadastrado!"));
-                  next();
-                })
-                .catch(onError => console.log(onError));
+              .then(medico => {
+                if (medico.length != 0 && value != null)
+                  next(new AppError("'rg' já cadastrado!", 422));
+                next();
+              })
+              .catch(error => {
+                next( new AppError("Erro interno no servidor") )
+              });
             }
           }
         },
@@ -167,10 +173,12 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
               })
                 .then(medico => {
                   if (medico.length != 0 && value != null)
-                    next(new AppError("'cpf' já cadastrado!"));
+                    next(new AppError("'cpf' já cadastrado!", 422));
                   next();
                 })
-                .catch(onError => console.log(onError));
+                .catch(error => {
+                  next( new AppError("Erro interno no servidor") )
+                });
             }
           }
         },
@@ -185,10 +193,12 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
               })
                 .then(medico => {
                   if (medico.length != 0 && value != null)
-                    next(new AppError("'titulo_eleitoral' já cadastrado!"));
+                    next(new AppError("'titulo_eleitoral' já cadastrado!", 422));
                   next();
                 })
-                .catch(onError => console.log(onError));
+                .catch(error => {
+                  next( new AppError("Erro interno no servidor") )
+                });
             }
           }
         },
