@@ -10,7 +10,7 @@ export interface IAtributosMedicoFormacao {
   arquivo_id: number
 }
 export interface IAtributosMedicoFormacaoCriacao
-  extends Optional<IAtributosMedicoFormacao, "id"> { }
+  extends Optional<IAtributosMedicoFormacao, "id" | "medico_id" | "arquivo_id" > { }
 
 class MedicoFormacao extends Model<IAtributosMedicoFormacao, IAtributosMedicoFormacaoCriacao>
   implements IAtributosMedicoFormacao {

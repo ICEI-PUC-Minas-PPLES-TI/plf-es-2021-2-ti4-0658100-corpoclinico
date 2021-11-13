@@ -1,10 +1,11 @@
 import AppError from "../errors/AppError";
 import Arquivo, { IAtributosArquivoCriacao } from "../models/Arquivo";
+import { IAtributosMedicoFormacaoCriacao } from "../models/MedicoFormacao";
 import MedicoFormacaoService from "./MedicoFormacaoService";
 
 export default class ArquivoService {
 
-  async create(arquivos: any, medico_id: number) {
+  async create(arquivos: any, medico_id: number, formacoes : IAtributosMedicoFormacaoCriacao[]) {
     const arqString = JSON.stringify(arquivos).replace("[Object: null prototype] ", "");
     const arquivosObj = JSON.parse(arqString);
 
@@ -96,11 +97,15 @@ export default class ArquivoService {
       }
     });
 
-    arquivosObj.docs_cert_form?.forEach(async (certFormFields: any) => {
+    arquivosObj.docs_cert_form?.forEach(async (certFormFields: any, index : number) => {
       try {
         const nome_arquivo = certFormFields.filename;
         const tipo = 'FORM';
         const certForm = await this.gerar({ nome_arquivo, tipo, medico_id });
+        const medicoFormacaoService = new MedicoFormacaoService();
+        formacoes[index].medico_id = medico_id;
+        formacoes[index].arquivo_id = certForm.id
+        medicoFormacaoService.create(formacoes[index]);
         return certForm;
       } catch (erro) {
         throw new AppError("Arquivo não criado!", 500, erro);
@@ -226,7 +231,7 @@ export default class ArquivoService {
         const tipo = 'FORM';
         const certForm = await this.gerar({ nome_arquivo, tipo, medico_id });
         const medicoFormacaoService = new MedicoFormacaoService();
-        // const medicoFormacao = medicoFormacaoService.create()
+        // const medicoFormacao = medicoFormacaoService.create({});
         return certForm;
       } catch (erro) {
         throw new AppError("Arquivo não criado!" + erro, 500);
@@ -253,7 +258,6 @@ export default class ArquivoService {
         },
         force: true
       });
-      console.log(id)
     } catch (erro) {
       throw new AppError("Arquivo não criado! " + erro, 404);
     }

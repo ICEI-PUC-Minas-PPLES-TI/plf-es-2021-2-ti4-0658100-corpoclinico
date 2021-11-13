@@ -1,25 +1,38 @@
+import AppError from "../errors/AppError";
 import { ISortPaginateQuery, SortPaginate } from "../helpers/SortPaginate";
 import MedicoFormacao, { IAtributosMedicoFormacaoCriacao } from "../models/MedicoFormacao";
 import Especialidade from "../models/Especialidade";
 
 export default class MedicoFormacaoService{
-    async create(medicoFormacao: IAtributosMedicoFormacaoCriacao){
-        return MedicoFormacao.create(medicoFormacao)
+    async create(formacao: IAtributosMedicoFormacaoCriacao){
+        return MedicoFormacao.create(formacao)
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
+        })
     }
-    async update(medicoFormacao: Partial<IAtributosMedicoFormacaoCriacao>){
-        return MedicoFormacao.update(medicoFormacao, {
-            where: {id: medicoFormacao.id},
-        });
+    async update(formacao: Partial<IAtributosMedicoFormacaoCriacao>){
+        return MedicoFormacao.update(formacao, {
+            where: {id: formacao.id},
+        })
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
+        })
     }
     async delete(id: number){
         return MedicoFormacao.destroy({
             where: {id}
-          })
+        })
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
+        })
     }
     async getById(id: number){
         return MedicoFormacao.findOne({
             where: {id},
             include: [ Especialidade ]
+        })
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
         })
     }
 
@@ -33,7 +46,7 @@ export default class MedicoFormacaoService{
                 count
             );
             return {
-                medicoFormacaos: await MedicoFormacao.findAll({
+                formacaos: await MedicoFormacao.findAll({
                     include: [ Especialidade ],
                     ...SortPaginateOptions,
                 }),
@@ -42,9 +55,8 @@ export default class MedicoFormacaoService{
                 offset: SortPaginateOptions.offset
             }
         })
-        .catch((error) => {
-            console.log(error);
-            throw error;
-        });
+        .catch (erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
+        })
     }
 }

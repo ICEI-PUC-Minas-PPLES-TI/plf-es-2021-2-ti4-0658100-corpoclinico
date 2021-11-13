@@ -15,8 +15,9 @@ import CandidaturaService from "../services/CandidaturaService";
 import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
 import { IGetAllMedicoFilter } from "../types/Requests";
 import { ISortPaginateQuery } from "../helpers/SortPaginate";
+import { IAtributosMedicoFormacao, IAtributosMedicoFormacaoCriacao } from "../models/MedicoFormacao";
 
-interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { }
+interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { "formacoes" : any }
 interface IGetHandlerGetFilter extends ISortPaginateQuery, IGetAllMedicoFilter { }
 
 class MedicoController {
@@ -39,10 +40,16 @@ class MedicoController {
 
     await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
-    const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
+    const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max, formacoes } = request.body;
     const { equipe_id, cnpj, faturamento, unidade_id } = request.body;
     const { nome, email, senha } = request.body;
     const password = bcrypt.hashSync(senha, 8);
+
+    let formacoesArray : any;
+    if(typeof formacoes == "string")
+      formacoesArray = JSON.parse(formacoes);
+    else
+      formacoesArray = formacoes;
 
     const usuario = await this.usuarioSerive.create({
       nome,
@@ -82,7 +89,7 @@ class MedicoController {
     )
       .then(async (medico) => {
         await Promise.all([
-          this.arquivoService.create(request.files, medico.id),
+          this.arquivoService.create(request.files, medico.id, formacoesArray),
           this.candidaturaService.create({ cnpj, equipe_id, faturamento, medico_id: medico.id, unidade_id })
         ]).catch(async (error) => {
           await this.medicoService.delete(medico.id, true);
