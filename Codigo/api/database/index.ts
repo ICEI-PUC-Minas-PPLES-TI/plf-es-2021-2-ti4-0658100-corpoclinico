@@ -68,6 +68,9 @@ export default {
       MedicoFormacao.belongsTo(Medico, {
         foreignKey: 'medico_id'
       })
+      MedicoFormacao.hasMany(Arquivo, {
+        onDelete: 'cascade', hooks:true
+      })
 
 
       if (process.env.NODE_ENV === "dev") {

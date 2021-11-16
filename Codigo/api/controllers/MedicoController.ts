@@ -15,7 +15,7 @@ import CandidaturaService from "../services/CandidaturaService";
 import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
 import { IGetAllMedicoFilter } from "../types/Requests";
 import { ISortPaginateQuery } from "../helpers/SortPaginate";
-import { IAtributosMedicoFormacao, IAtributosMedicoFormacaoCriacao } from "../models/MedicoFormacao";
+import MedicoFormacao, { IAtributosMedicoFormacao, IAtributosMedicoFormacaoCriacao } from "../models/MedicoFormacao";
 
 interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { "formacoes" : any }
 interface IGetHandlerGetFilter extends ISortPaginateQuery, IGetAllMedicoFilter { }
@@ -133,9 +133,15 @@ class MedicoController {
     // Validando com o esquema criado:
     await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
-    const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
+    const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max, formacoes } = request.body;
     const { equipe_id, cnpj, faturamento, unidade_id } = request.body;
     const { nome, email, senha } = request.body;
+
+    let formacoesArray : any;
+    if(typeof formacoes == "string")
+      formacoesArray = JSON.parse(formacoes);
+    else
+      formacoesArray = formacoes;
 
     let senhaTemp;
     if (senha)
@@ -212,9 +218,10 @@ class MedicoController {
     )
       .then(async (medico) => {
         await Promise.all([
-          this.arquivoService.update(request.files, medico?.get().id),
+          this.arquivoService.update(request.files, medico?.get().id, formacoesArray),
           this.candidaturaService.update({ id: candidatura[0]?.get().id, cnpj, equipe_id, faturamento, medico_id: medico?.get().id, unidade_id }),
         ]).catch(async (error) => {
+          console.log(error)
           throw new AppError("Candidatura e arquivos para médico não atualizados!" + error, 500);
         })
         return response.status(201).json({
@@ -245,6 +252,9 @@ class MedicoController {
         {
           model: Candidatura, as: 'candidatura',
           attributes: ['cnpj', 'faturamento', 'equipe_id', 'unidade_id', 'data_criado']
+        },
+        {
+          model: MedicoFormacao, as: 'formacoes',
         }
       ]
     });

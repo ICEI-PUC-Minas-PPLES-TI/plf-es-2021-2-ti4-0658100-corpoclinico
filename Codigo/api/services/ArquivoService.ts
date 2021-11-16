@@ -1,11 +1,12 @@
+import {Op} from "sequelize";
 import AppError from "../errors/AppError";
 import Arquivo, { IAtributosArquivoCriacao } from "../models/Arquivo";
-import { IAtributosMedicoFormacaoCriacao } from "../models/MedicoFormacao";
+import MedicoFormacao, { IAtributosMedicoFormacao, IAtributosMedicoFormacaoCriacao } from "../models/MedicoFormacao";
 import MedicoFormacaoService from "./MedicoFormacaoService";
 
 export default class ArquivoService {
 
-  async create(arquivos: any, medico_id: number, formacoes : IAtributosMedicoFormacaoCriacao[]) {
+  async create(arquivos: any, medico_id: number, formacoes: IAtributosMedicoFormacaoCriacao[]) {
     const arqString = JSON.stringify(arquivos).replace("[Object: null prototype] ", "");
     const arquivosObj = JSON.parse(arqString);
 
@@ -97,7 +98,7 @@ export default class ArquivoService {
       }
     });
 
-    arquivosObj.docs_cert_form?.forEach(async (certFormFields: any, index : number) => {
+    arquivosObj.docs_cert_form?.forEach(async (certFormFields: any, index: number) => {
       try {
         const nome_arquivo = certFormFields.filename;
         const tipo = 'FORM';
@@ -125,7 +126,7 @@ export default class ArquivoService {
 
   }
 
-  async update(arquivos: any, medico_id: number) {
+  async update(arquivos: any, medico_id: number, formacoes: IAtributosMedicoFormacao[]) {
     const arqString = JSON.stringify(arquivos).replace("[Object: null prototype] ", "");
     const arquivosObj = JSON.parse(arqString);
 
@@ -225,18 +226,79 @@ export default class ArquivoService {
       }
     });
 
-    arquivosObj.docs_cert_form?.forEach(async (certFormFields: any) => {
+    let formacoesId : number[] = [];
+    formacoes.forEach(async (elem, index) => {
       try {
-        const nome_arquivo = certFormFields.filename;
-        const tipo = 'FORM';
-        const certForm = await this.gerar({ nome_arquivo, tipo, medico_id });
         const medicoFormacaoService = new MedicoFormacaoService();
-        // const medicoFormacao = medicoFormacaoService.create({});
-        return certForm;
+        let forma : any;
+        try{
+          forma = await medicoFormacaoService.getById(elem.id);
+        }catch(e){
+          forma = null;
+        }
+
+        let arquivoApagar: number = 0;
+
+        if (elem.arquivo_id === null) {
+
+          if(forma)
+            arquivoApagar = forma?.get().arquivo_id;
+
+          const certFormFields = arquivosObj.docs_cert_form[index]
+          const nome_arquivo = certFormFields.filename;
+          const tipo = 'FORM';
+          const certForm = await this.gerar({ nome_arquivo, tipo, medico_id });
+          elem.arquivo_id = certForm.id
+        }
+
+        if(!forma) {
+          elem.medico_id = medico_id;
+          elem = await medicoFormacaoService.create(elem);
+        }
+
+        if(arquivoApagar != 0){
+          if(!arquivoApagar)
+            throw new AppError("")
+          await this.deleteById(arquivoApagar);
+        }
+
+        elem.medico_id = medico_id;
+        formacoesId.push(elem.id);
+
+        medicoFormacaoService.update(elem);
+        return;
       } catch (erro) {
+        console.log(erro)
         throw new AppError("Arquivo não criado!" + erro, 500);
       }
-    });
+    })
+    MedicoFormacao.destroy({
+      where: {
+        [Op.and]: [
+          { medico_id: medico_id },
+          {
+            id: {
+              [Op.notIn]: formacoesId
+            }
+          }
+        ]
+      }
+    })
+
+    // arquivosObj.docs_cert_form?.forEach(async (certFormFields: any, index : number) => {
+    //   try {
+    //     const nome_arquivo = certFormFields.filename;
+    //     const tipo = 'FORM';
+    //     const certForm = await this.gerar({ nome_arquivo, tipo, medico_id });
+    //     const medicoFormacaoService = new MedicoFormacaoService();
+    //     formacoes[index].medico_id = medico_id;
+    //     formacoes[index].arquivo_id = certForm.id
+    //     medicoFormacaoService.update(formacoes[index]);
+    //     return certForm;
+    //   } catch (erro) {
+    //     throw new AppError("Arquivo não criado!" + erro, 500);
+    //   }
+    // });
 
     arquivosObj.docs_cert_espec?.forEach(async (certEspecFields: any) => {
       try {
@@ -250,7 +312,7 @@ export default class ArquivoService {
     });
   }
 
-  async deleteById(id : number) {
+  async deleteById(id: number) {
     try {
       await Arquivo.destroy({
         where: {
@@ -264,24 +326,24 @@ export default class ArquivoService {
   }
 
   // TODO @Lucas-Angelo problema aqui irá apagar todas as especialidades quando atualizar uma, tem que criar formacao
-  async deleteByTipo(tipo : string, medico_id : number) {
-    if(tipo!="FORM")
-    try {
-      const arquivo = await Arquivo.findOne({
-        where: {
-          tipo: tipo,
-          medico_id: medico_id
-        }
-      });
-      await Arquivo.destroy({
-        where: {
-          id: arquivo?.get().id
-        },
-        force: true
-      });
-    } catch (erro) {
-      throw new AppError("Arquivo não criado! " + erro, 404);
-    }
+  async deleteByTipo(tipo: string, medico_id: number) {
+    if (tipo != "FORM")
+      try {
+        const arquivo = await Arquivo.findOne({
+          where: {
+            tipo: tipo,
+            medico_id: medico_id
+          }
+        });
+        await Arquivo.destroy({
+          where: {
+            id: arquivo?.get().id
+          },
+          force: true
+        });
+      } catch (erro) {
+        throw new AppError("Arquivo não criado! " + erro, 404);
+      }
   }
 
   async gerar(arquivo: IAtributosArquivoCriacao) {
