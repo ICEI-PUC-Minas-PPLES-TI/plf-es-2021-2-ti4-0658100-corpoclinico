@@ -204,12 +204,28 @@ class MedicoController {
       }
     )
       .then(async (medico) => {
-        await Promise.all([
-          this.arquivoService.update(request.files, medico?.get().id),
-          this.candidaturaService.update({ id: candidatura[0]?.get().id, cnpj, equipe_id, faturamento, medico_id: medico?.get().id, unidade_id }),
-        ]).catch(async (error) => {
-          throw new AppError("Candidatura e arquivos para médico não atualizados!" + error, 500);
-        })
+        let arquivosAtualizados : any;
+        let candidaturaAtualizada : any;
+
+        try {
+          arquivosAtualizados = await this.arquivoService.update(request.files, medico?.get().id);
+        } catch (error) {
+          throw new AppError("Arquivos para médico não atualizados!" + error, 500);
+        }
+        try {
+          candidaturaAtualizada = await this.candidaturaService.update({ id: candidatura[0]?.get().id, cnpj, equipe_id, faturamento, medico_id: medico?.get().id, unidade_id });
+        } catch (error) {
+          throw new AppError("Candidatura para médico não atualizada!" + error, 500);
+        }
+
+        for(const arquivoMedicoEspecialidade of arquivosAtualizados) {
+          if(arquivoMedicoEspecialidade.dataValues.tipo == 'RQE') {
+            console.log(medico?.get().id);
+            console.log(arquivoMedicoEspecialidade.id);
+            console.log(candidaturaAtualizada.dataValues.id);
+          }
+        }
+
         return response.status(201).json({
           atualizado: true,
           id: medico?.get().id
