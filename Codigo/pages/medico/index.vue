@@ -211,8 +211,11 @@ export default {
         });
     },
 
-    fazNada() {
-      console.log("não to pronto ainda");
+    fazNada(){
+      let info = JSON.parse(JSON.stringify(this.formData))
+      let cpfParaSerBuscado = info.cpf;
+      localStorage.setItem('cpfParaSerBuscado', cpfParaSerBuscado)
+      window.location.href = '/medico/atualiza/'
     },
 
     abreToast(mensagem) {
