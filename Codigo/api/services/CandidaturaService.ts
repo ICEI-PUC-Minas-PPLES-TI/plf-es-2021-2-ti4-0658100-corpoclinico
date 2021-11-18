@@ -52,7 +52,7 @@ export default class CandidaturaService{
             throw new AppError("Erro interno no servidor!", 500, erro);
         })
     }
-    async delete(id: number){
+    async delete(id: number) {
         return Candidatura.destroy({
             where: {id}
         })
@@ -60,16 +60,16 @@ export default class CandidaturaService{
             throw new AppError("Erro interno no servidor!", 500, erro);
         })
     }
-    async getById(id: number){
+    async getById(id: number) {
         return Candidatura.findOne({
-            where: {id},
-            include: [ Medico, Equipe ]
+            where: { id },
+            include: [Medico, Equipe]
         })
         .catch (erro => {
             throw new AppError("Erro interno no servidor!", 500, erro);
         })
     }
-    async getBy(key: keyof Candidatura, atributo: string){
+    async getBy(key: keyof Candidatura, atributo: string) {
         return Candidatura.findAll({
             where: {
                 [key]: atributo
@@ -80,7 +80,7 @@ export default class CandidaturaService{
         })
     }
 
-    async getAll( sortPaginate: ISortPaginateQuery, atributos: string[] ){
+    async getAll(sortPaginate: ISortPaginateQuery, atributos: string[]) {
         return Candidatura.findAndCountAll()
         .then(async (dados) => {
             const count: number = (dados.count) as any;
