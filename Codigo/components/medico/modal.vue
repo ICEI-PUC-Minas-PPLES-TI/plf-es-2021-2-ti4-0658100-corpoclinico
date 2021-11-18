@@ -1,9 +1,9 @@
 <template>
     <v-dialog
-        v-modal="dialog"
+        v-model="dialog"
         transition="dialog-bottom-transition"
         class="unidade-modal"
-        max-width="800px"
+        width="800px"
         @click:outside="$emit('input', false)"
         @keydown.esc="$emit('input', false)"
     >
@@ -26,19 +26,21 @@
                             <v-card-title class="text-h5 unidade-modal-title">
                             Avaliar Médico
                             </v-card-title>
-                            <v-cart-text>
+                            <v-card-text>
                                 <v-select
                                 :items="items"
                                 label="Status"
                                 hide-details="auto"
+                                :rules="[v => !!v || 'Status Obrigatório']"
                                 >
                                 </v-select>
                                 <v-textarea
                                     hide-details="auto"
                                     :clearable="true"
                                     label="Observações"
+                                    :rules="[v => !!v || 'Observações obrigatórias']"
                                 />
-                            </v-cart-text>
+                            </v-card-text>
                         </v-form>   
                     </v-col>
                 </v-row>
@@ -60,15 +62,13 @@
                         />
                     </v-col>
                 </v-row>    
-
+                <v-card-actions>
                 <v-row class="mx-auto text-center" >
                     <v-col>
                         <v-btn  class="mr-2"
                                 color="grey"
                                 background="primary"
-                                slot ="activator"
-                                v-bind="attrs"
-                                v-on="on"
+                                @click="dialog = false"
                                 >   
                                 Cancelar
                         </v-btn>
@@ -78,13 +78,13 @@
                                 color="blue"
                                 background="primary"
                                 slot ="activator"
-                                v-bind="attrs"
-                                v-on="on"
+                                @click="submitAvaliacao"
                                 >   
                                 Avaliar
                         </v-btn>
                     </v-col>
                 </v-row>
+                </v-card-actions>
             </v-container>
         </v-card>
     </v-dialog>
@@ -95,6 +95,33 @@
     data: () => ({
       items: ['Aprovado', 'Revisão', 'Negado'],
     }),
+    methods:{
+        submitAvaliacao() {
+            // if(this.unidade.id > 0){
+            // this.updateUnidade(this.unidade.id);
+            // }else{
+            //     if (this.$refs.formUnidade.validate()){
+            //         let unidade = JSON.parse(JSON.stringify(this.unidade))
+            //         this.$axios.$post('/unidade', unidade).then(response => {
+            //         this.limpaDados();
+            //         this.abreToast('Unidade Cadastrada!');
+            //         this.$emit('input', false) // Fecha modal
+            //         this.$emit('listaUnidade')
+            //         }).catch(error => {
+
+            //         if (Array.isArray(error.response.data.erros)) {
+            //             this.abreToast(error.response.data.erros[0]);
+            //         } else {
+            //             this.abreToast(error.response.data.erros);
+            //         }
+
+            //         })
+
+            //     }
+            // } 
+            alert("oh my god")
+        }
+    }
   }
 </script>
 
