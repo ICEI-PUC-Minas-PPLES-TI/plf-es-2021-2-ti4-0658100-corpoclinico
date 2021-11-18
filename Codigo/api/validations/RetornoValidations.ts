@@ -8,8 +8,6 @@ export const retornoCreateScheme = yup.object().shape({
 });
 
 export const retornoUpdateScheme = yup.object().shape({
-    avaliador_id: yup.number().required(),
-    candidatura_id: yup.number().required(),
     comentario: yup.string(),
-    status: yup.mixed().oneOf(['P', 'R', 'A'])
+    status: yup.mixed().oneOf(['P', 'R', 'A']).required()
 });

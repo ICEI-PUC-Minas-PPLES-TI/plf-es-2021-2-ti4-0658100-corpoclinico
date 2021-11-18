@@ -23,7 +23,7 @@ class EquipeController {
     await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
 
-    const { nome, especialidade_id, usuario_id } = request.body;
+    const { nome, especialidade_id } = request.body;
 
     // vê se a especialidade existe
     const especialidade = await this.EspecialidadeService.getById(especialidade_id);
@@ -31,7 +31,7 @@ class EquipeController {
       throw new AppError("Erro na validação de um ou mais campos", 422, "especialidade_id não existe no banco")
     }
 
-    await this.Service.create({ nome, especialidade_id, usuario_id })
+    await this.Service.create({ nome, especialidade_id })
     .then((equipe) => {
       return response.status(201).json({
         id: equipe.id

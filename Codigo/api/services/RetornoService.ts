@@ -51,6 +51,16 @@ export default class RetornoService {
         throw new AppError("Erro interno do servidor!", 500, error);
     });
   }
+  async getAllBy(field: keyof Retorno, value: any) {
+    return Retorno.findAll({
+      where: {
+        [field]: value
+      }
+    })
+    .catch(error => {
+        throw new AppError("Erro interno do servidor!", 500, error);
+    });
+  }
 
   async getAll() {
     return Retorno.findAll()

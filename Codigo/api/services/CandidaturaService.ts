@@ -20,18 +20,23 @@ export default class CandidaturaService{
     async create(candidatura: IAtributosCandidaturaCriacao){
         return Candidatura.create({...candidatura})
         .then(async (candidatura)=>{
-            const { equipe_id, id: candidatura_id } = candidatura.get();
-            const equipe = await this.equipeService.getById( equipe_id );
-            const avaliador_id = equipe.get().usuario_id;
+            const usuarios = (await this.usuarioService.getAllBy('tipo', ['A'])).map(u=>(u.get().id))
 
             
+            const { /*equipe_id, */id: candidatura_id } = candidatura.get();
+            // criação de retorno no nome do responsável da equipe - requisito paralizado
+            /*const equipe = await this.equipeService.getById( equipe_id );
+            const avaliador_equipe_id = equipe?.get().usuario_id;
+
+            if (avaliador_equipe_id)
+                usuarios.push(avaliador_equipe_id);*/
+                
             return Promise.all([
-                this.retornoService.create({
+                usuarios.map(avaliador_id => this.retornoService.create({
                     avaliador_id,
                     candidatura_id,
                     status: 'P',
-                }),
-                
+                }))
             ])
             
         })
