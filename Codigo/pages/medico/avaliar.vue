@@ -4,6 +4,7 @@
 
 <template>
   <div>
+        <h1>Avaliando Médico #3</h1>
         <v-form
           ref="formPt1"
           lazy-validation
@@ -13,7 +14,6 @@
             <v-col cols="12" :xs="12" :sm="6" :md="9">
               <v-text-field
                 :hide-details="'auto'"
-                :rules="[v => !!v || 'Nome é obrigatório']"
                 v-model="formData.nome"
                 maxlength="120"
                 label="Nome (obrigatório)"
@@ -25,7 +25,6 @@
                 :hide-details="'auto'"
                 v-model="formData.cpf"
                 v-mask="['###.###.###-##']"
-                :rules="[v => !!v || 'CPF é obrigatório']"
                 label="CPF (obrigatório)"
                 disabled
               />
@@ -40,7 +39,6 @@
                 v-model="formData.celular"
                 v-mask="['(##) ####-####', '(##) #####-####']"
                 label="Telefone Celular (obrigatório)"
-                :rules="[v => !!v || 'Telefone Celular obrigatório', v => (v && v.length >= 14) || 'Telefone inválido',]"
                 disabled
               />
             </v-col>
@@ -51,7 +49,6 @@
                 label="E-mail (obrigatório)"
                 type="email"
                 maxlength="100"
-                :rules="[v => !!v || 'E-mail obrigatório', v => /.+@.+\..+/.test(v) || 'E-mail inválido',]"
                 disabled
               />
             </v-col>
@@ -94,8 +91,6 @@
               <v-text-field
                 :hide-details="'auto'"
                 v-model="formData.rg"
-                :rules="[v => !!v || 'RG obrigatório']"
-                label="RG (obrigatório)"
                 v-mask="{mask: 'AA-FFFFFFFFFFF', tokens: {
                   F: {
                     pattern: /^[0-9]*\.?[0-9]*$/
@@ -157,7 +152,6 @@
                 :hide-details="'auto'"
                 label="Título de Eleitor (obrigatório)"
                 v-model="formData.titulo_eleitoral"
-                :rules="[v => !!v || 'Título obrigatório']"
                 v-mask="['#### #### ####']"
                 disabled
               />
@@ -166,7 +160,6 @@
               <v-text-field
                 :hide-details="'auto'"
                 label="Zona Eleitoral (obrigatório)"
-                :rules="[v => !!v || 'Zona obrigatória']"
                 v-model="formData.zona"
                 maxlength="3"
                 disabled
@@ -177,7 +170,6 @@
                 :hide-details="'auto'"
                 label="Seção Eleitoral (obrigatório)"
                 v-model="formData.secao"
-                :rules="[v => !!v || 'Seção obrigatória']"
                 maxlength="4"
                 disabled
               />
@@ -186,7 +178,6 @@
               <v-text-field
                 :hide-details="'auto'"
                 label="Cartão do SUS (obrigatório)"
-                :rules="[v => !!v || 'Cartão do Sus obrigatório']"
                 v-model="formData.cartao_sus"
                 maxlength="15"
                 disabled
@@ -218,7 +209,6 @@
               <v-file-input
                 accept="image/*"
                 label="Doc. CPF"
-                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
                 disabled
               />
             </v-col>
@@ -226,7 +216,6 @@
               <v-file-input
                 accept="image/*"
                 label="Foto 3x4"
-                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
                 disabled
               />
             </v-col>
@@ -239,7 +228,6 @@
                 v-mask="'#####-###'"
                 v-model="formData.cep"
                 label="CEP (obrigatório)"
-                :rules="[v => !!v || 'CEP obrigatório']"
                 disabled
               />
             </v-col>
@@ -249,7 +237,6 @@
                 v-model="formData.logradouro"
                 label="Logradouro (obrigatório)"
                 maxlength="100"
-                :rules="[v => !!v || 'Logradouro obrigatório']"
                 disabled
               />
             </v-col>
@@ -259,7 +246,6 @@
                 v-model="formData.numero"
                 label="Número (obrigatório)"
                 maxlength="20"
-                :rules="[v => !!v || 'Número obrigatório']"
                 disabled
               />
             </v-col>
@@ -310,7 +296,6 @@
                 ]"
                 label="Estado (obrigatório)"
                 v-model="formData.estado"
-                :rules="[v => !!v || 'Estado obrigatório']"
                 disabled
               ></v-select>
             </v-col>
@@ -319,7 +304,6 @@
                 :hide-details="'auto'"
                 v-model="formData.cidade"
                 label="Cidade (obrigatório)"
-                :rules="[v => !!v || 'Cidade obrigatória']"
                 maxlength="100"
                 disabled
               />
@@ -330,7 +314,6 @@
                 v-model="formData.bairro"
                 label="Bairro (obrigatório)"
                 maxlength="45"
-                :rules="[v => !!v || 'Bairro obrigatório']"
                 disabled
               />
             </v-col>
@@ -341,7 +324,6 @@
               <v-file-input
                 accept="image/*"
                 label="Comp. de Endereço"
-                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
                 disabled
               />
             </v-col>
@@ -355,7 +337,6 @@
                 ]"
                 v-model="formData.escolaridade_max"
                 label="Nível de Escolaridade (obrigatório)"
-                :rules="[v => !!v || 'Nível de Escolaridade obrigatório']"
                 disabled
               />
             </v-col>
@@ -390,7 +371,6 @@
                   <v-row>
                     <v-col cols="12" :xs="12" :md="6">
                       <v-text-field
-                        :hide-details="'auto'"
                         label="Nome Faculdade"
                         maxlength="60"
                         v-model="formData.formacao[fidx].faculdade_nome"
@@ -431,15 +411,12 @@
                 label="CRM (obrigatório)"
                 maxlength="20"
                 v-model="formData.crm"
-                :rules="[v => !!v || 'CRM obrigatório', v => (v && v.slice(-2).toLocaleUpperCase().match(/^[A-Z]+$/)) || 'CRM Inválido']"
-                hint="Ex: 000000/MG"
                 disabled
               />
             </v-col>
             <v-col cols="12" :xs="12" :md="2">
               <v-file-input
                 accept="image/*"
-                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
                 label="Doc. CRM"
                 disabled
               />
@@ -485,7 +462,6 @@
                 ]"
                 label="Categoria (obrigatório)"
                 v-model="formData.categoria"
-                :rules="[v => !!v || 'Categoria obrigatória']"
                 disabled
               />
             </v-col>
@@ -599,7 +575,6 @@
             <v-file-input
               accept="image/*"
               label="Cert. Quitação CRMMG"
-              :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
               disabled
             />
           </v-col>
@@ -614,7 +589,6 @@
             <v-file-input
               accept="image/*"
               label="Termo de Compromisso"
-              :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
               disabled
             />
           </v-col>
