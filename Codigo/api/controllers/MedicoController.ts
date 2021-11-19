@@ -16,7 +16,7 @@ import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura
 import { IGetAllMedicoFilter } from "../types/Requests";
 import { ISortPaginateQuery } from "../helpers/SortPaginate";
 
-interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { }
+interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { especialidades : any }
 interface IGetHandlerGetFilter extends ISortPaginateQuery, IGetAllMedicoFilter { }
 
 class MedicoController {
@@ -39,10 +39,16 @@ class MedicoController {
 
     await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
-    const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
+    const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max, especialidades } = request.body;
     const { equipe_id, cnpj, faturamento, unidade_id } = request.body;
     const { nome, email, senha } = request.body;
     const password = bcrypt.hashSync(senha, 8);
+
+    let especialidadesArray : any;
+    if(typeof especialidades == "string")
+      especialidadesArray = JSON.parse(especialidades);
+    else
+      especialidadesArray = especialidades;
 
     const usuario = await this.usuarioSerive.create({
       nome,
@@ -81,15 +87,25 @@ class MedicoController {
       }
     )
       .then(async (medico) => {
-        await Promise.all([
-          this.arquivoService.create(request.files, medico.id),
-          this.candidaturaService.create({ cnpj, equipe_id, faturamento, medico_id: medico.id, unidade_id })
-        ]).catch(async (error) => {
+
+        let arquivosCriados : any;
+        let candidaturaCriada : any;
+
+        try {
+          candidaturaCriada = await this.candidaturaService.create({ cnpj, equipe_id, faturamento, medico_id: medico.id, unidade_id });
+        } catch (error) {
           await this.medicoService.delete(medico.id, true);
           throw new AppError("Erro interno no servidor", 500, error);
-        })
+        }
+        try {
+          arquivosCriados = await this.arquivoService.create(request.files, medico.id, especialidadesArray, candidaturaCriada.id);
+        } catch (error) {
+          await this.medicoService.delete(medico.id, true);
+          throw new AppError("Erro interno no servidor", 500, error);
+        }
+
         return response.status(201).json({
-          id: medico.id
+          id: medico.id,
         });
       })
       .catch(async (erro) => {
@@ -126,11 +142,17 @@ class MedicoController {
     // Validando com o esquema criado:
     await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
-    const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max } = request.body;
+    const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max, especialidades } = request.body;
     const { equipe_id, cnpj, faturamento, unidade_id } = request.body;
     const { nome, email, senha } = request.body;
 
-    let senhaTemp;
+    let especialidadesArray : any;
+    if(typeof especialidades == "string")
+      especialidadesArray = JSON.parse(especialidades);
+    else
+      especialidadesArray = especialidades;
+
+    let senhaTemp : any;
     if (senha)
       senhaTemp = bcrypt.hashSync(senha, 8);
     const password = senhaTemp;
@@ -140,7 +162,7 @@ class MedicoController {
     if (!token) {
       throw new AppError("Usuário não autenticado!", 401);
     }
-    let idLogado;
+    let idLogado : any;
     token = Array.isArray(token) ? token[0] : token; //garante que token é uma string
     jwt.verify(token, process.env.SECRET_KEY ?? " ", (err, decoded) => {
       if (err) {
@@ -164,7 +186,7 @@ class MedicoController {
     if (usuarioLogado?.get().tipo !== "A" && usuario?.get().id !== usuarioLogado?.get().id)
       throw new AppError("Usuário logado não é admin ou não é o mesmo do médico em atualização cadastral!", 405);
 
-    usuario.update({
+    await usuario.update({
       nome,
       email,
       senha: password
@@ -204,31 +226,25 @@ class MedicoController {
       }
     )
       .then(async (medico) => {
-        let arquivosAtualizados : any;
+        let arquivosAtualizados: any = [];
         let candidaturaAtualizada : any;
 
-        try {
-          arquivosAtualizados = await this.arquivoService.update(request.files, medico?.get().id);
-        } catch (error) {
-          throw new AppError("Arquivos para médico não atualizados!" + error, 500);
-        }
         try {
           candidaturaAtualizada = await this.candidaturaService.update({ id: candidatura[0]?.get().id, cnpj, equipe_id, faturamento, medico_id: medico?.get().id, unidade_id });
         } catch (error) {
           throw new AppError("Candidatura para médico não atualizada!" + error, 500);
         }
-
-        for(const arquivoMedicoEspecialidade of arquivosAtualizados) {
-          if(arquivoMedicoEspecialidade.dataValues.tipo == 'RQE') {
-            console.log(medico?.get().id);
-            console.log(arquivoMedicoEspecialidade.id);
-            console.log(candidaturaAtualizada.dataValues.id);
-          }
+        try {
+          arquivosAtualizados = await this.arquivoService.update(request.files, medico?.get().id, especialidadesArray, candidaturaAtualizada.dataValues.id);
+        } catch (error) {
+          throw new AppError("Arquivos para médico não atualizados!" + error, 500);
         }
 
         return response.status(201).json({
           atualizado: true,
-          id: medico?.get().id
+          id: medico?.get().id,
+          candidatura: candidaturaAtualizada,
+          arquivosAtualizados: arquivosAtualizados
         });
       })
       .catch(async (erro) => {

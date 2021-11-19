@@ -1,12 +1,19 @@
+import { Op } from "sequelize";
 import AppError from "../errors/AppError";
 import Arquivo, { IAtributosArquivoCriacao } from "../models/Arquivo";
+import Candidatura from "../models/Candidatura";
+import Equipe from "../models/Equipe";
+import MedicoEspecialidade from "../models/MedicoEspecialidade";
+import CandidaturaService from "./CandidaturaService";
+import EquipeService from "./EquipeService";
+import MedicoEspecialidadeService from "./MedicoEspecialidadeService";
 
 export default class ArquivoService {
 
-  async create(arquivos: any, medico_id: number) {
+  async create(arquivos: any, medico_id: number, especialidades: any, candidatura_id: number) {
     const arqString = JSON.stringify(arquivos).replace("[Object: null prototype] ", "");
     const arquivosObj = JSON.parse(arqString);
-    const arquivosCriados : any = [];
+    const arquivosCriados: any = [];
 
     if (arquivosObj.doc_rg)
       for (const rgFields of arquivosObj.doc_rg) {
@@ -95,8 +102,8 @@ export default class ArquivoService {
     if (arquivosObj.doc_term_compr)
       for (const termCompFields of arquivosObj.doc_term_compr) {
         try {
-        const nome_arquivo = termCompFields.filename;
-        const tipo = 'TSAIR';
+          const nome_arquivo = termCompFields.filename;
+          const tipo = 'TSAIR';
           const termComp = await this.gerar({ nome_arquivo, tipo, medico_id });
           arquivosCriados.push(termComp);
         } catch (erro) {
@@ -116,22 +123,36 @@ export default class ArquivoService {
         }
       }
 
-    if (arquivosObj.docs_cert_espec)
+    if (arquivosObj.docs_cert_espec) {
+      let rqeIndex = 0;
       for (const certEspecFields of arquivosObj.docs_cert_espec) {
         try {
           const nome_arquivo = certEspecFields.filename;
-          const tipo = 'RQE'; // ! @guizombas quando acabar o médico especialidade tem que integrar nessa parte tipo assim
+          const tipo = 'RQE';
           const certEspec = await this.gerar({ nome_arquivo, tipo, medico_id });
           arquivosCriados.push(certEspec);
+
+          const candidatura = await Candidatura.findByPk(candidatura_id)
+            .catch(erro => {
+              throw new AppError("Erro interno no servidor!", 500, erro);
+            })
+          const equipe = await Equipe.findByPk(candidatura?.get().equipe_id)
+          especialidades[rqeIndex].medico_id = medico_id;
+          especialidades[rqeIndex].especialidade_id = equipe?.get().especialidade_id;
+          especialidades[rqeIndex].arquivo_id = certEspec.id;
+          const medicoEspecialidadeService = new MedicoEspecialidadeService();
+          await medicoEspecialidadeService.create(especialidades[rqeIndex]);
+          rqeIndex++;
         } catch (erro) {
           throw new AppError("Arquivo não criado!" + erro, 500);
         }
       }
+    }
 
     return arquivosCriados;
   }
 
-  async update(arquivos: any, medico_id: number) {
+  async update(arquivos: any, medico_id: number, especialidades: any, candidatura_id: number) {
     const arqString = JSON.stringify(arquivos).replace("[Object: null prototype] ", "");
     const arquivosObj = JSON.parse(arqString);
     let arquivosAtualizados: any = [];
@@ -230,8 +251,8 @@ export default class ArquivoService {
     if (arquivosObj.doc_term_compr)
       for (const termCompFields of arquivosObj.doc_term_compr) {
         try {
-        const nome_arquivo = termCompFields.filename;
-        const tipo = 'TSAIR';
+          const nome_arquivo = termCompFields.filename;
+          const tipo = 'TSAIR';
           await this.deleteByTipo(tipo, medico_id);
           const termComp = await this.gerar({ nome_arquivo, tipo, medico_id });
           arquivosAtualizados.push(termComp);
@@ -252,17 +273,88 @@ export default class ArquivoService {
         }
       }
 
-    if (arquivosObj.docs_cert_espec)
-      for (const certEspecFields of arquivosObj.docs_cert_espec) {
+    let especialidadesId: number[] = [];
+    let index = 0;
+    for (const especialidade of especialidades) {
+      try {
+        const candidatura = await Candidatura.findByPk(candidatura_id)
+          .catch(erro => {
+            throw new AppError("Erro interno no servidor!", 500, erro);
+          })
+        const equipe = await Equipe.findByPk(candidatura?.get().equipe_id)
+        const especialidadeId = equipe?.get().especialidade_id; // Captura o id da especialidade candidatada
+
+        const medicoEspecialidadeService = new MedicoEspecialidadeService();
+        let espec: any;
+
+        // Verificar se vai atualizar uma especialidade para caso não, criar outra.
         try {
-          const nome_arquivo = certEspecFields.filename;
-          const tipo = 'RQE'; // ! @guizombas quando acabar o médico especialidade tem que integrar nessa parte tipo assim
+          espec = await medicoEspecialidadeService.getById(especialidade.id);
+        } catch (error) {
+          espec = null;
+        }
+
+        let arquivoApagar: number = 0;
+
+        // Se o "arquivo_id" for null quer dizer que vai ter arquivo novo e precisa do arquivoApagar para apagar o antigo
+        if (especialidade.arquivo_id == null) {
+
+          // Captura o id do antigo arquivo da especialidade, para apagar
+          if (espec)
+            arquivoApagar = espec?.get().arquivo_id;
+
+          // Já que o arquivo_id é null, criar um novo arquivo para a especialidade
+          const nome_arquivo = arquivosObj.docs_cert_espec[index].filename;
+          const tipo = 'RQE';
           const certEspec = await this.gerar({ nome_arquivo, tipo, medico_id });
           arquivosAtualizados.push(certEspec);
-        } catch (erro) {
-          throw new AppError("Arquivo não criado!" + erro, 500);
+          especialidade.arquivo_id = certEspec.id; // Atualiza o id do novo arquivo enviado
         }
+
+        // Caso for atualizar criando uma especialidade nova
+        if (!espec) {
+          especialidade.medico_id = medico_id;
+          especialidade.especialidade_id = especialidadeId;
+          await medicoEspecialidadeService.create(especialidade);
+          especialidadesId.push(especialidade.id);
+        } else { // Caso seja atualizar uma existente
+          especialidade.medico_id = medico_id;
+          especialidade.especialidade_id = especialidadeId;
+          especialidadesId.push(especialidade.id);
+          await medicoEspecialidadeService.update(especialidade);
+        }
+
+        if (arquivoApagar != 0) {
+          if (!arquivoApagar)
+            throw new AppError("Erro ao deletar artigo arquivo.", 500);
+          await this.deleteById(arquivoApagar);
+        }
+
+        await MedicoEspecialidade.destroy({
+          where: {
+            id: especialidade.id
+          }
+        })
+        index++;
+      } catch (error) {
+        throw new AppError("Arquivo não criado!" + error, 500);
       }
+    }
+    // Deletar todas as especialidades do médico que não estiverem nas especialidadesId atualizadas
+    await MedicoEspecialidade.destroy({
+      where: {
+        [Op.and]: [
+          { medico_id: medico_id },
+          {
+            id: {
+              [Op.notIn]: especialidadesId
+            }
+          }
+        ]
+      }
+    })
+
+    console.log(arquivosAtualizados)
 
     return arquivosAtualizados;
   }
@@ -275,7 +367,6 @@ export default class ArquivoService {
         },
         force: true
       });
-      console.log(id)
     } catch (erro) {
       throw new AppError("Arquivo não criado! " + erro, 404);
     }

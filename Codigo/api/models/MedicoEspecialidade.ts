@@ -69,6 +69,15 @@ class MedicoEspecialidade extends Model<IAtributosMedicoEspecialidade, IAtributo
       },
     },
       {
+        hooks: {
+          beforeDestroy: async (medicoEspecialidade, options) => {
+            await Arquivo.destroy({
+              where: {
+                id: medicoEspecialidade.arquivo_id,
+              }
+            });
+          },
+        },
         tableName: "medico_especialidade",
         timestamps: true, // deletedAt precisa disso true
         deletedAt: false,

@@ -10,6 +10,7 @@ import Medico from '../models/Medico';
 import Usuario from "../models/Usuario";
 import Candidatura from '../models/Candidatura';
 import Unidade from "../models/Unidade";
+import MedicoEspecialidade from '../models/MedicoEspecialidade';
 
 dotenv.config();
 
@@ -37,12 +38,12 @@ export default {
       Equipe.initialize(sequelize);
       Arquivo.initialize(sequelize);
       Candidatura.initialize(sequelize);
-      
+      MedicoEspecialidade.initialize(sequelize);
 
       // Associações
       Equipe.belongsTo(Especialidade, { foreignKey: 'especialidade_id'})
       Especialidade.hasOne(Equipe, { foreignKey: 'id' })
-      
+
       Medico.belongsTo(Usuario, {
         as: 'usuario',
         foreignKey: 'usuario_id'

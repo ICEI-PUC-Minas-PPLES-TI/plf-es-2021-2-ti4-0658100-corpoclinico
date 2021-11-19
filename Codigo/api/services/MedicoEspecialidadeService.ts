@@ -5,19 +5,20 @@ import MedicoEspecialidade, { IAtributosMedicoEspecialidade, IAtributosMedicoEsp
 export default class MedicoEspecialidadeService {
 
   async create(medicoEspecialidade: IAtributosMedicoEspecialidadeCriacao) {
-    return MedicoEspecialidade.create(medicoEspecialidade)
-    .catch((err)=>{
-      throw new AppError("Erro interno no servidor", 500, err)
-    })
+    const medicoEspecialidadeCriada = await MedicoEspecialidade.create(medicoEspecialidade)
+      .catch((err) => {
+        throw new AppError("Erro interno no servidor", 500, err)
+      })
+    return medicoEspecialidadeCriada;
   }
 
   async update(medicoEspecialidade: Partial<IAtributosMedicoEspecialidade>) {
     return MedicoEspecialidade.update(medicoEspecialidade, {
       where: { id: medicoEspecialidade.id }
     })
-    .catch((err)=>{
-      throw new AppError("Erro interno no servidor", 500, err)
-    })
+      .catch((err) => {
+        throw new AppError("Erro interno no servidor", 500, err)
+      })
   }
 
   async delete(id: number) {
@@ -28,9 +29,9 @@ export default class MedicoEspecialidadeService {
     return MedicoEspecialidade.destroy({
       where: { id }
     })
-    .catch((err)=>{
-      throw new AppError("Erro interno no servidor", 500, err)
-    })
+      .catch((err) => {
+        throw new AppError("Erro interno no servidor", 500, err)
+      })
   }
 
   async getById(id: number, paranoid?: boolean) {
@@ -38,9 +39,9 @@ export default class MedicoEspecialidadeService {
       where: { id },
       paranoid
     })
-    .catch((err)=>{
-      throw new AppError("Erro interno no servidor", 500, err)
-    })
+      .catch((err) => {
+        throw new AppError("Erro interno no servidor", 500, err)
+      })
   }
 
   async getBy(field: keyof IAtributosMedicoEspecialidade, value: any, attributes?: Array<keyof IAtributosMedicoEspecialidade>) {
@@ -50,9 +51,9 @@ export default class MedicoEspecialidadeService {
       },
       attributes
     })
-    .catch((err)=>{
-      throw new AppError("Erro interno no servidor", 500, err)
-    })
+      .catch((err) => {
+        throw new AppError("Erro interno no servidor", 500, err)
+      })
   }
 
   async getAll(sortPaginate: ISortPaginateQuery) {
@@ -78,7 +79,7 @@ export default class MedicoEspecialidadeService {
           total: dados.count
         }
       })
-      .catch((err)=>{
+      .catch((err) => {
         throw new AppError("Erro interno no servidor", 500, err)
       })
   }
