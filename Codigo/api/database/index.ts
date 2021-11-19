@@ -72,7 +72,6 @@ export default {
         onDelete: 'cascade', hooks:true
       })
 
-
       if (process.env.NODE_ENV === "dev") {
         console.log(
           `Conexão com '${process.env.DB_HOST}/${process.env.DB_DATABASE}' estabelecida`

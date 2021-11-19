@@ -53,6 +53,15 @@ class MedicoFormacao extends Model<IAtributosMedicoFormacao, IAtributosMedicoFor
         },
       },
       {
+        hooks: {
+          beforeDestroy: async (medicoFormacao, options) => {
+            await Arquivo.destroy({
+              where: {
+                id: medicoFormacao.arquivo_id,
+              }
+            });
+          },
+        },
         tableName: "medico_formacao",
         deletedAt: false,
         createdAt: false,

@@ -227,52 +227,63 @@ export default class ArquivoService {
     });
 
     let formacoesId : number[] = [];
-    formacoes.forEach(async (elem, index) => {
+    let indexFormacoes : number = 0;
+    for (let formacao of formacoes) {
       try {
         const medicoFormacaoService = new MedicoFormacaoService();
-        let forma : any;
-        try{
-          forma = await medicoFormacaoService.getById(elem.id);
-        }catch(e){
+
+        // Verificar se é para atualizar uma formação existente ou criar outra
+        let forma: any;
+        try {
+          forma = await MedicoFormacao.findByPk(formacao.id);
+        } catch (e) {
           forma = null;
         }
 
-        let arquivoApagar: number = 0;
+        let arquivoApagar: number = 0; // Se houver um arquivo da formação existente para apagar, salve o id aqui para apagar
 
-        if (elem.arquivo_id === null) {
 
-          if(forma)
+        // Se o 'arquivo_id' é null quer dizer que tem arquivo novo para a formação
+        if (formacao.arquivo_id === null) {
+
+          // Captura o arquivo antigo para apagar
+          if (forma)
             arquivoApagar = forma?.get().arquivo_id;
 
-          const certFormFields = arquivosObj.docs_cert_form[index]
+          // Gera o novo arquivo
+          const certFormFields = arquivosObj.docs_cert_form[indexFormacoes];
           const nome_arquivo = certFormFields.filename;
           const tipo = 'FORM';
           const certForm = await this.gerar({ nome_arquivo, tipo, medico_id });
-          elem.arquivo_id = certForm.id
+          formacao.arquivo_id = certForm.id;
         }
 
-        if(!forma) {
-          elem.medico_id = medico_id;
-          elem = await medicoFormacaoService.create(elem);
+        // Quer dizer que é para criar a nova formação, pois não passou 'id'
+        if (!forma) {
+          formacao.medico_id = medico_id;
+          formacoesId.push(formacao.id);
+          formacao = await medicoFormacaoService.create(formacao);
+        } else {
+          formacao.medico_id = medico_id;
+          formacoesId.push(formacao.id); // Para apagar todas as formações que não foram enviadas
+          await medicoFormacaoService.update(formacao);
         }
 
-        if(arquivoApagar != 0){
-          if(!arquivoApagar)
-            throw new AppError("")
+        // Apaga o arquivo se tiver id do antigo
+        if (arquivoApagar != 0) {
+          if (!arquivoApagar)
+            throw new AppError("");
           await this.deleteById(arquivoApagar);
         }
 
-        elem.medico_id = medico_id;
-        formacoesId.push(elem.id);
-
-        medicoFormacaoService.update(elem);
-        return;
+        indexFormacoes++;
       } catch (erro) {
-        console.log(erro)
         throw new AppError("Arquivo não criado!" + erro, 500);
       }
-    })
-    MedicoFormacao.destroy({
+    }
+
+    // Apaga todas as formações não enviadas
+    await MedicoFormacao.destroy({
       where: {
         [Op.and]: [
           { medico_id: medico_id },
@@ -284,21 +295,6 @@ export default class ArquivoService {
         ]
       }
     })
-
-    // arquivosObj.docs_cert_form?.forEach(async (certFormFields: any, index : number) => {
-    //   try {
-    //     const nome_arquivo = certFormFields.filename;
-    //     const tipo = 'FORM';
-    //     const certForm = await this.gerar({ nome_arquivo, tipo, medico_id });
-    //     const medicoFormacaoService = new MedicoFormacaoService();
-    //     formacoes[index].medico_id = medico_id;
-    //     formacoes[index].arquivo_id = certForm.id
-    //     medicoFormacaoService.update(formacoes[index]);
-    //     return certForm;
-    //   } catch (erro) {
-    //     throw new AppError("Arquivo não criado!" + erro, 500);
-    //   }
-    // });
 
     arquivosObj.docs_cert_espec?.forEach(async (certEspecFields: any) => {
       try {
