@@ -15,6 +15,7 @@ import CandidaturaService from "../services/CandidaturaService";
 import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
 import { IGetAllMedicoFilter } from "../types/Requests";
 import { ISortPaginateQuery } from "../helpers/SortPaginate";
+import MedicoEspecialidade from "../models/MedicoEspecialidade";
 
 interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { especialidades : any }
 interface IGetHandlerGetFilter extends ISortPaginateQuery, IGetAllMedicoFilter { }
@@ -270,6 +271,9 @@ class MedicoController {
         {
           model: Candidatura, as: 'candidatura',
           attributes: ['cnpj', 'faturamento', 'equipe_id', 'unidade_id', 'data_criado']
+        },
+        {
+          model: MedicoEspecialidade, as: 'especialidades',
         }
       ]
     });
