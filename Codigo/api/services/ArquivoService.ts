@@ -349,8 +349,6 @@ export default class ArquivoService {
       }
     })
 
-    console.log(arquivosAtualizados)
-
     return arquivosAtualizados;
   }
 
