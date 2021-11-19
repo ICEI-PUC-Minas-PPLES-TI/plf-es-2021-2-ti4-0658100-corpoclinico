@@ -330,11 +330,6 @@ export default class ArquivoService {
           await this.deleteById(arquivoApagar);
         }
 
-        await MedicoEspecialidade.destroy({
-          where: {
-            id: especialidade.id
-          }
-        })
         index++;
       } catch (error) {
         throw new AppError("Arquivo não criado!" + error, 500);
