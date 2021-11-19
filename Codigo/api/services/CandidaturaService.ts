@@ -16,7 +16,6 @@ export default class CandidaturaService{
             where: {id: candidatura.id},
         })
         .catch (erro => {
-          console.log(erro)
             throw new AppError("Erro interno no servidor!", 500, erro);
         })
     }

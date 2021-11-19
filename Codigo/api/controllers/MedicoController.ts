@@ -221,7 +221,6 @@ class MedicoController {
           this.arquivoService.update(request.files, medico?.get().id, formacoesArray),
           this.candidaturaService.update({ id: candidatura[0]?.get().id, cnpj, equipe_id, faturamento, medico_id: medico?.get().id, unidade_id }),
         ]).catch(async (error) => {
-          console.log(error)
           throw new AppError("Candidatura e arquivos para médico não atualizados!" + error, 500);
         })
         return response.status(201).json({
