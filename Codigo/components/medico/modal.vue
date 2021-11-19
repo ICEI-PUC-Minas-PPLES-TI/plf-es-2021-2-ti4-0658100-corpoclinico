@@ -8,9 +8,7 @@
         @keydown.esc="$emit('input', false)"
     >
     <template v-slot:activator="{ on, attrs }">
-        <v-btn  class="mr-2"
-                color="success"
-                background="primary"
+        <v-btn  color="blue"
                 slot ="activator"
                 v-bind="attrs"
                 v-on="on"
@@ -94,6 +92,8 @@
   export default {
     data: () => ({
       items: ['Aprovado', 'Revisão', 'Negado'],
+      valid:true,
+      dialog:false,
     }),
     methods:{
         submitAvaliacao() {

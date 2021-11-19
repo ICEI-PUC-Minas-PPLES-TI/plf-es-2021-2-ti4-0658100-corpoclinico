@@ -4,7 +4,7 @@
 
 <template>
   <div>
-        <h1>Avaliando Médico #3</h1>
+        <h1>Avaliando Médico #id</h1>
         <v-form
           ref="formPt1"
           lazy-validation
@@ -593,14 +593,13 @@
             />
           </v-col>
         </v-row>
-        <v-row class="mx-0 px-0">
+        <v-row>
             <v-col  :md="8" :sm="0" :xl="8" cols="12">
             </v-col>
             <v-col :md="4" :sm="0" :xl="4" cols="12">
                 <v-btn
                     class="mr-2"
-                    color="success"
-                    background="primary"
+                    color="white"
                     >
                     Retornar
                 </v-btn>
