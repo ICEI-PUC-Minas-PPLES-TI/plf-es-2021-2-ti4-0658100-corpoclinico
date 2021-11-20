@@ -526,8 +526,6 @@
             :hide-details="'auto'"
             item-text="nome"
             item-value="id"
-            :items="unidades"
-            v-model="formData.unidade_id"
             label="Unidade"
             disabled
           />
@@ -537,8 +535,6 @@
             :hide-details="'auto'"
             item-text="nome"
             item-value="id"
-            :items="equipes"
-            v-model="formData.equipe_id"
             label="Equipe"
             disabled
           />
@@ -585,6 +581,7 @@ export default {
   directives: { mask },
   data() {
     return {
+      medico: [],
       formData: {
         nome: null,
         email: null,
@@ -641,34 +638,24 @@ export default {
       senhaVisivel: false,
     };
   },
-  async asyncData({ app }) {
-    let data = {
-      unidades: [],
-      equipes: [],
-    };
-    await app.$axios
-      .get(`/unidade`)
-      .then((res) => {
-        data.unidades = res.data;
-      })
-      .catch((err) => {
-        console.log(err.response);
-      });
-
-    await app.$axios
-      .get(`/equipe`)
-      .then((res) => {
-        data.equipes = res.data.dados;
-      })
-      .catch((err) => {
-        console.log(err.response);
-      });
-    return data;
+  mounted() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const myParam = urlParams.get("id");
+    this.listaMedico(myParam);
   },
-  mounted() {},
   methods: {
     carregaArquivo(ev, nome) {
       this.arquivos[nome] = ev;
+    },
+    listaMedico(id) {
+      this.$axios
+        .$get("/medico/" + id)
+        .then((response) => {
+          this.medico = response;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
 };

@@ -36,6 +36,7 @@
                                     hide-details="auto"
                                     :clearable="true"
                                     label="Observações"
+                                    
                                     :rules="[v => !!v || 'Observações obrigatórias']"
                                 />
                             </v-card-text>
