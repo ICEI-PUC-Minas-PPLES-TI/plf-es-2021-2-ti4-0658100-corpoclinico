@@ -84,7 +84,7 @@
         <template>
           <v-data-table :headers="headers" :items="medicos" :items-per-page="5">
             <template v-slot:item.actions="{ item }">
-              <v-icon color="success" class="mr-2" @click="fazNada()">
+              <v-icon color="success" class="mr-2" @click="fazNada(item.id)">
                 mdi-square-edit-outline
               </v-icon>
             </template>
@@ -211,8 +211,8 @@ export default {
         });
     },
 
-    fazNada() {
-      console.log("não to pronto ainda");
+    fazNada(id) {
+      window.location.href="/medico/avaliar?id="+id;
     },
 
     abreToast(mensagem) {

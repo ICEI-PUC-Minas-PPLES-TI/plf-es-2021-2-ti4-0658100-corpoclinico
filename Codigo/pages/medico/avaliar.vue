@@ -2,7 +2,7 @@
 
 <template>
   <div>
-    <h1>Avaliando Médico #id</h1>
+    <h1>Avaliando Médico #{{ this.formData.id }}</h1>
     <v-form ref="formPt1" lazy-validation>
       <!-- Nome, CPF -->
       <v-row>
@@ -181,18 +181,8 @@
       </v-row>
       <!-- Senha, Anexos -->
       <v-row>
-        <v-col cols="12" :xs="12" :sm="6" :md="3">
-          <v-text-field
-            v-model="formData.senha"
-            :append-icon="senhaVisivel ? 'mdi-eye' : 'mdi-eye-off'"
-            :type="senhaVisivel ? 'text' : 'password'"
-            @click:append="senhaVisivel = !senhaVisivel"
-            hide-details="auto"
-            label="Senha"
-            disabled
-          />
         </v-col>
-        <v-col cols="12" :xs="12" :sm="6" :md="3">
+        <v-col cols="12" :xs="12" :sm="6" :md="4">
           <v-file-input
             accept="image/*"
             label="Doc. RG (Frente e Verso)"
@@ -202,10 +192,10 @@
             disabled
           />
         </v-col>
-        <v-col cols="12" :xs="12" :sm="6" :md="3">
+        <v-col cols="12" :xs="12" :sm="6" :md="4">
           <v-file-input accept="image/*" label="Doc. CPF" disabled />
         </v-col>
-        <v-col cols="12" :xs="12" :sm="6" :md="3">
+        <v-col cols="12" :xs="12" :sm="6" :md="4">
           <v-file-input accept="image/*" label="Foto 3x4" disabled />
         </v-col>
       </v-row>
@@ -251,42 +241,13 @@
       <!-- Estado, Cidade, Bairro -->
       <v-row>
         <v-col cols="12" :xs="12" :md="3">
-          <v-select
+          <v-text-field
             item-text="nome"
             item-value="sigla"
-            :items="[
-              { nome: 'Acre', sigla: 'AC' },
-              { nome: 'Alagoas', sigla: 'AL' },
-              { nome: 'Amapá', sigla: 'AP' },
-              { nome: 'Amazonas', sigla: 'AM' },
-              { nome: 'Bahia', sigla: 'BA' },
-              { nome: 'Ceará', sigla: 'CE' },
-              { nome: 'Distrito Federal', sigla: 'DF' },
-              { nome: 'Espírito Santo', sigla: 'ES' },
-              { nome: 'Goiás', sigla: 'GO' },
-              { nome: 'Maranhão', sigla: 'MA' },
-              { nome: 'Mato Grosso', sigla: 'MT' },
-              { nome: 'Mato Grosso do Sul', sigla: 'MS' },
-              { nome: 'Minas Gerais', sigla: 'MG' },
-              { nome: 'Pará', sigla: 'PA' },
-              { nome: 'Paraíba', sigla: 'PB' },
-              { nome: 'Paraná', sigla: 'PR' },
-              { nome: 'Pernambuco', sigla: 'PE' },
-              { nome: 'Piauí', sigla: 'PI' },
-              { nome: 'Rio de Janeiro', sigla: 'RJ' },
-              { nome: 'Rio Grande do Norte', sigla: 'RN' },
-              { nome: 'Rio Grande do Sul', sigla: 'RS' },
-              { nome: 'Rondônia', sigla: 'RO' },
-              { nome: 'Roraima', sigla: 'RR' },
-              { nome: 'Santa Catarina', sigla: 'SC' },
-              { nome: 'São Paulo', sigla: 'SP' },
-              { nome: 'Sergipe', sigla: 'SE' },
-              { nome: 'Tocantins', sigla: 'TO' },
-            ]"
             label="Estado"
             v-model="formData.estado"
             disabled
-          ></v-select>
+          ></v-text-field>
         </v-col>
         <v-col cols="12" :xs="12" :md="5">
           <v-text-field
@@ -313,13 +274,7 @@
           <v-file-input accept="image/*" label="Comp. de Endereço" disabled />
         </v-col>
         <v-col cols="12" :xs="12" :md="4">
-          <v-select
-            :items="[
-              { text: 'Graduação', value: 'BACHA' },
-              { text: 'Pós Graduação', value: 'ESPE' },
-              { text: 'Mestrado', value: 'MESTRE' },
-              { text: 'Doutorado', value: 'DOUTOR' },
-            ]"
+          <v-text-field
             v-model="formData.escolaridade_max"
             label="Nível de Escolaridade"
             disabled
@@ -432,12 +387,7 @@
           </v-menu>
         </v-col>
         <v-col cols="12" :xs="12" :md="3">
-          <v-select
-            :items="[
-              { text: 'Efetivo', value: 'E' },
-              { text: 'Temporário', value: 'T' },
-              { text: 'Contratado', value: 'C' },
-            ]"
+          <v-text-field
             label="Categoria"
             v-model="formData.categoria"
             disabled
@@ -501,7 +451,7 @@
       <!-- Faturamento, CNPJ, Unidade, Equipe -->
       <v-row>
         <v-col cols="12" :xs="12" :md="formData.faturamento == 'PJ' ? 3 : 6">
-          <v-select
+          <v-text-field
             :hide-details="'auto'"
             :items="[
               { text: 'Pessoa Juridica', value: 'PJ' },
@@ -518,23 +468,26 @@
             label="CNPJ"
             v-model="formData.cnpj"
             v-mask="['##.###.###/####-##']"
+            disabled
           />
         </v-col>
 
         <v-col cols="12" :xs="12" :md="3">
-          <v-select
+          <v-text-field
             :hide-details="'auto'"
             item-text="nome"
             item-value="id"
+            v-model="formData.unidade"
             label="Unidade"
             disabled
           />
         </v-col>
         <v-col cols="12" :xs="12" :md="3">
-          <v-select
+          <v-text-field
             :hide-details="'auto'"
             item-text="nome"
             item-value="id"
+            v-model="formData.equipe"
             label="Equipe"
             disabled
           />
@@ -563,7 +516,11 @@
       <v-row>
         <v-col :md="8" :sm="0" :xl="8" cols="12"> </v-col>
         <v-col :md="4" :sm="0" :xl="4" cols="12">
-          <v-btn class="mr-2" color="white"> Retornar </v-btn>
+          <v-btn 
+          class="mr-2" 
+          color="white"
+          @click="retorno()"
+          > Retornar </v-btn>
           <modalAvalia />
         </v-col>
       </v-row>
@@ -576,13 +533,17 @@ import axios2 from "axios";
 import { mask } from "vue-the-mask";
 import modalAvalia from "@/components/medico/modal.vue";
 export default {
+  //todo: Buscar formações e especialidaes e carregar na tela
   components: { modalAvalia },
   layout: "cmedico",
   directives: { mask },
   data() {
     return {
       medico: [],
+      unidades:[],
+      equipes:[],
       formData: {
+        id: null,
         nome: null,
         email: null,
         senha: null,
@@ -615,8 +576,8 @@ export default {
           },
         ],
         especialidade: [],
-        equipe_id: null,
-        unidade_id: null,
+        equipe: null,
+        unidade: null,
         faturamento: null,
         cnpj: null,
       },
@@ -633,12 +594,12 @@ export default {
       menuNascimento: false,
       menuEmissao: false,
       menuDataCrm: false,
-      unidades: [],
-      equipes: [],
       senhaVisivel: false,
     };
   },
   mounted() {
+    this.listaEquipes()
+    this.listaUnidades()
     const urlParams = new URLSearchParams(window.location.search);
     const myParam = urlParams.get("id");
     this.listaMedico(myParam);
@@ -652,11 +613,72 @@ export default {
         .$get("/medico/" + id)
         .then((response) => {
           this.medico = response;
+          this.formData = {
+            id: this.medico.id,
+            nome:this.medico.usuario.nome,
+            email: this.medico.usuario.email,
+            celular: this.medico.celular,
+            cpf: this.medico.cpf,
+            dt_nascimento: this.medico.dt_nascimento,
+            rg: this.medico.rg,
+            rg_orgao_emissor: this.medico.rg_orgao_emissor,
+            rg_data_emissao: this.medico.rg_data_emissao,
+            titulo_eleitoral: this.medico.titulo_eleitoral,
+            zona: this.medico.zona,
+            secao: this.medico.secao,
+            cartao_sus: this.medico.cartao_sus,
+            cep: this.medico.cep,
+            logradouro: this.medico.logradouro,
+            numero: this.medico.numero,
+            complemento: this.medico.complemento,
+            estado: this.medico.estado,
+            cidade: this.medico.cidade,
+            bairro: this.medico.bairro,
+            sociedade_cientifica: this.medico.sociedade_cientifica,
+            escolaridade_max: this.medico.escolaridade_max,
+            crm: this.medico.crm,
+            dt_inscricao_crm: this.medico.dt_inscricao_crm,
+            categoria: this.medico.categoria,
+            formacao: [
+              {
+                faculdade_nome: null,
+                faculdade_ano_formatura: null,
+              },
+            ],
+            especialidade: [],
+            equipe: this.equipes[this.medico.candidatura.equipe_id-1].nome,
+            unidade: this.unidades[this.medico.candidatura.unidade_id-1],
+            faturamento: this.medico.candidatura.faturamento,
+            cnpj: this.medico.candidatura.cnpj,
+          };
         })
         .catch((error) => {
           console.log(error);
+          this.formData={
+            id:"Médico não encontrado"
+          }
+          setTimeout(window.location.href="/medico", 2000);
         });
     },
+    listaUnidades() {
+      this.$axios.$get('/unidade').then(response => {
+        for(let i = 0;i<response.length;i++){
+          this.unidades.push(response[i].nome)
+        }
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    listaEquipes(){
+      this.$axios.$get('/equipe').then(response => {
+        this.equipes = response.dados
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    retorno(){
+      window.location.href="/medico"
+    }
   },
 };
 </script>
