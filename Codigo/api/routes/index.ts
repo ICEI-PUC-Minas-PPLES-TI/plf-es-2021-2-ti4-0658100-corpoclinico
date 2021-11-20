@@ -13,6 +13,7 @@ import ArquivoController from '../controllers/ArquivoController';
 
 import { upload } from '../helpers/files/MulterSettings';
 import { documentosMedico } from '../helpers/files/DocumentosEnum';
+import VideoController from '../controllers/VideoController';
 
 // Iniciar controllers
 const usuarioController = new UsuarioController();
@@ -21,6 +22,7 @@ const unidadeController = new UnidadeController();
 const equipeController = new EquipeController();
 const especialidadeController = new EspecialidadeController();
 const arquivoController = new ArquivoController();
+const videoController = new VideoController();
 
 const multerUploadMedico = upload.fields(documentosMedico);
 
@@ -58,5 +60,12 @@ router.get('/unidade', unidadeController.getAll)
 router.post('/unidade', unidadeController.create)
 // Arquivo
 router.delete('/arquivo/:id', arquivoController.delete)
+
+//Video
+router.get('/video/:id', videoController.get);
+router.get('/video', videoController.getAll);
+router.post('/video', videoController.create);
+router.put('/video/:id', videoController.update);
+router.delete('/video/:id', videoController.delete);
 
 export default router;
