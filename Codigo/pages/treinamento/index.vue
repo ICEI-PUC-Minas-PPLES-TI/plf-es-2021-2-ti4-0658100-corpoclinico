@@ -3,177 +3,98 @@
     <div class="text-center">Bem vindo ao treinamento</div>
     <div id="teste"></div>
     <v-stepper v-model="step">
-      <v-stepper-content step="1">
-        <v-card class="mb-12" color="grey lighten-1" height="200px">
-          <div id="player"></div>
-        </v-card>
+      <div v-for="(videoId, index) in videoIds" :key="index">
+        <v-stepper-content :step="index + 1">
+          <v-card class="mb-12" color="grey lighten-1" height="350px" width="100%">
+            <youtube :video-id="videoId" ref="youtube" :player-vars="playerVars" @playing="playing"></youtube>
+          </v-card>
+          <div class="text-center">
+            <v-btn v-if="index + 1 != 1" class="ma-1" plain @click="previousStep(index)" >
+              <v-icon>mdi-chevron-left</v-icon>
+            </v-btn>
 
-        <div class="text-center">
-          <v-btn class="ma-1" plain @click="proximoPasso('video1', 1)">
-            <v-icon> mdi-chevron-right </v-icon>
-          </v-btn>
-        </div>
-      </v-stepper-content>
-
-      <v-stepper-content step="2">
-        <v-card class="mb-12" color="grey lighten-1" height="200px">
-          <!--
-        <iframe width="100%" height="100%" id="video2"
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ">
-        </iframe> -->
-          <div id="player2"></div>
-        </v-card>
-
-        <div class="text-center">
-          <v-btn class="ma-1" plain @click="step = 1">
-            <v-icon> mdi-chevron-left </v-icon>
-          </v-btn>
-          <v-btn class="ma-1" plain @click="proximoPasso('video2', 3)">
-            <v-icon> mdi-chevron-right </v-icon>
-          </v-btn>
-        </div>
-      </v-stepper-content>
-
-      <v-stepper-content step="3">
-        <v-card class="mb-12" color="grey lighten-1" height="200px"></v-card>
-
-        <div class="text-center">
-          <v-btn class="ma-1" plain @click="step = 2">
-            <v-icon> mdi-chevron-left </v-icon>
-          </v-btn>
-        </div>
-      </v-stepper-content>
-
+            <v-btn class="ma-1" plain @click="nextStep(index)">
+              <v-icon>mdi-chevron-right</v-icon>
+            </v-btn>
+          </div>
+        </v-stepper-content>
+      </div>
       <v-stepper-header>
-        <v-stepper-step :complete="step > 1" color="#007970" step="1">
-          1
-        </v-stepper-step>
-
-        <v-divider></v-divider>
-
-        <v-stepper-step :complete="step > 2" color="#007970" step="2">
-          2
-        </v-stepper-step>
-
-        <v-divider></v-divider>
-
-        <v-stepper-step color="#007970" step="3"> 3 </v-stepper-step>
+        <div v-for="(videoId, index) in videoIds" :key="index">
+          <v-stepper-step :complete="step > index + 1" color="#007970" :step="index + 1">{{ index + 1 }}</v-stepper-step>
+          <v-divider></v-divider>
+        </div>
       </v-stepper-header>
     </v-stepper>
+
+    <v-snackbar v-model="toast" shaped>
+      {{ toastMensagem }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="blue" text v-bind="attrs" @click="toast = false">
+          Ok
+        </v-btn>
+      </template>
+    </v-snackbar>
+
   </v-container>
 </template>
+
+<style>
+iframe {
+  width: 100%;
+}
+</style>
 
 <script>
 export default {
   layout: "cmedico",
   data() {
     return {
-      nextStep1: false,
-      nextStep2: false,
+      videoIds: ['lG0Ys-2d4MA', 'lG0Ys-2d4MA'],
       step: 1,
+      playerVars: {
+        //autoplay: 1
+      },
+      toastMensagem: "",
+      toast: false,
+
     };
   },
   mounted() {
-
-    // 2. This code loads the IFrame Player API code asynchronously.
-    var tag = document.createElement("script");
-
-    tag.src = "https://www.youtube.com/iframe_api";
-    var firstScriptTag = document.getElementsByTagName("script")[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-    console.log("oba");
-    var checkYT = setInterval(function () {
-      if (YT.loaded) {
-        //...setup video here using YT.Player()
-        var player;
-        player = new YT.Player("player", {
-          height: "100%",
-          width: "100%",
-          videoId: "M7lc1UVf-VE",
-          events: {
-            onStateChange: function (evt) {
-              console.log(evt);
-              if (evt.data === YT.PlayerState.ENDED) {
-                //this.nextStep1 = true;
-                let s = window.document.getElementById('teste');
-                console.log( s );
-                s.value = 'testeee';
-                console.log(s);
-              }
-            },
-          },
-        });
-
-        var player2;
-        player2 = new YT.Player("player2", {
-          height: "100%",
-          width: "100%",
-          videoId: "dQw4w9WgXcQ",
-          events: {
-            onStateChange: function (evt) {
-              console.log(evt);
-              if (evt.data === YT.PlayerState.ENDED) {
-                this.nextStep2 = true;
-              }
-            },
-          },
-        });
-
-        clearInterval(checkYT);
-      }
-    }, 100);
-
-
-
-    //console.log(window.onYouTubeIframeAPIReady());
-    // window.onYouTubeIframeAPIReady(){
-    // player = new YT.Player('player', {
-    //     height: '360',
-    //     width: '640',
-    //     videoId: 'M7lc1UVf-VE',
-    //     events: {
-    //       'onReady': onPlayerReady,
-    //       'onStateChange': onPlayerStateChange
-    //     }
-    //   });
-    // }
   },
   methods: {
-    proximoPasso(formNome, step) {
-      if (step == 2 && this.nextStep1 == true) {
-        this.step = 2;
-      } else if (step == 3 && this.nextStep2 == true) {
-        this.step = 3;
+    playVideo() {
+      this.player.playVideo()
+    },
+    playing() {
+      console.log('\o/ we are watching!!!')
+    },
+    async nextStep(index) {
+      // console.log(this.$refs.youtube);
+      // console.log(this.$refs.youtube[index].player.getPlayerState());
+      let result = await this.$refs.youtube[index].player.getPlayerState();
+      // console.log(result);
+      // console.log(result == 0);
+      if (result == 0) {
+        this.step = index + 2;
+      }else{
+        this.abreToast("Termine o vídeo atual para avançar!");
       }
+
     },
 
-    loadScript() {
-      if (typeof YT == "undefined" || typeof YT.Player == "undefined") {
-        var tag = document.createElement("script");
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName("script")[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        this.onYouTubeIframeAPIReady();
-      }
+    async previousStep(index){
+      this.step -= 1;
     },
 
-    // onYouTubeIframeAPIReady() {
-    //   new YT.Player("player", {
-    //     events: {
-    //       onStateChange: function (evt) {
-    //         console.log(evt);
-    //         if (evt.data === YT.PlayerState.ENDED) {
-    //           this.nextStep1 = true;
-    //         }
-    //       },
-    //     },
-    //   });
-    // },
-
-    // onPlayerStateChange() {
-    //   log;
-    // },
+    abreToast(mensagem) {
+      this.toastMensagem = mensagem;
+      this.toast = true;
+    },
   },
 };
 </script>
+
+
+
