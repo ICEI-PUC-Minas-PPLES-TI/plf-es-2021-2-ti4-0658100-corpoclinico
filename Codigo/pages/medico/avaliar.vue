@@ -613,6 +613,7 @@ export default {
         .$get("/medico/" + id)
         .then((response) => {
           this.medico = response;
+          console.log(this.medico)
           this.formData = {
             id: this.medico.id,
             nome:this.medico.usuario.nome,
