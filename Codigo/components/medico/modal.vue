@@ -121,6 +121,7 @@
             //     }
             // } 
             alert("oh my god")
+            this.dialog=false
         }
     }
   }
