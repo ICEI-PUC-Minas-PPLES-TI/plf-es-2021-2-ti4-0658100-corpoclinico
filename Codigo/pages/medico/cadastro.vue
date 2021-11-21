@@ -603,13 +603,13 @@
           <v-row>
             <v-col>
               <ul>
-                <li v-for="(espe, eidx) in formData.especialidade" :key="eidx">
+                <li v-for="(espe, eidx) in formData.especialidades" :key="eidx">
                   <v-row>
                     <v-col cols="12" :xs="12" :md="4">
                       <v-text-field
                         :hide-details="'auto'"
                         label="Instituicao"
-                        v-model="formData.especialidade[eidx].instituicao"
+                        v-model="formData.especialidades[eidx].instituicao"
                         maxlength="60"
                         @blur="salvarEmCache"
                       />
@@ -619,7 +619,7 @@
                         :hide-details="'auto'"
                         type="number"
                         label="Ano de Formação"
-                        v-model="formData.especialidade[eidx].ano_formatura"
+                        v-model="formData.especialidades[eidx].ano_formatura"
                         @blur="salvarEmCache"
                       />
                     </v-col>
@@ -628,6 +628,7 @@
                         accept="image/*"
                         label="Certificado"
                         :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+                        @change="carregaArquivo($event, 'doc_cert_espec', false)"
                       />
                     </v-col>
                     <v-col cols="12" :xs="12" :md="2">
@@ -636,7 +637,7 @@
                         type="number"
                         label="Nº RQE"
                         maxlength="20"
-                        v-model="formData.especialidade[eidx].rqe"
+                        v-model="formData.especialidades[eidx].rqe"
                         @blur="salvarEmCache"
                       />
                     </v-col>
@@ -653,7 +654,7 @@
           <v-row>
             <v-col>
               <v-btn text @click="adicionarEspecialidade">
-                Adicionar {{ formData.especialidade.length > 0 ? 'outra': '' }} especialidade
+                Adicionar {{ formData.especialidades.length > 0 ? 'outra': '' }} especialidade
               </v-btn>
             </v-col>
           </v-row>
@@ -825,7 +826,7 @@ export default {
           faculdade_nome: null,
           faculdade_ano_formatura: null,
         }],
-        especialidade: [],
+        especialidades: [],
         equipe_id: null,
         unidade_id: null,
         faturamento: null,
@@ -840,6 +841,7 @@ export default {
         doc_cert_quit_crmmg: null,
         doc_term_vigi: null,
         doc_term_compr: null,
+        doc_cert_espec: []
       },
       menuNascimento: false,
       menuEmissao: false,
@@ -905,7 +907,7 @@ export default {
       })
     },
     adicionarEspecialidade(){
-      this.formData.especialidade.push({
+      this.formData.especialidades.push({
         instituicao: null,
         ano_formatura: null,
         rqe: null,
@@ -924,15 +926,29 @@ export default {
       info.crm = info.crm.substr(0, info.crm.length - 3)
       info.titulo_eleitoral = info.titulo_eleitoral.replace(/ /g,'')
       
-      for (var key in this.arquivos) {
-        if(this.arquivos[key])
+      /*for (var key in this.arquivos) {
+        if(Array.isArray(this.arquivos[key])) {
+          for(let i=0; i<this.arquivos[key].length; i++) {
+            console.log(info, key, this.arquivos[key][i])
+            info[key + '[]'] = this.arquivos[key][i]
+          }
+        } else if(this.arquivos[key])
           info[key] = this.arquivos[key]
-      }
-      // info.doc_rg = this.arquivos.doc_rg
+      }*/
 
       let formData = new FormData()
-      for (var key in info)
+      for (var key in info){
         formData.append(key, info[key])
+      }
+
+      for (var key in this.arquivos) {
+        if(Array.isArray(this.arquivos[key])) {
+          for(let i=0; i<this.arquivos[key].length; i++) {
+            formData.append([key + '[]'], this.arquivos[key][i])
+          }
+        } else if(this.arquivos[key])
+          formData.append(key, this.arquivos[key])
+      }
       
       this.$axios
         .post('/medico', formData, {
@@ -956,8 +972,13 @@ export default {
       localStorage.setItem('corpoclinico-medico-version', MODALV)
       localStorage.setItem('corpoclinico-medico', JSON.stringify(info))
     },
-    carregaArquivo(ev, nome){
-      this.arquivos[nome] = ev
+    carregaArquivo(ev, nome, unico=true){
+      if(unico)
+        this.arquivos[nome] = ev
+      else{
+        console.log('here', nome)
+        this.arquivos[nome].push(ev)
+      }
     }
   }
 }
