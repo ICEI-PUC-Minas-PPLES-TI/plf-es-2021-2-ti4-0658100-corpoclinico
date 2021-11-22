@@ -15,6 +15,8 @@ import CandidaturaService from "../services/CandidaturaService";
 import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
 import { IGetAllMedicoFilter } from "../types/Requests";
 import { ISortPaginateQuery } from "../helpers/SortPaginate";
+import Equipe from "../models/Equipe";
+import Unidade from "../models/Unidade";
 
 interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { }
 interface IGetHandlerGetFilter extends ISortPaginateQuery, IGetAllMedicoFilter { }
@@ -247,6 +249,42 @@ class MedicoController {
     else
       response.status(200).json(medico);
   }
+
+  // URI de exemplo: http://localhost:3000/api/medico/1
+  public getMe: GetRequestHandler<IAtributosMedico> = async (request, response) => {
+    const medico = await Medico.findOne({
+      where: {
+        usuario_id: request.headers.authorization
+      },
+      include: [
+        {
+          model: Usuario, as: 'usuario',
+          attributes: ['email', 'nome']
+        },
+        {
+          model: Arquivo, as: 'arquivos',
+          attributes: ['id', 'nome_arquivo', 'tipo']
+        },
+        {
+          model: Candidatura, as: 'candidatura',
+          attributes: ['cnpj', 'faturamento', 'equipe_id', 'unidade_id', 'data_criado'],
+          include: [{
+            model: Equipe,
+            as: 'equipe'
+          },{
+            model: Unidade,
+            as: 'unidade'
+          }]
+        }
+      ]
+    });
+
+    if (!medico)
+      throw new AppError("Medico não encontrado!", 404);
+    else
+      response.status(200).json(medico);
+  }
+
 
   // URI de exemplo: http://localhost:3000/api/medico?pagina=1&limite=5&atributo=nome&ordem=DESC
   // todos as querys são opicionais

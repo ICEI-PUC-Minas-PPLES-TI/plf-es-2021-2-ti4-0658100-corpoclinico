@@ -36,6 +36,7 @@ router.put('/usuario/:id',  usuarioController.update)
 router.post('/medico', multerUploadMedico, medicoController.create)
 router.get('/medico/:id', [autenticacaoJwt.verificarToken], medicoController.get)
 router.get('/medico', [autenticacaoJwt.verificarToken], medicoController.getAll)
+router.get('/me', [autenticacaoJwt.verificarToken], medicoController.getMe)
 router.delete('/medico/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], medicoController.delete)
 router.put('/medico/:id', multerUploadMedico, medicoController.update)
 // Equipe

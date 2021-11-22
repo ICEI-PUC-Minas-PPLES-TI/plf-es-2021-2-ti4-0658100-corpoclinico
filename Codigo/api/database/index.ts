@@ -42,6 +42,11 @@ export default {
       // Associações
       Equipe.belongsTo(Especialidade, { foreignKey: 'especialidade_id'})
       Especialidade.hasOne(Equipe, { foreignKey: 'id' })
+
+      Usuario.hasOne(Medico, {
+        as: 'medico',
+        foreignKey: 'usuario_id'
+      })
       
       Medico.belongsTo(Usuario, {
         as: 'usuario',
@@ -58,6 +63,16 @@ export default {
       })
       Candidatura.belongsTo(Medico, {
         foreignKey: 'medico_id'
+      })
+
+      Candidatura.belongsTo(Equipe, {
+        as: 'equipe',
+        foreignKey: 'equipe_id'
+      })
+
+      Candidatura.belongsTo(Unidade, {
+        as: 'unidade',
+        foreignKey: 'unidade_id'
       })
 
 
