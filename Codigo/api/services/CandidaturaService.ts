@@ -15,6 +15,7 @@ export default class CandidaturaService{
     constructor(){
         this.equipeService = new EquipeService();
         this.retornoService = new RetornoService();
+        this.usuarioService = new UsuarioService();
     }
 
     async create(candidatura: IAtributosCandidaturaCriacao){
@@ -22,8 +23,7 @@ export default class CandidaturaService{
         .then(async (candidatura)=>{
             const usuarios = (await this.usuarioService.getAllBy('tipo', ['A'])).map(u=>(u.get().id))
 
-            
-            const { /*equipe_id, */id: candidatura_id } = candidatura.get();
+            const { /*equipe_id, */id: candidatura_id } = candidatura;
             // criação de retorno no nome do responsável da equipe - requisito paralizado
             /*const equipe = await this.equipeService.getById( equipe_id );
             const avaliador_equipe_id = equipe?.get().usuario_id;
@@ -32,7 +32,7 @@ export default class CandidaturaService{
                 usuarios.push(avaliador_equipe_id);*/
                 
             return Promise.all([
-                usuarios.map(avaliador_id => this.retornoService.create({
+                usuarios.map(async (avaliador_id) => await this.retornoService.create({
                     avaliador_id,
                     candidatura_id,
                     status: 'P',

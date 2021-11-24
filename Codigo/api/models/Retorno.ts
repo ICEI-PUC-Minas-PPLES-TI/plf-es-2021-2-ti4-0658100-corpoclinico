@@ -43,7 +43,7 @@ class Retorno extends Model<IAtributosRetorno, IAtributosRetornoCriacao> impleme
       },
     },
     {
-      tableName: "unidade",
+      tableName: "retorno",
       timestamps: false,
       sequelize
     })
