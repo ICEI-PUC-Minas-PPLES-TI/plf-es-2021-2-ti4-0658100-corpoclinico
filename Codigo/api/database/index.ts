@@ -73,7 +73,7 @@ export default {
         as: 'arquivo',
         foreignKey: 'arquivo_id',
       });
-      MedicoEspecialidade.hasOne(Especialidade, {
+      MedicoEspecialidade.belongsTo(Especialidade, {
         as: 'especialidade',
         foreignKey: 'especialidade_id',
       })
