@@ -123,8 +123,11 @@ export default {
         },{
           nome: 'Medicos',
           icon: 'mdi-doctor',
-          link: '/',
-          disabled: true
+          link: '/medico',
+        },{
+          nome: 'Unidades',
+          icon: 'mdi-hospital-building',
+          link: '/unidade'
         },{
           nome: 'Relatórios',
           icon: 'mdi-chart-box-outline',
