@@ -61,8 +61,7 @@ router.post('/unidade', unidadeController.create)
 // Arquivo
 router.delete('/arquivo/:id', arquivoController.delete)
 //Retorno
-router.get('/retorno/:id', retornoController.get)
-router.get('/retorno', retornoController.getAll)
-router.put('/retorno', retornoController.update)
+router.get('/retorno', [autenticacaoJwt.verificarToken], retornoController.getAll)
+router.put('/retorno/:id', retornoController.update)
 
 export default router;

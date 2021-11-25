@@ -15,6 +15,7 @@ import CandidaturaService from "../services/CandidaturaService";
 import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
 import { IGetAllMedicoFilter } from "../types/Requests";
 import { ISortPaginateQuery } from "../helpers/SortPaginate";
+import Retorno from "../models/Retorno";
 
 interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { }
 interface IGetHandlerGetFilter extends ISortPaginateQuery, IGetAllMedicoFilter { }
@@ -237,7 +238,16 @@ class MedicoController {
         },
         {
           model: Candidatura, as: 'candidatura',
-          attributes: ['cnpj', 'faturamento', 'equipe_id', 'unidade_id', 'data_criado']
+          attributes: ['cnpj', 'faturamento', 'equipe_id', 'unidade_id', 'data_criado'],
+          include: [{
+            model: Retorno, as: 'retornos',
+            attributes: ['id', 'comentario', 'status'],
+            include: [{
+              model: Usuario, as: 'avaliador',
+              
+            }]
+          }],
+          required: false
         }
       ]
     });

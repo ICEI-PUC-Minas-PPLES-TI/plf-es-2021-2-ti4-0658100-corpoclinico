@@ -60,6 +60,9 @@ export default {
       Candidatura.belongsTo(Medico, {
         foreignKey: 'medico_id'
       })
+      Candidatura.hasMany(Retorno, {
+        foreignKey: 'candidatura_id', as: 'retornos'
+      })
 
       Retorno.belongsTo(Usuario, {
         as: 'avaliador',

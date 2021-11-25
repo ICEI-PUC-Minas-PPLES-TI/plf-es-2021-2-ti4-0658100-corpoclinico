@@ -26,7 +26,7 @@ class RetornoController {
 
     const { status, comentario } = request.body;
 
-    await this.Service.update({ status, comentario });
+    await this.Service.update({ status, comentario, id });
     response.status(201).json({});
   }
 
@@ -42,9 +42,14 @@ class RetornoController {
 
   // URI de exemplo: {{server}}/api/retorno
   public getAll: GetAllSimpleRequestHandler<IAtributosRetorno> = async (request, response) => {
-    const usuarioLogadoId = Number(request.headers.authorization);
-    const retornos = await this.Service.getAllBy("avaliador_id", usuarioLogadoId)
-    response.status(200).json(retornos);
+    if (request.headers.authorization){
+      const usuarioLogadoId = Number(request.headers.authorization);
+      const retornos = await this.Service.getAllBy("avaliador_id", usuarioLogadoId)
+      response.status(200).json(retornos);
+    }
+    else
+      throw new AppError("Necessario logar para acessar os retornos", 405);
+    
   }
 }
 
