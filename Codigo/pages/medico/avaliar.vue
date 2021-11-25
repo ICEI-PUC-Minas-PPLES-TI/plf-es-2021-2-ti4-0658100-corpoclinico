@@ -179,26 +179,6 @@
           />
         </v-col>
       </v-row>
-      <!-- Senha, Anexos -->
-      <v-row>
-        </v-col>
-        <v-col cols="12" :xs="12" :sm="6" :md="4">
-          <v-file-input
-            accept="image/*"
-            label="Doc. RG (Frente e Verso)"
-            :rules="[
-              (v) => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',
-            ]"
-            disabled
-          />
-        </v-col>
-        <v-col cols="12" :xs="12" :sm="6" :md="4">
-          <v-file-input accept="image/*" label="Doc. CPF" disabled />
-        </v-col>
-        <v-col cols="12" :xs="12" :sm="6" :md="4">
-          <v-file-input accept="image/*" label="Foto 3x4" disabled />
-        </v-col>
-      </v-row>
       <!-- CEP, Logradouro, Número, Complemento -->
       <v-row>
         <v-col cols="12" :xs="12" :md="3">
@@ -270,17 +250,14 @@
       </v-row>
       <!-- Comprovante de Endereço -->
       <v-row>
-        <v-col cols="12" :xs="12" :md="4">
-          <v-file-input accept="image/*" label="Comp. de Endereço" disabled />
-        </v-col>
-        <v-col cols="12" :xs="12" :md="4">
+        <v-col>
           <v-text-field
             v-model="formData.escolaridade_max"
             label="Nível de Escolaridade"
             disabled
           />
         </v-col>
-        <v-col cols="12" :xs="12" :md="4">
+        <v-col>
           <v-text-field
             :hide-details="'auto'"
             label="Sociedade Cientifica"
@@ -314,10 +291,7 @@
                     disabled
                   />
                 </v-col>
-                <v-col cols="12" :xs="12" :sm="6" :md="3">
-                  <v-file-input accept="image/*" label="Certificado" disabled />
-                </v-col>
-                <v-col cols="12" :xs="12" :sm="6" :md="3">
+                <v-col>
                   <v-text-field
                     :hide-details="'auto'"
                     type="number"
@@ -353,10 +327,7 @@
             disabled
           />
         </v-col>
-        <v-col cols="12" :xs="12" :md="2">
-          <v-file-input accept="image/*" label="Doc. CRM" disabled />
-        </v-col>
-        <v-col :cols="12" :md="4">
+        <v-col>
           <v-menu
             v-model="menuDataCrm"
             :close-on-content-click="false"
@@ -417,9 +388,6 @@
                     v-model="formData.especialidade[eidx].ano_formatura"
                     disabled
                   />
-                </v-col>
-                <v-col cols="12" :xs="12" :md="2">
-                  <v-file-input accept="image/*" label="Certificado" disabled />
                 </v-col>
                 <v-col cols="12" :xs="12" :md="2">
                   <v-text-field
@@ -494,25 +462,6 @@
         </v-col>
       </v-row>
       <!-- Certificado e Termos -->
-      <v-row>
-        <v-col cols="12" :xs="12" :md="4">
-          <v-file-input
-            accept="image/*"
-            label="Cert. Quitação CRMMG"
-            disabled
-          />
-        </v-col>
-        <v-col cols="12" :xs="12" :md="4">
-          <v-file-input accept="image/*" label="Termo de Vigilância" disabled />
-        </v-col>
-        <v-col cols="12" :xs="12" :md="4">
-          <v-file-input
-            accept="image/*"
-            label="Termo de Compromisso"
-            disabled
-          />
-        </v-col>
-      </v-row>
       <v-row>
         <v-col :md="8" :sm="0" :xl="8" cols="12"> </v-col>
         <v-col :md="4" :sm="0" :xl="4" cols="12">
