@@ -3,7 +3,7 @@
         v-model="dialog"
         transition="dialog-bottom-transition"
         class="unidade-modal"
-        width="800px"
+        width="600px"
         @click:outside="$emit('input', false)"
         @keydown.esc="$emit('input', false)"
     >
@@ -16,7 +16,7 @@
             Avaliar
         </v-btn>
     </template>
-        <v-card>
+        <v-card class="px-4 py-4">
             <v-container fluids>
                 <v-row class="mx-auto">
                     <v-col :md="12" :sm="12" :xl="12" cols="12">
@@ -44,16 +44,14 @@
                     </v-col>
                 </v-row>
                 <v-row class="mx-auto" >
-                    <v-col :md="12" :sm="12" :xl="12" cols="12">
+                    <v-col>
                         <v-file-input
                             accept="image/*"
                             label="Assinatura"
                             :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
                         />
                     </v-col>
-                </v-row>
-                <v-row class="mx-auto text-center" >
-                    <v-col :md="12" :sm="12" :xl="12" cols="12">
+                    <v-col>
                         <v-file-input
                             accept="image/*"
                             label="Arquivo Adicional"
@@ -62,23 +60,24 @@
                     </v-col>
                 </v-row>    
                 <v-card-actions>
-                <v-row class="mx-auto text-center" >
+                <v-row class="mx-auto text-center mt-2" >
                     <v-col>
-                        <v-btn  class="mr-2"
-                                color="grey"
-                                background="primary"
-                                @click="dialog = false"
-                                >   
+                        <v-btn                                       color="grey"
+                            background="primary"
+                            width="100%"
+                            @click="dialog = false"
+                        >   
                                 Cancelar
                         </v-btn>
                     </v-col>
                     <v-col>
-                        <v-btn  class="mr-2"
-                                color="blue"
-                                background="primary"
-                                slot ="activator"
-                                @click="submitAvaliacao"
-                                >   
+                        <v-btn
+                            width="100%"
+                            color="blue"
+                            background="primary"
+                            slot ="activator"
+                            @click="submitAvaliacao"
+                        >   
                                 Avaliar
                         </v-btn>
                     </v-col>
