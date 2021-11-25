@@ -12,7 +12,8 @@
             v-model="formData.nome"
             maxlength="120"
             label="Nome"
-            disabled
+            color="primary"
+            readonly
           />
         </v-col>
         <v-col cols="12" :xs="12" :sm="6" :md="3">
@@ -21,7 +22,7 @@
             v-model="formData.cpf"
             v-mask="['###.###.###-##']"
             label="CPF"
-            disabled
+            readonly
           />
         </v-col>
       </v-row>
@@ -34,7 +35,7 @@
             v-model="formData.celular"
             v-mask="['(##) ####-####', '(##) #####-####']"
             label="Telefone Celular"
-            disabled
+            readonly
           />
         </v-col>
         <v-col cols="12" :xs="12" :sm="6" :md="5">
@@ -44,38 +45,20 @@
             label="E-mail"
             type="email"
             maxlength="100"
-            disabled
+            readonly
           />
         </v-col>
         <v-col cols="12" :xs="12" :sm="6" :md="3">
-          <v-menu
-            v-model="menuNascimento"
-            :close-on-content-click="false"
-            :nudge-right="40"
-            transition="scale-transition"
-            offset-y
-            min-width="auto"
-          >
-            <template v-slot:activator="{ on, attrs }">
               <v-text-field
                 v-model="formData.dt_nascimento"
                 hide-details="auto"
                 label="Data de Nascimento"
                 type="date"
                 max="3000-01-01"
-                class="medico-stepper-input-date"
-                disabled
+                readonly
               >
-                <span slot="append">
-                  <v-icon v-bind="attrs" v-on="on"> mdi-calendar </v-icon>
-                </span>
               </v-text-field>
-            </template>
-            <v-date-picker
-              v-model="formData.dt_nascimento"
-              @input="menuNascimento = false"
-            ></v-date-picker>
-          </v-menu>
+            
         </v-col>
       </v-row>
       <!-- RG, Orgao Emissor, Data de Emissao -->
@@ -97,7 +80,7 @@
                 },
               },
             }"
-            disabled
+            readonly
           />
         </v-col>
         <v-col cols="12" :xs="12" :sm="6" :md="5">
@@ -106,19 +89,10 @@
             v-model="formData.rg_orgao_emissor"
             label="Orgão Emissor"
             maxlength="30"
-            disabled
+            readonly
           />
         </v-col>
         <v-col cols="12" :xs="12" :sm="6" :md="3">
-          <v-menu
-            v-model="menuEmissao"
-            :close-on-content-click="false"
-            :nudge-right="40"
-            transition="scale-transition"
-            offset-y
-            min-width="auto"
-          >
-            <template v-slot:activator="{ on, attrs }">
               <v-text-field
                 v-model="formData.rg_data_emissao"
                 hide-details="auto"
@@ -126,18 +100,9 @@
                 type="date"
                 max="3000-01-01"
                 class="medico-stepper-input-date"
-                disabled
+                readonly
               >
-                <span slot="append">
-                  <v-icon v-bind="attrs" v-on="on"> mdi-calendar </v-icon>
-                </span>
               </v-text-field>
-            </template>
-            <v-date-picker
-              v-model="formData.rg_data_emissao"
-              @input="menuEmissao = false"
-            ></v-date-picker>
-          </v-menu>
         </v-col>
       </v-row>
       <!-- Titulo, Zona Eleitoral, Seção, Cartão SUS -->
@@ -148,7 +113,7 @@
             label="Título de Eleitor"
             v-model="formData.titulo_eleitoral"
             v-mask="['#### #### ####']"
-            disabled
+            readonly
           />
         </v-col>
         <v-col cols="12" :xs="12" :sm="6" :md="3">
@@ -157,7 +122,7 @@
             label="Zona Eleitoral"
             v-model="formData.zona"
             maxlength="3"
-            disabled
+            readonly
           />
         </v-col>
         <v-col cols="12" :xs="12" :sm="6" :md="3">
@@ -166,7 +131,7 @@
             label="Seção Eleitoral"
             v-model="formData.secao"
             maxlength="4"
-            disabled
+            readonly
           />
         </v-col>
         <v-col cols="12" :xs="12" :sm="6" :md="3">
@@ -175,7 +140,7 @@
             label="Cartão do SUS"
             v-model="formData.cartao_sus"
             maxlength="15"
-            disabled
+            readonly
           />
         </v-col>
       </v-row>
@@ -187,7 +152,7 @@
             v-mask="'#####-###'"
             v-model="formData.cep"
             label="CEP"
-            disabled
+            readonly
           />
         </v-col>
         <v-col cols="12" :xs="12" :md="5">
@@ -196,7 +161,7 @@
             v-model="formData.logradouro"
             label="Logradouro"
             maxlength="100"
-            disabled
+            readonly
           />
         </v-col>
         <v-col cols="12" :xs="12" :sm="6" :md="2">
@@ -205,7 +170,7 @@
             v-model="formData.numero"
             label="Número"
             maxlength="20"
-            disabled
+            readonly
           />
         </v-col>
         <v-col cols="12" :xs="12" :sm="6" :md="2">
@@ -214,7 +179,7 @@
             v-model="formData.complemento"
             label="Complemento"
             maxlength="20"
-            disabled
+            readonly
           />
         </v-col>
       </v-row>
@@ -226,7 +191,7 @@
             item-value="sigla"
             label="Estado"
             v-model="formData.estado"
-            disabled
+            readonly
           ></v-text-field>
         </v-col>
         <v-col cols="12" :xs="12" :md="5">
@@ -235,7 +200,7 @@
             v-model="formData.cidade"
             label="Cidade"
             maxlength="100"
-            disabled
+            readonly
           />
         </v-col>
         <v-col cols="12" :xs="12" :md="4">
@@ -244,7 +209,7 @@
             v-model="formData.bairro"
             label="Bairro"
             maxlength="45"
-            disabled
+            readonly
           />
         </v-col>
       </v-row>
@@ -254,7 +219,7 @@
           <v-text-field
             v-model="formData.escolaridade_max"
             label="Nível de Escolaridade"
-            disabled
+            readonly
           />
         </v-col>
         <v-col>
@@ -263,17 +228,8 @@
             label="Sociedade Cientifica"
             v-model="formData.sociedade_cientifica"
             maxlength="100"
-            disabled
+            readonly
           >
-            <template v-slot:append>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <v-icon v-on="on"> mdi-help-circle-outline </v-icon>
-                </template>
-                Associação de especialistas, estudiosos ou eruditos de um ramo
-                do conhecimento ou das ciências em geral.
-              </v-tooltip>
-            </template>
           </v-text-field>
         </v-col>
       </v-row>
@@ -288,7 +244,7 @@
                     label="Nome Faculdade"
                     maxlength="60"
                     v-model="formData.formacao[fidx].faculdade_nome"
-                    disabled
+                    readonly
                   />
                 </v-col>
                 <v-col>
@@ -297,7 +253,7 @@
                     type="number"
                     label="Ano de Formação"
                     v-model="formData.formacao[fidx].faculdade_ano_formatura"
-                    disabled
+                    readonly
                   />
                 </v-col>
                 <v-col
@@ -324,19 +280,10 @@
             label="CRM"
             maxlength="20"
             v-model="formData.crm"
-            disabled
+            readonly
           />
         </v-col>
         <v-col>
-          <v-menu
-            v-model="menuDataCrm"
-            :close-on-content-click="false"
-            :nudge-right="40"
-            transition="scale-transition"
-            offset-y
-            min-width="auto"
-          >
-            <template v-slot:activator="{ on, attrs }">
               <v-text-field
                 v-model="formData.dt_inscricao_crm"
                 hide-details="auto"
@@ -344,24 +291,15 @@
                 type="date"
                 max="3000-01-01"
                 class="medico-stepper-input-date"
-                disabled
+                readonly
               >
-                <span slot="append">
-                  <v-icon v-bind="attrs" v-on="on"> mdi-calendar </v-icon>
-                </span>
               </v-text-field>
-            </template>
-            <v-date-picker
-              v-model="formData.dt_inscricao_crm"
-              @input="menuDataCrm = false"
-            ></v-date-picker>
-          </v-menu>
         </v-col>
         <v-col cols="12" :xs="12" :md="3">
           <v-text-field
             label="Categoria"
             v-model="formData.categoria"
-            disabled
+            readonly
           />
         </v-col>
       </v-row>
@@ -377,7 +315,7 @@
                     label="Instituicao"
                     v-model="formData.especialidade[eidx].instituicao"
                     maxlength="60"
-                    disabled
+                    readonly
                   />
                 </v-col>
                 <v-col cols="12" :xs="12" :md="3">
@@ -386,7 +324,7 @@
                     type="number"
                     label="Ano de Formação"
                     v-model="formData.especialidade[eidx].ano_formatura"
-                    disabled
+                    readonly
                   />
                 </v-col>
                 <v-col cols="12" :xs="12" :md="2">
@@ -396,7 +334,7 @@
                     label="Nº RQE"
                     maxlength="20"
                     v-model="formData.especialidade[eidx].rqe"
-                    disabled
+                    readonly
                   />
                 </v-col>
                 <v-col
@@ -427,7 +365,7 @@
             ]"
             v-model="formData.faturamento"
             label="Faturamento"
-            disabled
+            readonly
           />
         </v-col>
         <v-col cols="12" :xs="12" :md="3" v-if="formData.faturamento == 'PJ'">
@@ -436,7 +374,7 @@
             label="CNPJ"
             v-model="formData.cnpj"
             v-mask="['##.###.###/####-##']"
-            disabled
+            readonly
           />
         </v-col>
 
@@ -447,7 +385,7 @@
             item-value="id"
             v-model="formData.unidade"
             label="Unidade"
-            disabled
+            readonly
           />
         </v-col>
         <v-col cols="12" :xs="12" :md="3">
@@ -457,7 +395,7 @@
             item-value="id"
             v-model="formData.equipe"
             label="Equipe"
-            disabled
+            readonly
           />
         </v-col>
       </v-row>
