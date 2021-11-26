@@ -49,16 +49,15 @@
           />
         </v-col>
         <v-col cols="12" :xs="12" :sm="6" :md="3">
-              <v-text-field
-                v-model="formData.dt_nascimento"
-                hide-details="auto"
-                label="Data de Nascimento"
-                type="date"
-                max="3000-01-01"
-                readonly
-              >
-              </v-text-field>
-            
+          <v-text-field
+            v-model="formData.dt_nascimento"
+            hide-details="auto"
+            label="Data de Nascimento"
+            type="date"
+            max="3000-01-01"
+            readonly
+          >
+          </v-text-field>
         </v-col>
       </v-row>
       <!-- RG, Orgao Emissor, Data de Emissao -->
@@ -93,16 +92,16 @@
           />
         </v-col>
         <v-col cols="12" :xs="12" :sm="6" :md="3">
-              <v-text-field
-                v-model="formData.rg_data_emissao"
-                hide-details="auto"
-                label="Data de Emissão"
-                type="date"
-                max="3000-01-01"
-                class="medico-stepper-input-date"
-                readonly
-              >
-              </v-text-field>
+          <v-text-field
+            v-model="formData.rg_data_emissao"
+            hide-details="auto"
+            label="Data de Emissão"
+            type="date"
+            max="3000-01-01"
+            class="medico-stepper-input-date"
+            readonly
+          >
+          </v-text-field>
         </v-col>
       </v-row>
       <!-- Titulo, Zona Eleitoral, Seção, Cartão SUS -->
@@ -235,41 +234,16 @@
       </v-row>
       <!-- Formações -->
       <v-row>
+        <v-col cols="12" :xs="12" :md="6">
+          <v-text-field label="Nome Faculdade" maxlength="60" readonly />
+        </v-col>
         <v-col>
-          <ul>
-            <li v-for="(forma, fidx) in formData.formacao" :key="fidx">
-              <v-row>
-                <v-col cols="12" :xs="12" :md="6">
-                  <v-text-field
-                    label="Nome Faculdade"
-                    maxlength="60"
-                    v-model="formData.formacao[fidx].faculdade_nome"
-                    readonly
-                  />
-                </v-col>
-                <v-col>
-                  <v-text-field
-                    :hide-details="'auto'"
-                    type="number"
-                    label="Ano de Formação"
-                    v-model="formData.formacao[fidx].faculdade_ano_formatura"
-                    readonly
-                  />
-                </v-col>
-                <v-col
-                  cols="12"
-                  :xs="12"
-                  :md="1"
-                  v-if="fidx > 0"
-                  @click="formData.formacao.splice(fidx, 1)"
-                >
-                  <v-btn icon class="mt-3">
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </li>
-          </ul>
+          <v-text-field
+            :hide-details="'auto'"
+            type="number"
+            label="Ano de Formação"
+            readonly
+          />
         </v-col>
       </v-row>
       <!-- CRM, Categoria -->
@@ -284,16 +258,16 @@
           />
         </v-col>
         <v-col>
-              <v-text-field
-                v-model="formData.dt_inscricao_crm"
-                hide-details="auto"
-                label="Data de Inscrição do CRM"
-                type="date"
-                max="3000-01-01"
-                class="medico-stepper-input-date"
-                readonly
-              >
-              </v-text-field>
+          <v-text-field
+            v-model="formData.dt_inscricao_crm"
+            hide-details="auto"
+            label="Data de Inscrição do CRM"
+            type="date"
+            max="3000-01-01"
+            class="medico-stepper-input-date"
+            readonly
+          >
+          </v-text-field>
         </v-col>
         <v-col cols="12" :xs="12" :md="3">
           <v-text-field
@@ -399,15 +373,19 @@
           />
         </v-col>
       </v-row>
-      <!-- Certificado e Termos -->
+      <v-row>
+        <v-col>
+          <a @click="baixarArquivos()">Baixar arquivos do candidato</a>
+        </v-col>
+      </v-row>
+
+      <!-- Botoes -->
       <v-row>
         <v-col :md="8" :sm="0" :xl="8" cols="12"> </v-col>
         <v-col :md="4" :sm="0" :xl="4" cols="12">
-          <v-btn 
-          class="mr-2" 
-          color="white"
-          @click="retorno()"
-          > Retornar </v-btn>
+          <v-btn class="mr-2" color="white" @click="retorno()">
+            Retornar
+          </v-btn>
           <modalAvalia />
         </v-col>
       </v-row>
@@ -427,8 +405,8 @@ export default {
   data() {
     return {
       medico: [],
-      unidades:[],
-      equipes:[],
+      unidades: [],
+      equipes: [],
       formData: {
         id: null,
         nome: null,
@@ -485,8 +463,8 @@ export default {
     };
   },
   mounted() {
-    this.listaEquipes()
-    this.listaUnidades()
+    this.listaEquipes();
+    this.listaUnidades();
     const urlParams = new URLSearchParams(window.location.search);
     const myParam = urlParams.get("id");
     this.listaMedico(myParam);
@@ -500,10 +478,9 @@ export default {
         .$get("/medico/" + id)
         .then((response) => {
           this.medico = response;
-          console.log(this.medico)
           this.formData = {
             id: this.medico.id,
-            nome:this.medico.usuario.nome,
+            nome: this.medico.usuario.nome,
             email: this.medico.usuario.email,
             celular: this.medico.celular,
             cpf: this.medico.cpf,
@@ -534,39 +511,58 @@ export default {
               },
             ],
             especialidade: [],
-            equipe: this.equipes[this.medico.candidatura.equipe_id-1].nome,
-            unidade: this.unidades[this.medico.candidatura.unidade_id-1],
+            equipe: this.equipes[this.medico.candidatura.equipe_id - 1].nome,
+            unidade: this.unidades[this.medico.candidatura.unidade_id - 1],
             faturamento: this.medico.candidatura.faturamento,
             cnpj: this.medico.candidatura.cnpj,
           };
         })
         .catch((error) => {
           console.log(error);
-          this.formData={
-            id:"Médico não encontrado"
-          }
-          setTimeout(window.location.href="/medico", 2000);
+          this.formData = {
+            id: "Médico não encontrado",
+          };
+          setTimeout((window.location.href = "/medico"), 2000);
         });
     },
     listaUnidades() {
-      this.$axios.$get('/unidade').then(response => {
-        for(let i = 0;i<response.length;i++){
-          this.unidades.push(response[i].nome)
-        }
-      }).catch(error => {
-        console.log(error)
-      })
+      this.$axios
+        .$get("/unidade")
+        .then((response) => {
+          for (let i = 0; i < response.length; i++) {
+            this.unidades.push(response[i].nome);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
-    listaEquipes(){
-      this.$axios.$get('/equipe').then(response => {
-        this.equipes = response.dados
-      }).catch(error => {
-        console.log(error)
-      })
+    listaEquipes() {
+      this.$axios
+        .$get("/equipe")
+        .then((response) => {
+          this.equipes = response.dados;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
-    retorno(){
-      window.location.href="/medico"
-    }
+    baixarArquivos() {
+      let idsArquivos = [];
+      for (let i = 0; i < this.medico.arquivos.length; i++) {
+        idsArquivos.push(this.medico.arquivos[i].id);
+        this.$axios
+          .$get("/api/arquivo" + this.medico.arquivos[i].id)
+          .then((response) => {})
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+      console.log(idsArquivos);
+    },
+    retorno() {
+      window.location.href = "/medico";
+    },
   },
 };
 </script>
