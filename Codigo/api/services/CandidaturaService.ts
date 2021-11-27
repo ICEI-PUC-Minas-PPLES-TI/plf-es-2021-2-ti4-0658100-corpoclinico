@@ -45,12 +45,21 @@ export default class CandidaturaService{
         })
     }
     async update(candidatura: Partial<IAtributosCandidaturaCriacao>){
-        return Candidatura.update(candidatura, {
-            where: {id: candidatura.id},
-        })
-        .catch (erro => {
-            throw new AppError("Erro interno no servidor!", 500, erro);
-        })
+
+      let candidaturaAtualizada : any;
+      if(candidatura.id)
+        candidaturaAtualizada = await Candidatura.findByPk(candidatura.id);
+
+      if(!candidaturaAtualizada)
+        throw new AppError("Candidatura do médico não encontrada!", 500, ["'candidatura.id' da candidatura do médico não encontrada"]);
+
+      try {
+        await candidaturaAtualizada.update(candidatura)
+      } catch (erro) {
+        throw new AppError("Erro interno no servidor!", 500, erro);
+      }
+
+      return candidaturaAtualizada;
     }
     async delete(id: number) {
         return Candidatura.destroy({
