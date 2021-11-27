@@ -460,4 +460,16 @@ export default class ArquivoService {
     }
   }
 
+  async findById(id : number) {
+    const arquivo = await Arquivo.findOne({
+      where: {
+        id: id
+      }
+    });
+
+    if (!arquivo) throw new AppError("Arquivo não encontrado!", 404);
+
+    return arquivo;
+  }
+
 }

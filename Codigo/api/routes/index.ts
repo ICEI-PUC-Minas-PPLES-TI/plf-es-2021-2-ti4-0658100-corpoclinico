@@ -57,6 +57,7 @@ router.delete('/unidade/:id', unidadeController.delete)
 router.get('/unidade', unidadeController.getAll)
 router.post('/unidade', unidadeController.create)
 // Arquivo
+router.get('/arquivo/:id', arquivoController.download)
 router.delete('/arquivo/:id', arquivoController.delete)
 
 export default router;
