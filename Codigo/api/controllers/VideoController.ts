@@ -23,7 +23,9 @@ class VideoController {
     // Validando com o esquema criado:
     await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
-    const { link, prioridade } = request.body;
+    const { link } = request.body;
+
+    const prioridade = ((await this.Service.getLastByPrioridade())?.get()?.prioridade ?? 0) + 1;
 
     const video = await this.Service.create({ link, prioridade })
     response.status(201).json({

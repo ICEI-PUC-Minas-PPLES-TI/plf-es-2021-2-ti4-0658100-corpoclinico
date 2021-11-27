@@ -76,4 +76,10 @@ export default class VideoService {
     });
   }
 
+  async getLastByPrioridade(){
+    return Video.findOne({
+      order: [["prioridade", "DESC"]]
+    })
+  }
+
 }
