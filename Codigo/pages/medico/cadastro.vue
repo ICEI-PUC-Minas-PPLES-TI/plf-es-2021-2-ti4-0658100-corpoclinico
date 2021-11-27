@@ -102,25 +102,56 @@
           </v-row>
           <!-- RG, Orgao Emissor, Data de Emissao -->
           <v-row>
-            <v-col cols="12" :xs="12" :sm="6" :md="4">
+            <v-col cols="12" :sm="12" :md="2">
+              <v-select
+                item-text="sigla"
+                item-value="sigla"
+                :items="[
+                  {nome: 'Acre', sigla: 'AC'},
+                  {nome: 'Alagoas', sigla: 'AL'},
+                  {nome: 'Amapá', sigla: 'AP'},
+                  {nome: 'Amazonas', sigla: 'AM'},
+                  {nome: 'Bahia', sigla: 'BA'},
+                  {nome: 'Ceará', sigla: 'CE'},
+                  {nome: 'Distrito Federal', sigla: 'DF'},
+                  {nome: 'Espírito Santo', sigla: 'ES'},
+                  {nome: 'Goiás', sigla: 'GO'},
+                  {nome: 'Maranhão', sigla: 'MA'},
+                  {nome: 'Mato Grosso', sigla: 'MT'},
+                  {nome: 'Mato Grosso do Sul', sigla: 'MS'},
+                  {nome: 'Minas Gerais', sigla: 'MG'},
+                  {nome: 'Pará', sigla: 'PA'},
+                  {nome: 'Paraíba', sigla: 'PB'},
+                  {nome: 'Paraná', sigla: 'PR'},
+                  {nome: 'Pernambuco', sigla: 'PE'},
+                  {nome: 'Piauí', sigla: 'PI'},
+                  {nome: 'Rio de Janeiro', sigla: 'RJ'},
+                  {nome: 'Rio Grande do Norte', sigla: 'RN'},
+                  {nome: 'Rio Grande do Sul', sigla: 'RS'},
+                  {nome: 'Rondônia', sigla: 'RO'},
+                  {nome: 'Roraima', sigla: 'RR'},
+                  {nome: 'Santa Catarina', sigla: 'SC'},
+                  {nome: 'São Paulo', sigla: 'SP'},
+                  {nome: 'Sergipe', sigla: 'SE'},
+                  {nome: 'Tocantins', sigla: 'TO'}
+                ]"
+                label="UF do RG (obrigatório)"
+                v-model="formData.rg_estado"
+                :rules="[v => !!v || 'Estado do RG obrigatório']"
+                @change="salvarEmCache"
+              ></v-select>
+            </v-col>
+            <v-col cols="12" :xs="12" :sm="6" :md="3">
               <v-text-field
                 :hide-details="'auto'"
                 v-model="formData.rg"
                 :rules="[v => !!v || 'RG obrigatório']"
                 label="RG (obrigatório)"
-                v-mask="{mask: 'AA-FFFFFFFFFFF', tokens: {
-                  F: {
-                    pattern: /^[0-9]*\.?[0-9]*$/
-                  },
-                  A: {
-                    pattern: /[a-zA-Z]/,
-                    transform: v => v.toLocaleUpperCase()
-                  }
-                }}"
+                maxlength="11"
                 @blur="salvarEmCache"
               />
             </v-col>
-            <v-col cols="12" :xs="12" :sm="6" :md="5">
+            <v-col cols="12" :xs="12" :sm="6" :md="4">
               <v-text-field
                 :hide-details="'auto'"
                 v-model="formData.rg_orgao_emissor"
@@ -535,14 +566,52 @@
         >
           <!-- CRM, Categoria -->
           <v-row>
+            <v-col cols="12" :md="2">
+              <v-select
+                item-text="sigla"
+                item-value="sigla"
+                :items="[
+                  {nome: 'Acre', sigla: 'AC'},
+                  {nome: 'Alagoas', sigla: 'AL'},
+                  {nome: 'Amapá', sigla: 'AP'},
+                  {nome: 'Amazonas', sigla: 'AM'},
+                  {nome: 'Bahia', sigla: 'BA'},
+                  {nome: 'Ceará', sigla: 'CE'},
+                  {nome: 'Distrito Federal', sigla: 'DF'},
+                  {nome: 'Espírito Santo', sigla: 'ES'},
+                  {nome: 'Goiás', sigla: 'GO'},
+                  {nome: 'Maranhão', sigla: 'MA'},
+                  {nome: 'Mato Grosso', sigla: 'MT'},
+                  {nome: 'Mato Grosso do Sul', sigla: 'MS'},
+                  {nome: 'Minas Gerais', sigla: 'MG'},
+                  {nome: 'Pará', sigla: 'PA'},
+                  {nome: 'Paraíba', sigla: 'PB'},
+                  {nome: 'Paraná', sigla: 'PR'},
+                  {nome: 'Pernambuco', sigla: 'PE'},
+                  {nome: 'Piauí', sigla: 'PI'},
+                  {nome: 'Rio de Janeiro', sigla: 'RJ'},
+                  {nome: 'Rio Grande do Norte', sigla: 'RN'},
+                  {nome: 'Rio Grande do Sul', sigla: 'RS'},
+                  {nome: 'Rondônia', sigla: 'RO'},
+                  {nome: 'Roraima', sigla: 'RR'},
+                  {nome: 'Santa Catarina', sigla: 'SC'},
+                  {nome: 'São Paulo', sigla: 'SP'},
+                  {nome: 'Sergipe', sigla: 'SE'},
+                  {nome: 'Tocantins', sigla: 'TO'}
+                ]"
+                label="Região do CRM (obrigatório)"
+                v-model="formData.regiao"
+                :rules="[v => !!v || 'Estado do CRM obrigatório']"
+                @change="salvarEmCache"
+              ></v-select>
+            </v-col>
             <v-col cols="12" :xs="12" :md="3">
               <v-text-field
                 :hide-details="'auto'"
                 label="CRM (obrigatório)"
                 maxlength="20"
                 v-model="formData.crm"
-                :rules="[v => !!v || 'CRM obrigatório', v => (v && v.slice(-2).toLocaleUpperCase().match(/^[A-Z]+$/)) || 'CRM Inválido']"
-                hint="Ex: 000000/MG"
+                :rules="[v => !!v || 'CRM obrigatório']"
                 @blur="salvarEmCache"
               />
             </v-col>
@@ -554,7 +623,7 @@
                 @change="carregaArquivo($event, 'doc_crm')"
               />
             </v-col>
-            <v-col :cols="12" :md="4">
+            <v-col :cols="12" :md="2">
               <v-menu
                 v-model="menuDataCrm"
                 :close-on-content-click="false"
@@ -807,6 +876,7 @@ export default {
         rg: null,
         rg_orgao_emissor: null,
         rg_data_emissao: undefined,
+        rg_estado: null,
         titulo_eleitoral: null,
         zona: null,
         secao: null,
@@ -820,6 +890,7 @@ export default {
         bairro: null,
         sociedade_cientifica: null,
         escolaridade_max: null,
+        regiao: null,
         crm: null,
         dt_inscricao_crm: null,
         categoria: null,
@@ -924,8 +995,7 @@ export default {
       let info = JSON.parse(JSON.stringify(this.formData))
       info.celular = info.celular.replace(/\D/g,'')
       info.cnpj = info.cnpj ? info.cnpj.replace(/\D/g,''): null
-      info.regiao = info.crm.substr(info.crm.length - 2)
-      info.crm = info.crm.substr(0, info.crm.length - 3)
+      info.rg = `${info.rg_estado}-${info.rg}`
       info.titulo_eleitoral = info.titulo_eleitoral.replace(/ /g,'')
       
       /*for (var key in this.arquivos) {
