@@ -628,7 +628,7 @@
                         accept="image/*"
                         label="Certificado"
                         :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
-                        @change="carregaArquivo($event, 'doc_cert_espec', false)"
+                        @change="carregaArquivo($event, 'docs_cert_espec', false)"
                       />
                     </v-col>
                     <v-col cols="12" :xs="12" :md="2">
@@ -841,7 +841,7 @@ export default {
         doc_cert_quit_crmmg: null,
         doc_term_vigi: null,
         doc_term_compr: null,
-        doc_cert_espec: []
+        docs_cert_espec: []
       },
       menuNascimento: false,
       menuEmissao: false,
@@ -947,7 +947,8 @@ export default {
       for (var key in this.arquivos) {
         if(Array.isArray(this.arquivos[key])) {
           for(let i=0; i<this.arquivos[key].length; i++) {
-            formData.append([key], this.arquivos[key][i])
+            console.log(key)
+            formData.append(key, this.arquivos[key][i])
           }
         } else if(this.arquivos[key])
           formData.append(key, this.arquivos[key])
