@@ -8,7 +8,9 @@ export type CreateRequestHandler<TRequestBody = any> = RequestHandler<never, Cre
 
 export type GetAllRequestHandler<TModel, TQuery=ISortPaginateQuery> = RequestHandler<never, ReadResponse<TModel>, never, TQuery>;
 
-export type GetRequestHandler<TModel> = RequestHandler<{ id: string }, TModel | undefined | null>
+export type GetRequestHandler<TModel> = RequestHandler<{ id: string }, TModel | undefined | null>;
+
+export type GetThisRequestHandler<TModel> = RequestHandler<never, TModel | undefined | null>;
 
 export type GetAllSimpleRequestHandler<TModel> = RequestHandler<{id: string}, TModel|undefined|null|TModel[]>
 

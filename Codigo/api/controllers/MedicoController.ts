@@ -7,7 +7,7 @@ import Usuario, { IAtributosUsuarioCriacao } from "../models/Usuario";
 import UsuarioService from "../services/UsuarioService";
 
 import bcrypt from "bcryptjs";
-import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
+import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, GetThisRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
 import AppError from "../errors/AppError";
 import ArquivoService from "../services/ArquivoService";
 import Arquivo from "../models/Arquivo";
@@ -257,6 +257,12 @@ class MedicoController {
     else
       response.status(200).json(medico);
   }
+
+  public getThis: GetRequestHandler<IAtributosMedico> = async (request, response, next) => {
+    const id = request.headers.authorization;
+    request.params.id = ((await this.medicoService.getBy('usuario_id', id))?.get().id ?? "") + "" ;
+    await this.get(request, response, next);
+  } 
 
   // URI de exemplo: http://localhost:3000/api/medico?pagina=1&limite=5&atributo=nome&ordem=DESC
   // todos as querys são opicionais
