@@ -37,6 +37,8 @@ const extensoesPermitidas = [
   '.wpt',
   '.wrd',
   '.wri',
+  '.xlsx',
+  '.csv',
 ]
 
 export {
