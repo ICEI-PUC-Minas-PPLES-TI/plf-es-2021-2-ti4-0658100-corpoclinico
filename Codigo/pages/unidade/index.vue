@@ -23,7 +23,14 @@
           <v-data-table
             :headers="headers"
             :items="unidades"
-            :items-per-page="5"
+            :items-per-page="-1"
+            :loading="tabelaCarregando"
+            :disable-sort="true"
+            :footer-props="{
+              'disable-items-per-page': true,
+              'disable-pagination': true
+            }"
+            class="unidade-table"
           >
             <template v-slot:item.ativo="{ item }">
               <v-switch 
@@ -80,5 +87,8 @@
   align-items: center;
   flex-wrap: wrap;
   justify-content: space-between !important;
+}
+.unidade-table .v-data-footer{
+  display: none;
 }
 </style>

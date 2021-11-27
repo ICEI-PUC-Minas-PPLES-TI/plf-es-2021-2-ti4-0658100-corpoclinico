@@ -32,7 +32,14 @@
           <v-data-table
             :headers="headers"
             :items="equipes"
-            :items-per-page="5"
+            :items-per-page="-1"
+            :loading="tabelaCarregando"
+            :disable-sort="true"
+            :footer-props="{
+              'disable-items-per-page': true,
+              'disable-pagination': true
+            }"
+            class="equipe-table"
           >
             <template v-slot:item.actions="{ item }">
               <v-icon color="success" class="mr-2" @click="abreModal(item.id)">
@@ -43,6 +50,11 @@
               <v-btn color="primary" @click="initialize"> Reset </v-btn>
             </template>
           </v-data-table>
+          <v-pagination
+            v-model="tabelaPaginaAtual"
+            :length="tabelaPaginas"
+            @input="listaEquipes"
+          />
         </template>
       </v-card-text>
     </v-card>
@@ -93,6 +105,10 @@ export default {
       toastMensagem: "",
       modalAtivo: false,
       modalEspecialidadeAtivo: false,
+      tabelaPaginaAtual: 1,
+      tabelaPaginas: 1,
+      totalItems: 1,
+      tabelaCarregando: false,
     };
   },
   watch: {
@@ -106,9 +122,11 @@ export default {
   methods: {
     listaEquipes() {
       this.$axios
-        .$get("/equipe")
+        .$get(`/equipe?pagina=${this.tabelaPaginaAtual}`)
         .then((response) => {
           this.equipes = response.dados;
+          this.tabelaPaginas = response.paginas
+          this.totalItems = response.total
         })
         .catch((error) => {
           console.log(error);
@@ -140,5 +158,8 @@ export default {
   align-items: center;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+.equipe-table .v-data-footer{
+  display: none;
 }
 </style>
