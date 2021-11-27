@@ -4,7 +4,6 @@
   <div>
     <h1>Avaliando Médico #{{ this.formData.id }}</h1>
     <v-form ref="formPt1" lazy-validation>
-      <!-- Nome, CPF -->
       <v-row>
         <v-col cols="12" :xs="12" :sm="6" :md="9">
           <v-text-field
@@ -26,7 +25,6 @@
           />
         </v-col>
       </v-row>
-      <!-- Celular, Email, Data de Nascimento -->
       <v-row>
         <v-col cols="12" :xs="12" :sm="6" :md="4">
           <v-text-field
@@ -60,7 +58,6 @@
           </v-text-field>
         </v-col>
       </v-row>
-      <!-- RG, Orgao Emissor, Data de Emissao -->
       <v-row>
         <v-col cols="12" :xs="12" :sm="6" :md="4">
           <v-text-field
@@ -104,7 +101,6 @@
           </v-text-field>
         </v-col>
       </v-row>
-      <!-- Titulo, Zona Eleitoral, Seção, Cartão SUS -->
       <v-row>
         <v-col cols="12" :xs="12" :sm="6" :md="3">
           <v-text-field
@@ -143,7 +139,6 @@
           />
         </v-col>
       </v-row>
-      <!-- CEP, Logradouro, Número, Complemento -->
       <v-row>
         <v-col cols="12" :xs="12" :md="3">
           <v-text-field
@@ -182,7 +177,6 @@
           />
         </v-col>
       </v-row>
-      <!-- Estado, Cidade, Bairro -->
       <v-row>
         <v-col cols="12" :xs="12" :md="3">
           <v-text-field
@@ -212,7 +206,6 @@
           />
         </v-col>
       </v-row>
-      <!-- Comprovante de Endereço -->
       <v-row>
         <v-col>
           <v-text-field
@@ -233,6 +226,8 @@
         </v-col>
       </v-row>
       <!-- Formações -->
+
+      
       <v-row>
         <v-col cols="12" :xs="12" :md="6">
           <v-text-field label="Nome Faculdade" maxlength="60" readonly />
@@ -246,7 +241,8 @@
           />
         </v-col>
       </v-row>
-      <!-- CRM, Categoria -->
+
+
       <v-row>
         <v-col cols="12" :xs="12" :md="3">
           <v-text-field
@@ -277,53 +273,10 @@
           />
         </v-col>
       </v-row>
+
       <!-- Especialidades -->
       <v-row>
         <v-col>
-          <ul>
-            <li v-for="(espe, eidx) in formData.especialidade" :key="eidx">
-              <v-row>
-                <v-col cols="12" :xs="12" :md="4">
-                  <v-text-field
-                    :hide-details="'auto'"
-                    label="Instituicao"
-                    v-model="formData.especialidade[eidx].instituicao"
-                    maxlength="60"
-                    readonly
-                  />
-                </v-col>
-                <v-col cols="12" :xs="12" :md="3">
-                  <v-text-field
-                    :hide-details="'auto'"
-                    type="number"
-                    label="Ano de Formação"
-                    v-model="formData.especialidade[eidx].ano_formatura"
-                    readonly
-                  />
-                </v-col>
-                <v-col cols="12" :xs="12" :md="2">
-                  <v-text-field
-                    :hide-details="'auto'"
-                    type="number"
-                    label="Nº RQE"
-                    maxlength="20"
-                    v-model="formData.especialidade[eidx].rqe"
-                    readonly
-                  />
-                </v-col>
-                <v-col
-                  cols="12"
-                  :xs="12"
-                  :md="1"
-                  @click="formData.especialidade.splice(eidx, 1)"
-                >
-                  <v-btn icon class="mt-3">
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </li>
-          </ul>
         </v-col>
       </v-row>
       <v-row> </v-row>
@@ -552,7 +505,7 @@ export default {
       for (let i = 0; i < this.medico.arquivos.length; i++) {
         idsArquivos.push(this.medico.arquivos[i].id);
         this.$axios
-          .$get("/api/arquivo" + this.medico.arquivos[i].id)
+          .$get("/arquivo/" + this.medico.arquivos[i].id)
           .then((response) => {})
           .catch((error) => {
             console.log(error);
