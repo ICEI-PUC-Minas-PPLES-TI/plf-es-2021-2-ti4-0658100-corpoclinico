@@ -1,10 +1,12 @@
 import { Model, DataTypes, Sequelize, Optional } from "sequelize";
 import Especialidade from "./Especialidade";
+import Usuario from "./Usuario";
 
 export interface IAtributosEquipe {
   id: number,
   nome: string,
-  especialidade_id: number
+  especialidade_id: number,
+  //usuario_id: number
 }
 export interface IAtributosEquipeCriacao
   extends Optional<IAtributosEquipe, "id"> {}
@@ -15,6 +17,7 @@ class Equipe extends Model<IAtributosEquipe, IAtributosEquipeCriacao>
   nome!: string;
   especialidade_id!: number;
   id!: number;
+  //usuario_id!: number;
 
   static initialize(sequelize: Sequelize) {
     Equipe.init(
@@ -33,8 +36,14 @@ class Equipe extends Model<IAtributosEquipe, IAtributosEquipeCriacao>
                 model: Especialidade,
                 key: 'id'
             },
-            
-        }
+        },
+        /*usuario_id: {
+          type: DataTypes.INTEGER().UNSIGNED,
+          references: {
+            model: Usuario,
+            key: 'id'
+          }
+        }*/
       },
       {
         tableName: "equipe",

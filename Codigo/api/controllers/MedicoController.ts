@@ -7,7 +7,7 @@ import Usuario, { IAtributosUsuarioCriacao } from "../models/Usuario";
 import UsuarioService from "../services/UsuarioService";
 
 import bcrypt from "bcryptjs";
-import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
+import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, GetThisRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
 import AppError from "../errors/AppError";
 import ArquivoService from "../services/ArquivoService";
 import Arquivo from "../models/Arquivo";
@@ -15,6 +15,7 @@ import CandidaturaService from "../services/CandidaturaService";
 import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
 import { IGetAllMedicoFilter } from "../types/Requests";
 import { ISortPaginateQuery } from "../helpers/SortPaginate";
+import Retorno from "../models/Retorno";
 import MedicoFormacao, { IAtributosMedicoFormacao, IAtributosMedicoFormacaoCriacao } from "../models/MedicoFormacao";
 import MedicoEspecialidade from "../models/MedicoEspecialidade";
 
@@ -282,7 +283,16 @@ class MedicoController {
         },
         {
           model: Candidatura, as: 'candidatura',
-          attributes: ['cnpj', 'faturamento', 'equipe_id', 'unidade_id', 'data_criado']
+          attributes: ['cnpj', 'faturamento', 'equipe_id', 'unidade_id', 'data_criado'],
+          include: [{
+            model: Retorno, as: 'retornos',
+            attributes: ['id', 'comentario', 'status'],
+            include: [{
+              model: Usuario, as: 'avaliador',
+
+            }]
+          }],
+          required: false
         },
         {
           model: MedicoFormacao, as: 'formacoes',
@@ -297,6 +307,12 @@ class MedicoController {
       throw new AppError("Medico não encontrado!", 404);
     else
       response.status(200).json(medico);
+  }
+
+  public getThis: GetRequestHandler<IAtributosMedico> = async (request, response, next) => {
+    const id = request.headers.authorization;
+    request.params.id = ((await this.medicoService.getBy('usuario_id', id))?.get().id ?? "") + "" ;
+    await this.get(request, response, next);
   }
 
   // URI de exemplo: http://localhost:3000/api/medico?pagina=1&limite=5&atributo=nome&ordem=DESC

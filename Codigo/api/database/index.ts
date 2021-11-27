@@ -10,6 +10,7 @@ import Medico from '../models/Medico';
 import Usuario from "../models/Usuario";
 import Candidatura from '../models/Candidatura';
 import Unidade from "../models/Unidade";
+import Retorno from '../models/Retorno';
 import MedicoFormacao from '../models/MedicoFormacao';
 import MedicoEspecialidade from '../models/MedicoEspecialidade';
 
@@ -39,6 +40,7 @@ export default {
       Equipe.initialize(sequelize);
       Arquivo.initialize(sequelize);
       Candidatura.initialize(sequelize);
+      Retorno.initialize(sequelize);
       MedicoFormacao.initialize(sequelize);
       MedicoEspecialidade.initialize(sequelize);
 
@@ -62,6 +64,19 @@ export default {
       Candidatura.belongsTo(Medico, {
         foreignKey: 'medico_id'
       })
+      Candidatura.hasMany(Retorno, {
+        foreignKey: 'candidatura_id', as: 'retornos'
+      })
+
+      Retorno.belongsTo(Usuario, {
+        as: 'avaliador',
+        foreignKey: 'avaliador_id'
+      });
+      Retorno.belongsTo(Candidatura, {
+        as: 'candidatura',
+        foreignKey: 'candidatura_id'
+      })
+
       Medico.hasMany(MedicoFormacao, {
         as: 'formacoes',
         foreignKey: 'medico_id'
