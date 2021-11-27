@@ -1,9 +1,7 @@
-//deixar inputs so pra leitura //mudar os selects para ipunt //datas so input
-
 <template>
   <div>
-    <h1>Avaliando Médico #{{ this.formData.id }}</h1>
-    <v-form ref="formPt1" lazy-validation>
+    <h1 class="mb-4">Avaliando Médico #{{ this.formData.id }}</h1>
+        <h3>Dados Pessoais</h3>
       <v-row>
         <v-col cols="12" :xs="12" :sm="6" :md="9">
           <v-text-field
@@ -120,7 +118,7 @@
             readonly
           />
         </v-col>
-        <v-col cols="12" :xs="12" :sm="6" :md="3">
+        <v-col cols="12" :xs="12" :sm="4" :md="2">
           <v-text-field
             :hide-details="'auto'"
             label="Seção Eleitoral"
@@ -129,7 +127,7 @@
             readonly
           />
         </v-col>
-        <v-col cols="12" :xs="12" :sm="6" :md="3">
+        <v-col cols="12" :xs="12" :sm="8" :md="4">
           <v-text-field
             :hide-details="'auto'"
             label="Cartão do SUS"
@@ -139,6 +137,7 @@
           />
         </v-col>
       </v-row>
+      <h3 class="my-4">Endereço</h3>
       <v-row>
         <v-col cols="12" :xs="12" :md="3">
           <v-text-field
@@ -206,6 +205,7 @@
           />
         </v-col>
       </v-row>
+      <h3>Formação</h3>
       <v-row>
         <v-col>
           <v-text-field
@@ -226,22 +226,44 @@
         </v-col>
       </v-row>
       <!-- Formações -->
-
-      
-      <v-row>
-        <v-col cols="12" :xs="12" :md="6">
-          <v-text-field label="Nome Faculdade" maxlength="60" readonly />
-        </v-col>
-        <v-col>
-          <v-text-field
-            :hide-details="'auto'"
-            type="number"
-            label="Ano de Formação"
-            readonly
-          />
-        </v-col>
+        <v-row v-for="item in this.medico.formacoes" v-bind:key="item.id">
+          <v-col cols="12" :xs="12" :md="6">
+            <v-text-field label="Faculdade" v-model="item.faculdade_nome"/>
+          </v-col>
+          <v-col>
+            <v-text-field
+              :hide-details="'auto'"
+              type="number"
+              label="Ano de Formação"
+              v-model="item.faculdade_ano_formatura"
+              readonly
+            />
+          </v-col>
       </v-row>
-
+      <h3 class="my-4">Dados Profissionais</h3>
+      <v-row v-for="item in this.medico.especialidades" v-bind:key="item.id">
+          <v-col cols="12" :xs="12" :md="4">
+            <v-text-field label="RQE de Especialidade" v-model="item.rqe"/>
+          </v-col>
+          <v-col cols="12" :xs="12" :md="4">
+            <v-text-field
+              :hide-details="'auto'"
+              type="number"
+              label="Instituição"
+              v-model="item.instituicao"
+              readonly
+            />
+          </v-col>
+          <v-col cols="12" :xs="12" :md="4">
+            <v-text-field
+              :hide-details="'auto'"
+              type="number"
+              label="Instituição"
+              v-model="item.ano_formatura"
+              readonly
+            />
+          </v-col>
+      </v-row>
 
       <v-row>
         <v-col cols="12" :xs="12" :md="3">
@@ -273,29 +295,18 @@
           />
         </v-col>
       </v-row>
-
-      <!-- Especialidades -->
-      <v-row>
-        <v-col>
-        </v-col>
-      </v-row>
-      <v-row> </v-row>
-
       <!-- Faturamento, CNPJ, Unidade, Equipe -->
+      <h3 class="my-4">Dados financeiros</h3>
       <v-row>
-        <v-col cols="12" :xs="12" :md="formData.faturamento == 'PJ' ? 3 : 6">
+        <v-col cols="12" :xs="12" :md="6" >
           <v-text-field
             :hide-details="'auto'"
-            :items="[
-              { text: 'Pessoa Juridica', value: 'PJ' },
-              { text: 'Cooperado', value: 'C' },
-            ]"
             v-model="formData.faturamento"
             label="Faturamento"
             readonly
           />
         </v-col>
-        <v-col cols="12" :xs="12" :md="3" v-if="formData.faturamento == 'PJ'">
+        <v-col cols="12" :xs="12" :md="6" v-if="formData.faturamento == 'PJ'">
           <v-text-field
             :hide-details="'auto'"
             label="CNPJ"
@@ -304,8 +315,10 @@
             readonly
           />
         </v-col>
-
-        <v-col cols="12" :xs="12" :md="3">
+      </v-row>
+      <h3 class="my-4"  >Equipe</h3>
+      <v-row>
+        <v-col cols="12" :xs="12" :md="6">
           <v-text-field
             :hide-details="'auto'"
             item-text="nome"
@@ -315,7 +328,7 @@
             readonly
           />
         </v-col>
-        <v-col cols="12" :xs="12" :md="3">
+        <v-col cols="12" :xs="12" :md="6">
           <v-text-field
             :hide-details="'auto'"
             item-text="nome"
@@ -342,7 +355,6 @@
           <modalAvalia />
         </v-col>
       </v-row>
-    </v-form>
   </div>
 </template>
 
@@ -387,12 +399,7 @@ export default {
         crm: null,
         dt_inscricao_crm: null,
         categoria: null,
-        formacao: [
-          {
-            faculdade_nome: null,
-            faculdade_ano_formatura: null,
-          },
-        ],
+        formacao: [],
         especialidade: [],
         equipe: null,
         unidade: null,
@@ -452,6 +459,8 @@ export default {
             estado: this.medico.estado,
             cidade: this.medico.cidade,
             bairro: this.medico.bairro,
+            formacao:this.medico.formacoes,
+            especialidades:this.medico.especialidades,
             sociedade_cientifica: this.medico.sociedade_cientifica,
             escolaridade_max: this.medico.escolaridade_max,
             crm: this.medico.crm,
@@ -501,17 +510,16 @@ export default {
         });
     },
     baixarArquivos() {
-      let idsArquivos = [];
       for (let i = 0; i < this.medico.arquivos.length; i++) {
-        idsArquivos.push(this.medico.arquivos[i].id);
         this.$axios
           .$get("/arquivo/" + this.medico.arquivos[i].id)
-          .then((response) => {})
+          .then((response) => {
+            console.log(response)
+          })
           .catch((error) => {
             console.log(error);
           });
       }
-      console.log(idsArquivos);
     },
     retorno() {
       window.location.href = "/medico";
