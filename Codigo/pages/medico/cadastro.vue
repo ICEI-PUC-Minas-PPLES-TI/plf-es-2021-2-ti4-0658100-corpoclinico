@@ -938,13 +938,16 @@ export default {
 
       let formData = new FormData()
       for (var key in info){
-        formData.append(key, info[key])
+        if(Array.isArray(info[key])) {
+          formData.append(key, JSON.stringify(info[key]))
+        } else
+          formData.append(key, info[key])
       }
 
       for (var key in this.arquivos) {
         if(Array.isArray(this.arquivos[key])) {
           for(let i=0; i<this.arquivos[key].length; i++) {
-            formData.append([key + '[]'], this.arquivos[key][i])
+            formData.append([key], this.arquivos[key][i])
           }
         } else if(this.arquivos[key])
           formData.append(key, this.arquivos[key])
@@ -958,9 +961,9 @@ export default {
         })
         .then(res => {
           alert('Cadastro concluido!')
-          localStorage.removeItem('corpoclinico-medico-version')
-          localStorage.removeItem('corpoclinico-medico')
-          window.location.href = '/'
+          //localStorage.removeItem('corpoclinico-medico-version')
+          //localStorage.removeItem('corpoclinico-medico')
+          //window.location.href = '/'
         }) .catch(err => {
           console.log(err.response)
           alert(err.response.data.erros)
