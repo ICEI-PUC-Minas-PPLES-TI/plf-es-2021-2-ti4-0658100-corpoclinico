@@ -10,6 +10,7 @@ import Medico from '../models/Medico';
 import Usuario from "../models/Usuario";
 import Candidatura from '../models/Candidatura';
 import Unidade from "../models/Unidade";
+import MedicoFormacao from '../models/MedicoFormacao';
 import MedicoEspecialidade from '../models/MedicoEspecialidade';
 
 dotenv.config();
@@ -38,6 +39,7 @@ export default {
       Equipe.initialize(sequelize);
       Arquivo.initialize(sequelize);
       Candidatura.initialize(sequelize);
+      MedicoFormacao.initialize(sequelize);
       MedicoEspecialidade.initialize(sequelize);
 
       // Associações
@@ -59,6 +61,16 @@ export default {
       });
       Candidatura.belongsTo(Medico, {
         foreignKey: 'medico_id'
+      })
+      Medico.hasMany(MedicoFormacao, {
+        as: 'formacoes',
+        foreignKey: 'medico_id'
+      })
+      MedicoFormacao.belongsTo(Medico, {
+        foreignKey: 'medico_id'
+      })
+      MedicoFormacao.hasMany(Arquivo, {
+        onDelete: 'cascade', hooks:true
       });
 
       Medico.hasMany(MedicoEspecialidade, {

@@ -491,14 +491,14 @@
           <v-row>
             <v-col>
               <ul>
-                <li v-for="(forma, fidx) in formData.formacao" :key="fidx">
+                <li v-for="(forma, fidx) in formData.formacoes" :key="fidx">
                   <v-row>
                     <v-col cols="12" :xs="12" :md="6">
                       <v-text-field
                         :hide-details="'auto'"
                         label="Nome Faculdade"
                         maxlength="60"
-                        v-model="formData.formacao[fidx].faculdade_nome"
+                        v-model="formData.formacoes[fidx].faculdade_nome"
                         @blur="salvarEmCache"
                       />
                     </v-col>
@@ -507,6 +507,7 @@
                         accept="image/*"
                         label="Certificado"
                         :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+                        @change="carregaArquivo($event, 'docs_cert_form', false)"
                       />
                     </v-col>
                     <v-col cols="12" :xs="12" :sm="6" :md="3">
@@ -514,11 +515,11 @@
                         :hide-details="'auto'"
                         type="number"
                         label="Ano de Formação"
-                        v-model="formData.formacao[fidx].faculdade_ano_formatura"
+                        v-model="formData.formacoes[fidx].faculdade_ano_formatura"
                         @blur="salvarEmCache"
                       />
                     </v-col>
-                    <v-col cols="12" :xs="12" :md="1" v-if="fidx > 0" @click="formData.formacao.splice(fidx, 1);salvarEmCache()">
+                    <v-col cols="12" :xs="12" :md="1" v-if="fidx > 0" @click="formData.formacoes.splice(fidx, 1);salvarEmCache()">
                       <v-btn icon class="mt-3">
                         <v-icon>mdi-close</v-icon>
                       </v-btn>
@@ -858,7 +859,7 @@
 <script>
 import axios2 from 'axios';
 import {mask} from 'vue-the-mask'
-const MODALV = '0.0.1' // Versão dos dados no modal, caso seja diferente da versao salva no PC do usuario nao vai carregar dados anteriores
+const MODALV = '0.0.2' // Versão dos dados no modal, caso seja diferente da versao salva no PC do usuario nao vai carregar dados anteriores
 export default {
   layout: 'cmedico',
   directives: {mask},
@@ -893,7 +894,7 @@ export default {
         crm: null,
         dt_inscricao_crm: null,
         categoria: null,
-        formacao: [{
+        formacoes: [{
           faculdade_nome: null,
           faculdade_ano_formatura: null,
         }],
@@ -912,7 +913,8 @@ export default {
         doc_cert_quit_crmmg: null,
         doc_term_vigi: null,
         doc_term_compr: null,
-        docs_cert_espec: []
+        docs_cert_espec: [],
+        docs_cert_form: [],
       },
       menuNascimento: false,
       menuEmissao: false,
@@ -972,7 +974,7 @@ export default {
         })
     },
     adicionarFormacao(){
-      this.formData.formacao.push({
+      this.formData.formacoes.push({
         faculdade_nome: null,
         faculdade_ano_formatura: null,
       })
