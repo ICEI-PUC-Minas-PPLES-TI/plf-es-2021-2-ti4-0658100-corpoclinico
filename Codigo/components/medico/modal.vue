@@ -112,8 +112,19 @@ export default {
   methods: {
     submitAvaliacao() {
       if (this.$refs.formAvalia.validate()) {
+        let letra = this.retorno.status.substring(0,1)
+        this.retorno.status = letra;
         let info = JSON.parse(JSON.stringify(this.retorno));
         console.log(info,this.arquivos)
+        const urlParams = new URLSearchParams(window.location.search);
+        const myParam = urlParams.get("id");
+        this.$axios
+          .$put("/retorno/" + myParam, info)
+          .then((response) => {
+          })
+          .catch((error) => {
+            console.log(error)
+          });
       }
     },
   },
