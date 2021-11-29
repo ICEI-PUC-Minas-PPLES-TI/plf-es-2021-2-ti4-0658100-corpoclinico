@@ -242,10 +242,10 @@
       </v-row>
       <h3 class="my-4">Dados Profissionais</h3>
       <v-row v-for="item in this.medico.especialidades" v-bind:key="item.id">
-          <v-col cols="12" :xs="12" :md="4">
+          <v-col cols="12" :xs="12" :md="6">
             <v-text-field label="RQE de Especialidade" v-model="item.rqe"/>
           </v-col>
-          <v-col cols="12" :xs="12" :md="4">
+          <!--<v-col cols="12" :xs="12" :md="4">
             <v-text-field
               :hide-details="'auto'"
               type="number"
@@ -253,12 +253,12 @@
               v-model="item.instituicao"
               readonly
             />
-          </v-col>
-          <v-col cols="12" :xs="12" :md="4">
+          </v-col>-->
+          <v-col cols="12" :xs="12" :md="6">
             <v-text-field
               :hide-details="'auto'"
               type="number"
-              label="Instituição"
+              label="Ano de Conclusão"
               v-model="item.ano_formatura"
               readonly
             />
@@ -438,6 +438,7 @@ export default {
         .$get("/medico/" + id)
         .then((response) => {
           this.medico = response;
+          console.log(this.medico.especialidades)
           this.formData = {
             id: this.medico.id,
             nome: this.medico.usuario.nome,
@@ -484,7 +485,7 @@ export default {
           this.formData = {
             id: "Médico não encontrado",
           };
-          setTimeout((window.location.href = "/medico"), 2000);
+          setTimeout((window.location.href = "/medico"), 3000);
         });
     },
     listaUnidades() {
