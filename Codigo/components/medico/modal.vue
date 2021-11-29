@@ -146,10 +146,7 @@ export default {
           this.medico = response;
         })
         .catch((error) => {
-          console.log(error);
-          this.formData = {
-            id: "Médico não encontrado",
-          };
+          alert(error);
           setTimeout((window.location.href = "/medico"), 2000);
         });
     },
