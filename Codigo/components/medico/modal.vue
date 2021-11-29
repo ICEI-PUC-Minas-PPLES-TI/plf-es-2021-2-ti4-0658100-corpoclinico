@@ -100,32 +100,58 @@ export default {
     items: ["Aprovado", "Revisão", "Negado"],
     valid: true,
     dialog: false,
+    medico:[],
     retorno: {
       status: null,
       comentario: null,
+      avaliador_id:null,
+      candidatura_id:null,
     },
     arquivos: {
       assinatura: null,
       adicional: null,
     },
   }),
+  mounted() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const myParam = urlParams.get("id");
+    this.listaMedico(myParam);
+  },
   methods: {
     submitAvaliacao() {
       if (this.$refs.formAvalia.validate()) {
+        let retornos = this.medico.candidatura.retornos
         let letra = this.retorno.status.substring(0,1)
         this.retorno.status = letra;
+        this.retorno.candidatura_id=1;
+        this.retorno.avaliador_id=1;
         let info = JSON.parse(JSON.stringify(this.retorno));
-        console.log(info,this.arquivos)
+        retornos.push(info)
+        let retorno = JSON.parse(JSON.stringify(retornos));
         const urlParams = new URLSearchParams(window.location.search);
         const myParam = urlParams.get("id");
         this.$axios
-          .$put("/retorno/" + myParam, info)
+          .$put("/medico/" + myParam, retorno)
           .then((response) => {
           })
           .catch((error) => {
             console.log(error)
           });
       }
+    },
+    listaMedico(id) {
+      this.$axios
+        .$get("/medico/" + id)
+        .then((response) => {
+          this.medico = response;
+        })
+        .catch((error) => {
+          console.log(error);
+          this.formData = {
+            id: "Médico não encontrado",
+          };
+          setTimeout((window.location.href = "/medico"), 2000);
+        });
     },
   },
 };
