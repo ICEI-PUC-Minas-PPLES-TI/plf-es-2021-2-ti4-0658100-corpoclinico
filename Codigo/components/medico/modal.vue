@@ -26,7 +26,7 @@
                   label="Status"
                   hide-details="auto"
                   v-model="retorno.status"
-                  :rules="[(v) => !!v || 'Status Obrigatório']"
+                  :rules="[v => !!v || 'Status Obrigatório']"
                 >
                 </v-select>
                 <v-textarea
@@ -34,34 +34,10 @@
                   :clearable="true"
                   label="Observações"
                   v-model="retorno.comentario"
-                  :rules="[(v) => !!v || 'Observações obrigatórias']"
+                  :rules="[v => !!v || 'Observações obrigatórias']"
                 />
               </v-card-text>
             </v-form>
-          </v-col>
-        </v-row>
-        <v-row class="mx-auto">
-          <v-col>
-            <v-file-input
-              accept="image/*"
-              label="Assinatura"
-              v-model="arquivos.assinatura"
-              :rules="[
-                (v) =>
-                  !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',
-              ]"
-            />
-          </v-col>
-          <v-col>
-            <v-file-input
-              accept="image/*"
-              label="Arquivo Adicional"
-              v-model="arquivos.adicional"
-              :rules="[
-                (v) =>
-                  !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',
-              ]"
-            />
           </v-col>
         </v-row>
         <v-card-actions>
@@ -103,9 +79,7 @@ export default {
     medico:[],
     retorno: {
       status: null,
-      comentario: null,
-      avaliador_id:null,
-      candidatura_id:null,
+      comentario: null
     },
     arquivos: {
       assinatura: null,
@@ -122,14 +96,12 @@ export default {
       if (this.$refs.formAvalia.validate()) {
         let retornos = this.medico.candidatura.retornos
         let letra = this.retorno.status.substring(0,1)
-        this.retorno.status = letra;
-        this.retorno.candidatura_id=1;
-        this.retorno.avaliador_id=1;
-        let info = JSON.parse(JSON.stringify(this.retorno));
-        retornos.push(info)
-        let retorno = JSON.parse(JSON.stringify(retornos));
+        retornos[0].status=letra
+        retornos[0].comentario=this.retorno.comentario
+        let retorno = JSON.parse(JSON.stringify(retornos[0]));
         const urlParams = new URLSearchParams(window.location.search);
         const myParam = urlParams.get("id");
+        console.log(retorno)
         this.$axios
           .$put("/medico/" + myParam, retorno)
           .then((response) => {

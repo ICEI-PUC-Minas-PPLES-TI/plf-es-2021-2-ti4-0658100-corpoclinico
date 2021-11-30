@@ -1,251 +1,251 @@
 <template>
   <div>
     <h1 class="mb-4">Avaliando Médico #{{ this.formData.id }}</h1>
-        <h3>Dados Pessoais</h3>
-      <v-row>
-        <v-col cols="12" :xs="12" :sm="6" :md="9">
-          <v-text-field
-            :hide-details="'auto'"
-            v-model="formData.nome"
-            maxlength="120"
-            label="Nome"
-            color="primary"
-            readonly
-          />
-        </v-col>
-        <v-col cols="12" :xs="12" :sm="6" :md="3">
-          <v-text-field
-            :hide-details="'auto'"
-            v-model="formData.cpf"
-            v-mask="['###.###.###-##']"
-            label="CPF"
-            readonly
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12" :xs="12" :sm="6" :md="4">
-          <v-text-field
-            :hide-details="'auto'"
-            type="tel"
-            v-model="formData.celular"
-            v-mask="['(##) ####-####', '(##) #####-####']"
-            label="Telefone Celular"
-            readonly
-          />
-        </v-col>
-        <v-col cols="12" :xs="12" :sm="6" :md="5">
-          <v-text-field
-            :hide-details="'auto'"
-            v-model="formData.email"
-            label="E-mail"
-            type="email"
-            maxlength="100"
-            readonly
-          />
-        </v-col>
-        <v-col cols="12" :xs="12" :sm="6" :md="3">
-          <v-text-field
-            v-model="formData.dt_nascimento"
-            hide-details="auto"
-            label="Data de Nascimento"
-            type="date"
-            max="3000-01-01"
-            readonly
-          >
-          </v-text-field>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12" :xs="12" :sm="6" :md="4">
-          <v-text-field
-            :hide-details="'auto'"
-            v-model="formData.rg"
-            label="RG"
-            v-mask="{
-              mask: 'AA-FFFFFFFFFFF',
-              tokens: {
-                F: {
-                  pattern: /^[0-9]*\.?[0-9]*$/,
-                },
-                A: {
-                  pattern: /[a-zA-Z]/,
-                  transform: (v) => v.toLocaleUpperCase(),
-                },
+    <h3>Dados Pessoais</h3>
+    <v-row>
+      <v-col cols="12" :xs="12" :sm="6" :md="9">
+        <v-text-field
+          :hide-details="'auto'"
+          v-model="formData.nome"
+          maxlength="120"
+          label="Nome"
+          color="primary"
+          readonly
+        />
+      </v-col>
+      <v-col cols="12" :xs="12" :sm="6" :md="3">
+        <v-text-field
+          :hide-details="'auto'"
+          v-model="formData.cpf"
+          v-mask="['###.###.###-##']"
+          label="CPF"
+          readonly
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" :xs="12" :sm="6" :md="4">
+        <v-text-field
+          :hide-details="'auto'"
+          type="tel"
+          v-model="formData.celular"
+          v-mask="['(##) ####-####', '(##) #####-####']"
+          label="Telefone Celular"
+          readonly
+        />
+      </v-col>
+      <v-col cols="12" :xs="12" :sm="6" :md="5">
+        <v-text-field
+          :hide-details="'auto'"
+          v-model="formData.email"
+          label="E-mail"
+          type="email"
+          maxlength="100"
+          readonly
+        />
+      </v-col>
+      <v-col cols="12" :xs="12" :sm="6" :md="3">
+        <v-text-field
+          v-model="formData.dt_nascimento"
+          hide-details="auto"
+          label="Data de Nascimento"
+          type="date"
+          max="3000-01-01"
+          readonly
+        >
+        </v-text-field>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" :xs="12" :sm="6" :md="4">
+        <v-text-field
+          :hide-details="'auto'"
+          v-model="formData.rg"
+          label="RG"
+          v-mask="{
+            mask: 'AA-FFFFFFFFFFF',
+            tokens: {
+              F: {
+                pattern: /^[0-9]*\.?[0-9]*$/
               },
-            }"
-            readonly
-          />
-        </v-col>
-        <v-col cols="12" :xs="12" :sm="6" :md="5">
-          <v-text-field
-            :hide-details="'auto'"
-            v-model="formData.rg_orgao_emissor"
-            label="Orgão Emissor"
-            maxlength="30"
-            readonly
-          />
-        </v-col>
-        <v-col cols="12" :xs="12" :sm="6" :md="3">
-          <v-text-field
-            v-model="formData.rg_data_emissao"
-            hide-details="auto"
-            label="Data de Emissão"
-            type="date"
-            max="3000-01-01"
-            class="medico-stepper-input-date"
-            readonly
-          >
-          </v-text-field>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12" :xs="12" :sm="6" :md="3">
-          <v-text-field
-            :hide-details="'auto'"
-            label="Título de Eleitor"
-            v-model="formData.titulo_eleitoral"
-            v-mask="['#### #### ####']"
-            readonly
-          />
-        </v-col>
-        <v-col cols="12" :xs="12" :sm="6" :md="3">
-          <v-text-field
-            :hide-details="'auto'"
-            label="Zona Eleitoral"
-            v-model="formData.zona"
-            maxlength="3"
-            readonly
-          />
-        </v-col>
-        <v-col cols="12" :xs="12" :sm="4" :md="2">
-          <v-text-field
-            :hide-details="'auto'"
-            label="Seção Eleitoral"
-            v-model="formData.secao"
-            maxlength="4"
-            readonly
-          />
-        </v-col>
-        <v-col cols="12" :xs="12" :sm="8" :md="4">
-          <v-text-field
-            :hide-details="'auto'"
-            label="Cartão do SUS"
-            v-model="formData.cartao_sus"
-            maxlength="15"
-            readonly
-          />
-        </v-col>
-      </v-row>
-      <h3 class="my-4">Endereço</h3>
-      <v-row>
-        <v-col cols="12" :xs="12" :md="3">
-          <v-text-field
-            :hide-details="'auto'"
-            v-mask="'#####-###'"
-            v-model="formData.cep"
-            label="CEP"
-            readonly
-          />
-        </v-col>
-        <v-col cols="12" :xs="12" :md="5">
-          <v-text-field
-            :hide-details="'auto'"
-            v-model="formData.logradouro"
-            label="Logradouro"
-            maxlength="100"
-            readonly
-          />
-        </v-col>
-        <v-col cols="12" :xs="12" :sm="6" :md="2">
-          <v-text-field
-            :hide-details="'auto'"
-            v-model="formData.numero"
-            label="Número"
-            maxlength="20"
-            readonly
-          />
-        </v-col>
-        <v-col cols="12" :xs="12" :sm="6" :md="2">
-          <v-text-field
-            :hide-details="'auto'"
-            v-model="formData.complemento"
-            label="Complemento"
-            maxlength="20"
-            readonly
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12" :xs="12" :md="3">
-          <v-text-field
-            item-text="nome"
-            item-value="sigla"
-            label="Estado"
-            v-model="formData.estado"
-            readonly
-          ></v-text-field>
-        </v-col>
-        <v-col cols="12" :xs="12" :md="5">
-          <v-text-field
-            :hide-details="'auto'"
-            v-model="formData.cidade"
-            label="Cidade"
-            maxlength="100"
-            readonly
-          />
-        </v-col>
-        <v-col cols="12" :xs="12" :md="4">
-          <v-text-field
-            :hide-details="'auto'"
-            v-model="formData.bairro"
-            label="Bairro"
-            maxlength="45"
-            readonly
-          />
-        </v-col>
-      </v-row>
-      <h3>Formação</h3>
-      <v-row>
-        <v-col>
-          <v-text-field
-            v-model="formData.escolaridade_max"
-            label="Nível de Escolaridade"
-            readonly
-          />
-        </v-col>
-        <v-col>
-          <v-text-field
-            :hide-details="'auto'"
-            label="Sociedade Cientifica"
-            v-model="formData.sociedade_cientifica"
-            maxlength="100"
-            readonly
-          >
-          </v-text-field>
-        </v-col>
-      </v-row>
-      <!-- Formações -->
-        <v-row v-for="item in this.medico.formacoes" v-bind:key="item.id">
-          <v-col cols="12" :xs="12" :md="6">
-            <v-text-field label="Faculdade" v-model="item.faculdade_nome"/>
-          </v-col>
-          <v-col>
-            <v-text-field
-              :hide-details="'auto'"
-              type="number"
-              label="Ano de Formação"
-              v-model="item.faculdade_ano_formatura"
-              readonly
-            />
-          </v-col>
-      </v-row>
-      <h3 class="my-4">Dados Profissionais</h3>
-      <v-row v-for="item in this.medico.especialidades" v-bind:key="item.id">
-          <v-col cols="12" :xs="12" :md="6">
-            <v-text-field label="RQE de Especialidade" v-model="item.rqe"/>
-          </v-col>
-          <!--<v-col cols="12" :xs="12" :md="4">
+              A: {
+                pattern: /[a-zA-Z]/,
+                transform: v => v.toLocaleUpperCase()
+              }
+            }
+          }"
+          readonly
+        />
+      </v-col>
+      <v-col cols="12" :xs="12" :sm="6" :md="5">
+        <v-text-field
+          :hide-details="'auto'"
+          v-model="formData.rg_orgao_emissor"
+          label="Orgão Emissor"
+          maxlength="30"
+          readonly
+        />
+      </v-col>
+      <v-col cols="12" :xs="12" :sm="6" :md="3">
+        <v-text-field
+          v-model="formData.rg_data_emissao"
+          hide-details="auto"
+          label="Data de Emissão"
+          type="date"
+          max="3000-01-01"
+          class="medico-stepper-input-date"
+          readonly
+        >
+        </v-text-field>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" :xs="12" :sm="6" :md="3">
+        <v-text-field
+          :hide-details="'auto'"
+          label="Título de Eleitor"
+          v-model="formData.titulo_eleitoral"
+          v-mask="['#### #### ####']"
+          readonly
+        />
+      </v-col>
+      <v-col cols="12" :xs="12" :sm="6" :md="3">
+        <v-text-field
+          :hide-details="'auto'"
+          label="Zona Eleitoral"
+          v-model="formData.zona"
+          maxlength="3"
+          readonly
+        />
+      </v-col>
+      <v-col cols="12" :xs="12" :sm="4" :md="2">
+        <v-text-field
+          :hide-details="'auto'"
+          label="Seção Eleitoral"
+          v-model="formData.secao"
+          maxlength="4"
+          readonly
+        />
+      </v-col>
+      <v-col cols="12" :xs="12" :sm="8" :md="4">
+        <v-text-field
+          :hide-details="'auto'"
+          label="Cartão do SUS"
+          v-model="formData.cartao_sus"
+          maxlength="15"
+          readonly
+        />
+      </v-col>
+    </v-row>
+    <h3 class="my-4">Endereço</h3>
+    <v-row>
+      <v-col cols="12" :xs="12" :md="3">
+        <v-text-field
+          :hide-details="'auto'"
+          v-mask="'#####-###'"
+          v-model="formData.cep"
+          label="CEP"
+          readonly
+        />
+      </v-col>
+      <v-col cols="12" :xs="12" :md="5">
+        <v-text-field
+          :hide-details="'auto'"
+          v-model="formData.logradouro"
+          label="Logradouro"
+          maxlength="100"
+          readonly
+        />
+      </v-col>
+      <v-col cols="12" :xs="12" :sm="6" :md="2">
+        <v-text-field
+          :hide-details="'auto'"
+          v-model="formData.numero"
+          label="Número"
+          maxlength="20"
+          readonly
+        />
+      </v-col>
+      <v-col cols="12" :xs="12" :sm="6" :md="2">
+        <v-text-field
+          :hide-details="'auto'"
+          v-model="formData.complemento"
+          label="Complemento"
+          maxlength="20"
+          readonly
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" :xs="12" :md="3">
+        <v-text-field
+          item-text="nome"
+          item-value="sigla"
+          label="Estado"
+          v-model="formData.estado"
+          readonly
+        ></v-text-field>
+      </v-col>
+      <v-col cols="12" :xs="12" :md="5">
+        <v-text-field
+          :hide-details="'auto'"
+          v-model="formData.cidade"
+          label="Cidade"
+          maxlength="100"
+          readonly
+        />
+      </v-col>
+      <v-col cols="12" :xs="12" :md="4">
+        <v-text-field
+          :hide-details="'auto'"
+          v-model="formData.bairro"
+          label="Bairro"
+          maxlength="45"
+          readonly
+        />
+      </v-col>
+    </v-row>
+    <h3>Formação</h3>
+    <v-row>
+      <v-col>
+        <v-text-field
+          v-model="formData.escolaridade_max"
+          label="Nível de Escolaridade"
+          readonly
+        />
+      </v-col>
+      <v-col>
+        <v-text-field
+          :hide-details="'auto'"
+          label="Sociedade Cientifica"
+          v-model="formData.sociedade_cientifica"
+          maxlength="100"
+          readonly
+        >
+        </v-text-field>
+      </v-col>
+    </v-row>
+    <!-- Formações -->
+    <v-row v-for="item in this.medico.formacoes" v-bind:key="item.id">
+      <v-col cols="12" :xs="12" :md="6">
+        <v-text-field label="Faculdade" v-model="item.faculdade_nome" />
+      </v-col>
+      <v-col>
+        <v-text-field
+          :hide-details="'auto'"
+          type="number"
+          label="Ano de Formação"
+          v-model="item.faculdade_ano_formatura"
+          readonly
+        />
+      </v-col>
+    </v-row>
+    <h3 class="my-4">Dados Profissionais</h3>
+    <v-row v-for="item in this.medico.especialidades" v-bind:key="item.id">
+      <v-col cols="12" :xs="12" :md="6">
+        <v-text-field label="RQE de Especialidade" v-model="item.rqe" />
+      </v-col>
+      <!--<v-col cols="12" :xs="12" :md="4">
             <v-text-field
               :hide-details="'auto'"
               type="number"
@@ -254,107 +254,103 @@
               readonly
             />
           </v-col>-->
-          <v-col cols="12" :xs="12" :md="6">
-            <v-text-field
-              :hide-details="'auto'"
-              type="number"
-              label="Ano de Conclusão"
-              v-model="item.ano_formatura"
-              readonly
-            />
-          </v-col>
-      </v-row>
+      <v-col cols="12" :xs="12" :md="6">
+        <v-text-field
+          :hide-details="'auto'"
+          type="number"
+          label="Ano de Conclusão"
+          v-model="item.ano_formatura"
+          readonly
+        />
+      </v-col>
+    </v-row>
 
-      <v-row>
-        <v-col cols="12" :xs="12" :md="3">
-          <v-text-field
-            :hide-details="'auto'"
-            label="CRM"
-            maxlength="20"
-            v-model="formData.crm"
-            readonly
-          />
-        </v-col>
-        <v-col>
-          <v-text-field
-            v-model="formData.dt_inscricao_crm"
-            hide-details="auto"
-            label="Data de Inscrição do CRM"
-            type="date"
-            max="3000-01-01"
-            class="medico-stepper-input-date"
-            readonly
-          >
-          </v-text-field>
-        </v-col>
-        <v-col cols="12" :xs="12" :md="3">
-          <v-text-field
-            label="Categoria"
-            v-model="formData.categoria"
-            readonly
-          />
-        </v-col>
-      </v-row>
-      <!-- Faturamento, CNPJ, Unidade, Equipe -->
-      <h3 class="my-4">Dados financeiros</h3>
-      <v-row>
-        <v-col cols="12" :xs="12" :md="6" >
-          <v-text-field
-            :hide-details="'auto'"
-            v-model="formData.faturamento"
-            label="Faturamento"
-            readonly
-          />
-        </v-col>
-        <v-col cols="12" :xs="12" :md="6" v-if="formData.faturamento == 'PJ'">
-          <v-text-field
-            :hide-details="'auto'"
-            label="CNPJ"
-            v-model="formData.cnpj"
-            v-mask="['##.###.###/####-##']"
-            readonly
-          />
-        </v-col>
-      </v-row>
-      <h3 class="my-4"  >Equipe</h3>
-      <v-row>
-        <v-col cols="12" :xs="12" :md="6">
-          <v-text-field
-            :hide-details="'auto'"
-            item-text="nome"
-            item-value="id"
-            v-model="formData.unidade"
-            label="Unidade"
-            readonly
-          />
-        </v-col>
-        <v-col cols="12" :xs="12" :md="6">
-          <v-text-field
-            :hide-details="'auto'"
-            item-text="nome"
-            item-value="id"
-            v-model="formData.equipe"
-            label="Equipe"
-            readonly
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <a @click="baixarArquivos()">Baixar arquivos do candidato</a>
-        </v-col>
-      </v-row>
+    <v-row>
+      <v-col cols="12" :xs="12" :md="3">
+        <v-text-field
+          :hide-details="'auto'"
+          label="CRM"
+          maxlength="20"
+          v-model="formData.crm"
+          readonly
+        />
+      </v-col>
+      <v-col>
+        <v-text-field
+          v-model="formData.dt_inscricao_crm"
+          hide-details="auto"
+          label="Data de Inscrição do CRM"
+          type="date"
+          max="3000-01-01"
+          class="medico-stepper-input-date"
+          readonly
+        >
+        </v-text-field>
+      </v-col>
+      <v-col cols="12" :xs="12" :md="3">
+        <v-text-field label="Categoria" v-model="formData.categoria" readonly />
+      </v-col>
+    </v-row>
+    <!-- Faturamento, CNPJ, Unidade, Equipe -->
+    <h3 class="my-4">Dados financeiros</h3>
+    <v-row>
+      <v-col cols="12" :xs="12" :md="6">
+        <v-text-field
+          :hide-details="'auto'"
+          v-model="formData.faturamento"
+          label="Faturamento"
+          readonly
+        />
+      </v-col>
+      <v-col cols="12" :xs="12" :md="6" v-if="formData.faturamento == 'PJ'">
+        <v-text-field
+          :hide-details="'auto'"
+          label="CNPJ"
+          v-model="formData.cnpj"
+          v-mask="['##.###.###/####-##']"
+          readonly
+        />
+      </v-col>
+    </v-row>
+    <h3 class="my-4">Equipe</h3>
+    <v-row>
+      <v-col cols="12" :xs="12" :md="6">
+        <v-text-field
+          :hide-details="'auto'"
+          item-text="nome"
+          item-value="id"
+          v-model="formData.unidade"
+          label="Unidade"
+          readonly
+        />
+      </v-col>
+      <v-col cols="12" :xs="12" :md="6">
+        <v-text-field
+          :hide-details="'auto'"
+          item-text="nome"
+          item-value="id"
+          v-model="formData.equipe"
+          label="Equipe"
+          readonly
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <a @click="baixarArquivos()">Baixar arquivos do candidato</a>
+      </v-col>
+    </v-row>
 
-      <!-- Botoes -->
-      <v-row>
-        <v-col :md="8" :sm="0" :xl="8" cols="12"> </v-col>
-        <v-col :md="4" :sm="0" :xl="4" cols="12">
-          <v-btn class="mr-2" color="white" @click="retorno()">
-            Retornar
-          </v-btn>
-          <modalAvalia />
-        </v-col>
-      </v-row>
+    <!-- Botoes -->
+    <v-row>
+      <v-col :md="8" :sm="0" :xl="8" cols="12"> </v-col>
+      <v-col :md="4" :sm="0" :xl="4" cols="12">
+        <v-btn class="mr-2" color="white" @click="retorno()">
+          Retornar
+        </v-btn>
+        <modalAvalia />
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -438,7 +434,6 @@ export default {
         .$get("/medico/" + id)
         .then((response) => {
           this.medico = response;
-          console.log(this.medico.especialidades)
           this.formData = {
             id: this.medico.id,
             nome: this.medico.usuario.nome,
@@ -511,16 +506,26 @@ export default {
         });
     },
     baixarArquivos() {
+      let urls = [];
       for (let i = 0; i < this.medico.arquivos.length; i++) {
-        this.$axios
-          .$get("/arquivo/" + this.medico.arquivos[i].id)
-          .then((response) => {
-            console.log(response)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        urls.push("http://localhost:3000/api/arquivo/"+ this.medico.arquivos[i].id)
       }
+      this.downloadAll(urls)
+    },
+    downloadAll(urls) {
+      var link = document.createElement('a');
+
+      link.setAttribute('download', null);
+      link.style.display = 'none';
+
+      document.body.appendChild(link);
+
+      for (var i = 0; i < urls.length; i++) {
+        link.setAttribute('href', urls[i]);
+        link.click();
+      }
+
+      document.body.removeChild(link);
     },
     retorno() {
       window.location.href = "/medico";
