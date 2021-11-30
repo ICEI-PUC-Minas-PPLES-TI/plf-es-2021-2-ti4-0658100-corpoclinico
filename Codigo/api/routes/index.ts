@@ -40,7 +40,7 @@ router.get('/medico/this', [autenticacaoJwt.verificarToken], medicoController.ge
 router.get('/medico/:id', [autenticacaoJwt.verificarToken], medicoController.get)
 router.get('/medico', [autenticacaoJwt.verificarToken], medicoController.getAll)
 router.delete('/medico/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], medicoController.delete)
-router.put('/medico/:id', multerUploadMedico, medicoController.update)
+router.put('/medico/:id', [autenticacaoJwt.verificarToken], multerUploadMedico, medicoController.update)
 // Equipe
 router.post('/equipe', equipeController.create)
 router.get('/equipe/:id', equipeController.get )
