@@ -73,18 +73,18 @@
 <script>
 export default {
   data: () => ({
-    items: ["Aprovado", "Revisão", "Negado"],
+    items: ["Aprovado", "Pendente", "Recusado"],
     valid: true,
     dialog: false,
-    medico:[],
+    medico: [],
     retorno: {
       status: null,
       comentario: null
     },
     arquivos: {
       assinatura: null,
-      adicional: null,
-    },
+      adicional: null
+    }
   }),
   mounted() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -94,37 +94,37 @@ export default {
   methods: {
     submitAvaliacao() {
       if (this.$refs.formAvalia.validate()) {
-        let retornos = this.medico.candidatura.retornos
-        let letra = this.retorno.status.substring(0,1)
-        retornos[0].status=letra
-        retornos[0].comentario=this.retorno.comentario
+        let retornos = this.medico.candidatura.retornos;
+        let letra = this.retorno.status.substring(0, 1);
+        retornos[0].status = letra;
+        retornos[0].comentario = this.retorno.comentario;
         let retorno = JSON.parse(JSON.stringify(retornos[0]));
-        let idRetorno = retorno.id
+        let idRetorno = retorno.id;
         this.$axios
           .$put("/retorno/" + idRetorno, retorno)
-          .then((response) => {
+          .then(response => {
             this.retornoPagina();
           })
-          .catch((error) => {
-            console.log(error)
+          .catch(error => {
+            console.log(error);
           });
       }
     },
     listaMedico(id) {
       this.$axios
         .$get("/medico/" + id)
-        .then((response) => {
+        .then(response => {
           this.medico = response;
         })
-        .catch((error) => {
+        .catch(error => {
           alert(error);
           setTimeout((window.location.href = "/medico"), 2000);
         });
     },
     retornoPagina() {
       window.location.href = "/medico";
-    },
-  },
+    }
+  }
 };
 </script>
 
