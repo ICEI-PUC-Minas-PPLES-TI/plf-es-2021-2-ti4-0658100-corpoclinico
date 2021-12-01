@@ -335,6 +335,9 @@ class MedicoController {
           },{
             model: Unidade,
             as: 'unidade'
+          },{
+            model: Retorno,
+            as: 'retornos'
           }]
         }
       ]

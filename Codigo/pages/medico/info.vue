@@ -5,6 +5,37 @@
         <h4>Minha Ficha</h4>
       </v-col>
     </v-row>
+    <v-row v-if="retorno">
+      <v-col>
+        <v-alert
+          text
+          :type="retorno.status == 'R' ? 'error' : retorno.status == 'P' ? 'info': 'success'"
+        >
+          <span v-if="retorno.status == 'R'">
+            Candidatura Recusada
+            <p>
+              Comentários:
+            </p>
+            <ul v-for="(r, ridx) in retorno.result" :key="ridx">
+              <li>{{r.comentario }}</li>
+            </ul>
+          </span>
+          <span v-else-if="retorno.status == 'P'">
+            Candidatura em análise, entre novamente mais tarde para obter o resultado
+          </span>
+          <span v-else-if="retorno.status == 'A'">
+            Candidatura aprovada
+            <p>
+              Para prosseguir, 
+              <router-link to="/treinamento">
+                clique aqui
+              </router-link>
+               para assistir os vídeos de treinamento
+            </p>
+          </span>
+        </v-alert>
+      </v-col>
+    </v-row>
     <v-row>
       <v-col class="info-subtitle">
         <span>
@@ -209,6 +240,38 @@ export default {
         else if(ct == 'C')
           return 'Contratado'
       }
+    },
+    retorno(){
+      if(this.info){
+        if(this.info.candidatura){
+          let denied = this.info.candidatura.retornos.filter((f) => {
+            return f.status == 'R'
+          })
+          if(denied.length > 0)
+            return {
+              status: 'R',
+              result: denied
+            }
+          else {
+            let pending = this.info.candidatura.retornos.filter((f) => {
+              return f.status == 'P'
+            })
+            if(pending.length > 0)
+              return {status: 'P' }
+            else {
+              let approved = this.info.candidatura.retornos.filter((f) => {
+                return f.status == 'A'
+              })
+              if(approved.length > 0)
+                return {status: 'A' }
+              else
+                return null
+            }
+          }
+        } else 
+          return null
+        
+      } else return null
     }
   },
   methods: {
