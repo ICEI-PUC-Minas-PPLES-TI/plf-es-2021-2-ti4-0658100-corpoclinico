@@ -711,7 +711,7 @@
                         @blur="salvarEmCache"
                       />
                     </v-col>
-                    <v-col cols="12" :xs="12" :md="1" @click="formData.especialidade.splice(eidx, 1);salvarEmCache()">
+                    <v-col cols="12" :xs="12" :md="1" @click="formData.especialidades.splice(eidx, 1);salvarEmCache()">
                       <v-btn icon class="mt-3">
                         <v-icon>mdi-close</v-icon>
                       </v-btn>
