@@ -508,7 +508,7 @@ export default {
     baixarArquivos() {
       let urls = [];
       for (let i = 0; i < this.medico.arquivos.length; i++) {
-        urls.push("http://localhost:3000/api/arquivo/"+ this.medico.arquivos[i].id)
+        urls.push(window.location.protocol + "//" + window.location.host + "/api/arquivo/"+ this.medico.arquivos[i].id)
       }
       this.downloadAll(urls)
     },
