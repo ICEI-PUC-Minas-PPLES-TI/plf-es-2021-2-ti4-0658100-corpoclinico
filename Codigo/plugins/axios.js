@@ -4,14 +4,14 @@ export default function ({ $axios, req }) {
     if (cookies) {
       $axios.defaults.headers.common[
         "x-access-token"
-      ] = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNjM3NDE4NDAzLCJleHAiOjE2Mzk4Mzc2MDN9.OSxess3Z_f6ihBBeiwfn8qJ4U3HVIXYhZZ0r5QkOYuA`;
+      ] = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNjM4MzExNjYwLCJleHAiOjE2NDA3MzA4NjB9.0M_K3wYHQLjWvbxk0MihpnF_XStcgPZXgvq8R7WgEW0`;
     }
   }
 
   $axios.onRequest((config) => {
     if (!req)
       config.headers.common["x-access-token"] =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNjM3NDE4NDAzLCJleHAiOjE2Mzk4Mzc2MDN9.OSxess3Z_f6ihBBeiwfn8qJ4U3HVIXYhZZ0r5QkOYuA";
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNjM4MzExNjYwLCJleHAiOjE2NDA3MzA4NjB9.0M_K3wYHQLjWvbxk0MihpnF_XStcgPZXgvq8R7WgEW0";
   });
 
   $axios.onError((error) => {

@@ -99,12 +99,11 @@ export default {
         retornos[0].status=letra
         retornos[0].comentario=this.retorno.comentario
         let retorno = JSON.parse(JSON.stringify(retornos[0]));
-        const urlParams = new URLSearchParams(window.location.search);
-        const myParam = urlParams.get("id");
-        console.log(retorno)
+        let idRetorno = retorno.id
         this.$axios
-          .$put("/medico/" + myParam, retorno)
+          .$put("/retorno/" + idRetorno, retorno)
           .then((response) => {
+            this.retornoPagina();
           })
           .catch((error) => {
             console.log(error)
@@ -121,6 +120,9 @@ export default {
           alert(error);
           setTimeout((window.location.href = "/medico"), 2000);
         });
+    },
+    retornoPagina() {
+      window.location.href = "/medico";
     },
   },
 };
