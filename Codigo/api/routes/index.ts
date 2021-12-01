@@ -10,6 +10,7 @@ import UnidadeController from '../controllers/UnidadeController';
 import EquipeController from '../controllers/EquipeController';
 import EspecialidadeController from '../controllers/EspecialidadeController';
 import ArquivoController from '../controllers/ArquivoController';
+import RetornoController from '../controllers/RetornoController';
 
 import { upload } from '../helpers/files/MulterSettings';
 import { documentosMedico } from '../helpers/files/DocumentosEnum';
@@ -21,6 +22,7 @@ const unidadeController = new UnidadeController();
 const equipeController = new EquipeController();
 const especialidadeController = new EspecialidadeController();
 const arquivoController = new ArquivoController();
+const retornoController = new RetornoController();
 
 const multerUploadMedico = upload.fields(documentosMedico);
 
@@ -34,6 +36,7 @@ router.delete('/usuario/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.i
 router.put('/usuario/:id',  usuarioController.update)
 // Medico
 router.post('/medico', multerUploadMedico, medicoController.create)
+router.get('/medico/this', [autenticacaoJwt.verificarToken], medicoController.getThis)
 router.get('/medico/:id', [autenticacaoJwt.verificarToken], medicoController.get)
 router.get('/medico', [autenticacaoJwt.verificarToken], medicoController.getAll)
 router.get('/me', [autenticacaoJwt.verificarToken], medicoController.getMe)
@@ -58,6 +61,10 @@ router.delete('/unidade/:id', unidadeController.delete)
 router.get('/unidade', unidadeController.getAll)
 router.post('/unidade', unidadeController.create)
 // Arquivo
+router.get('/arquivo/:id', arquivoController.download)
 router.delete('/arquivo/:id', arquivoController.delete)
+//Retorno
+router.get('/retorno', [autenticacaoJwt.verificarToken], retornoController.getAll)
+router.put('/retorno/:id', retornoController.update)
 
 export default router;

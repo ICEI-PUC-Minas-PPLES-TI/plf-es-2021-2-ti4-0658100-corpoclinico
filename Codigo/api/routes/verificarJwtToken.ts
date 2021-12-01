@@ -34,6 +34,7 @@ const verificarToken: RequestHandler = (req, res, next) => {
 
 const isAdmin: RequestHandler = (req, res, next) => {
   Usuario.findByPk(req.headers.authorization).then(usuario => {
+    req.headers["user-tipo"] = usuario?.get().tipo;
     if (usuario?.get().tipo === "A") {
       next();
       return;
@@ -42,6 +43,18 @@ const isAdmin: RequestHandler = (req, res, next) => {
       throw new AppError("Necessita de ser um usuário administrador!", 403)
   });
 };
+const isAdminOrMedico: RequestHandler = (req, res, next) => {
+  Usuario.findByPk(req.headers.authorization).then(usuario => {
+    req.headers["user-tipo"] = usuario?.get().tipo;
+    if (usuario?.get().tipo === "A" || usuario?.get().tipo === "M") {
+      next();
+      return;
+    }
+    else
+      throw new AppError("Necessita de ser um usuário administrador!", 403)
+  });
+};
+
 
 const autenticacaoJwt = {
   verificarToken,
