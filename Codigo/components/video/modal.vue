@@ -51,7 +51,9 @@ export default {
             titulo: 'Novo video',
 
             video: {
-                link: ''
+                id:'',
+                link: '',
+                ativo: '' 
             },
 
         }
@@ -71,16 +73,30 @@ export default {
 
         submit() {
           if (this.$refs.formVideo.validate()) {
+
               let video = JSON.parse(JSON.stringify(this.video))
-              this.$axios.$post('/video', video).then(response => {
-                  this.limpaDados();
-                  this.$emit('abreToast', 'video Cadastrado!')
-                  this.$emit('input', false) // Fecha modal
-              }).catch(error => {
+              if(video.id && video.id > 0){
+                this.$axios.$put('/video', video).then(response => {
+                    this.limpaDados();
+                    this.$emit('abreToast', 'video atualizado!')
+                    this.$emit('input', false) // Fecha modal
+                }).catch(error => {
 
-                this.$emit('abreToast', error.response.data)
+                    this.$emit('abreToast', error.response.data)
 
-              })
+                })
+              }else{
+                this.$axios.$post('/video', video).then(response => {
+                    this.limpaDados();
+                    this.$emit('abreToast', 'video cadastrado!')
+                    this.$emit('input', false) // Fecha modal
+                }).catch(error => {
+
+                    this.$emit('abreToast', error.response.data)
+
+                })   
+              }
+
 
           }
 
@@ -92,6 +108,18 @@ export default {
             }
 
             this.valid == false ?? this.$refs.formVideo.reset();
+        },
+
+        edit(id) {
+        this.$axios
+            .$get("/video/" + id)
+            .then((response) => {
+                console.log(response);
+            this.video = response;
+            })
+            .catch((error) => {
+            console.log(error);
+            });
         },
 
     }

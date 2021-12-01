@@ -47,7 +47,7 @@
                             <v-icon
                                 color="success"
                                 class="mr-2"
-                                @click="abreModal(item.id)"
+                                @click="abreToast('Em desenvolvimento')"
                             >mdi-square-edit-outline</v-icon>
                         </template>
                     </v-data-table>
