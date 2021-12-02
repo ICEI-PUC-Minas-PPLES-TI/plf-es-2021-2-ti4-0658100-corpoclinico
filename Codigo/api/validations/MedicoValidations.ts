@@ -154,14 +154,17 @@ export const medicoCreateValidationScheme = yup.object().shape({
   faturamento: yup
     .mixed()
     .oneOf(['PJ', 'C'])
-    .required('faturamento é necessário'),
+    .required('faturamento é obrigatório'),
   unidade_id: yup
     .number()
     .nullable(),
   cnpj: yup
     .string()
-    .max(14)
+    .max(14),
 
+  especialidades: yup
+  .string()
+  .required('"especialidades" é obrigatório'),
 });
 
 export const medicoUpdateValidationScheme = yup.object().shape({
