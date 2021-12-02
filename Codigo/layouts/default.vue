@@ -108,11 +108,6 @@ export default {
       drawer: false,
       menus: [
         {
-          nome: 'Candidaturas',
-          icon: 'mdi-thumb-up-outline',
-          link: '/',
-          disabled: true
-        },{
           nome: 'Usuários',
           icon: 'mdi-account-circle-outline',
           link: '/usuario',
@@ -121,7 +116,7 @@ export default {
           icon: 'mdi-account-group-outline',
           link: '/equipe',
         },{
-          nome: 'Medicos',
+          nome: 'Candidaturas',
           icon: 'mdi-doctor',
           link: '/medico',
         },{
@@ -129,10 +124,9 @@ export default {
           icon: 'mdi-hospital-building',
           link: '/unidade'
         },{
-          nome: 'Relatórios',
-          icon: 'mdi-chart-box-outline',
-          link: '/',
-          disabled: true
+          nome: 'Vídeos',
+          icon: 'mdi-video-outline',
+          link: '/video',
         }
       ]
     }
