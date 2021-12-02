@@ -167,9 +167,16 @@
         />
       </v-col>
       <v-col cols="12" :xs="12" :sm="6" :md="2">
-        <v-text-field
+        <v-text-field v-if="formData.Complemento!=null"
           :hide-details="'auto'"
           v-model="formData.complemento"
+          label="Complemento"
+          maxlength="20"
+          readonly
+        />
+        <v-text-field v-if="formData.Complemento==null"
+          :hide-details="'auto'"
+          v-model="complementoVazio"
           label="Complemento"
           maxlength="20"
           readonly
@@ -365,6 +372,7 @@ export default {
   directives: { mask },
   data() {
     return {
+      complementoVazio:"Não Possui",
       medico: [],
       unidades: [],
       equipes: [],

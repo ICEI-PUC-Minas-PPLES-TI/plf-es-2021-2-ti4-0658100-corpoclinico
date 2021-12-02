@@ -117,7 +117,6 @@ export default {
         .then(response => {
           this.medico = response;
           let retonroSelecionado = this.medico.candidatura.retornos[this.medico.candidatura.retornos.length-1].status
-          console.log(retonroSelecionado)
           if(retonroSelecionado=="R"){
             this.selecionado=this.items[2]
           }else if(retonroSelecionado=="A"){
