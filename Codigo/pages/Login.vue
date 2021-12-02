@@ -142,8 +142,11 @@ export default {
             medico = this.medicos[i];
           }
         } 
-        //ver se viu o video
-        //rota do medico
+        // if(medico.viuovideo==true){
+
+        // }else{
+
+        // }
       }
       else if(usuario.tipo == "A"){
         window.location.href="/medico"
