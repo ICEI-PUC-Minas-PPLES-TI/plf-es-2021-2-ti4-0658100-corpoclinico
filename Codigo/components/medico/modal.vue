@@ -18,7 +18,7 @@
           <v-col :md="12" :sm="12" :xl="12" cols="12">
             <v-form ref="formAvalia" v-model="valid" lazy-validation>
               <v-card-title class="text-h5 unidade-modal-title">
-                Avaliar Médico
+                Status Atual: {{this.selecionado}}
               </v-card-title>
               <v-card-text>
                 <v-select
@@ -74,6 +74,7 @@
 export default {
   data: () => ({
     items: ["Aprovado", "Pendente", "Recusado"],
+    selecionado:"",
     valid: true,
     dialog: false,
     medico: [],
@@ -115,6 +116,15 @@ export default {
         .$get("/medico/" + id)
         .then(response => {
           this.medico = response;
+          let retonroSelecionado = this.medico.candidatura.retornos[this.medico.candidatura.retornos.length-1].status
+          console.log(retonroSelecionado)
+          if(retonroSelecionado=="R"){
+            this.selecionado=this.items[2]
+          }else if(retonroSelecionado=="A"){
+            this.selecionado=this.items[0]
+          }else if(retonroSelecionado=="P"){
+            this.selecionado=this.items[1]
+          }
         })
         .catch(error => {
           alert(error);
