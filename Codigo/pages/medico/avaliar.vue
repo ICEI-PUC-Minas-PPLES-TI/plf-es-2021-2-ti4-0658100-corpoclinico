@@ -5,6 +5,7 @@
     <v-row>
       <v-col cols="12" :xs="12" :sm="6" :md="9">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           v-model="formData.nome"
           maxlength="120"
@@ -15,6 +16,7 @@
       </v-col>
       <v-col cols="12" :xs="12" :sm="6" :md="3">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           v-model="formData.cpf"
           v-mask="['###.###.###-##']"
@@ -26,6 +28,7 @@
     <v-row>
       <v-col cols="12" :xs="12" :sm="6" :md="4">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           type="tel"
           v-model="formData.celular"
@@ -36,6 +39,7 @@
       </v-col>
       <v-col cols="12" :xs="12" :sm="6" :md="5">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           v-model="formData.email"
           label="E-mail"
@@ -46,6 +50,7 @@
       </v-col>
       <v-col cols="12" :xs="12" :sm="6" :md="3">
         <v-text-field
+        class="corpo"
           v-model="formData.dt_nascimento"
           hide-details="auto"
           label="Data de Nascimento"
@@ -59,6 +64,7 @@
     <v-row>
       <v-col cols="12" :xs="12" :sm="6" :md="4">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           v-model="formData.rg"
           label="RG"
@@ -79,6 +85,7 @@
       </v-col>
       <v-col cols="12" :xs="12" :sm="6" :md="5">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           v-model="formData.rg_orgao_emissor"
           label="Orgão Emissor"
@@ -88,12 +95,12 @@
       </v-col>
       <v-col cols="12" :xs="12" :sm="6" :md="3">
         <v-text-field
+        class="corpo"
           v-model="formData.rg_data_emissao"
           hide-details="auto"
           label="Data de Emissão"
           type="date"
           max="3000-01-01"
-          class="medico-stepper-input-date"
           readonly
         >
         </v-text-field>
@@ -102,6 +109,7 @@
     <v-row>
       <v-col cols="12" :xs="12" :sm="6" :md="3">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           label="Título de Eleitor"
           v-model="formData.titulo_eleitoral"
@@ -111,6 +119,7 @@
       </v-col>
       <v-col cols="12" :xs="12" :sm="6" :md="3">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           label="Zona Eleitoral"
           v-model="formData.zona"
@@ -120,6 +129,7 @@
       </v-col>
       <v-col cols="12" :xs="12" :sm="4" :md="2">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           label="Seção Eleitoral"
           v-model="formData.secao"
@@ -129,6 +139,7 @@
       </v-col>
       <v-col cols="12" :xs="12" :sm="8" :md="4">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           label="Cartão do SUS"
           v-model="formData.cartao_sus"
@@ -141,6 +152,7 @@
     <v-row>
       <v-col cols="12" :xs="12" :md="3">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           v-mask="'#####-###'"
           v-model="formData.cep"
@@ -150,6 +162,7 @@
       </v-col>
       <v-col cols="12" :xs="12" :md="5">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           v-model="formData.logradouro"
           label="Logradouro"
@@ -159,6 +172,7 @@
       </v-col>
       <v-col cols="12" :xs="12" :sm="6" :md="2">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           v-model="formData.numero"
           label="Número"
@@ -167,14 +181,16 @@
         />
       </v-col>
       <v-col cols="12" :xs="12" :sm="6" :md="2">
-        <v-text-field v-if="formData.Complemento!=null"
+        <v-text-field
+        class="corpo" v-if="formData.Complemento!=null"
           :hide-details="'auto'"
           v-model="formData.complemento"
           label="Complemento"
           maxlength="20"
           readonly
         />
-        <v-text-field v-if="formData.Complemento==null"
+        <v-text-field
+        class="corpo" v-if="formData.Complemento==null"
           :hide-details="'auto'"
           v-model="complementoVazio"
           label="Complemento"
@@ -186,6 +202,7 @@
     <v-row>
       <v-col cols="12" :xs="12" :md="3">
         <v-text-field
+        class="corpo"
           item-text="nome"
           item-value="sigla"
           label="Estado"
@@ -195,6 +212,7 @@
       </v-col>
       <v-col cols="12" :xs="12" :md="5">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           v-model="formData.cidade"
           label="Cidade"
@@ -204,6 +222,7 @@
       </v-col>
       <v-col cols="12" :xs="12" :md="4">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           v-model="formData.bairro"
           label="Bairro"
@@ -216,6 +235,7 @@
     <v-row>
       <v-col>
         <v-text-field
+        class="corpo"
           v-model="formData.escolaridade_max"
           label="Nível de Escolaridade"
           readonly
@@ -223,6 +243,7 @@
       </v-col>
       <v-col>
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           label="Sociedade Cientifica"
           v-model="formData.sociedade_cientifica"
@@ -235,10 +256,12 @@
     <!-- Formações -->
     <v-row v-for="item in this.medico.formacoes" v-bind:key="item.id">
       <v-col cols="12" :xs="12" :md="6">
-        <v-text-field label="Faculdade" v-model="item.faculdade_nome" />
+        <v-text-field
+        class="corpo" label="Faculdade" v-model="item.faculdade_nome" />
       </v-col>
       <v-col>
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           type="number"
           label="Ano de Formação"
@@ -250,10 +273,12 @@
     <h3 class="my-4">Dados Profissionais</h3>
     <v-row v-for="item in this.medico.especialidades" v-bind:key="item.id">
       <v-col cols="12" :xs="12" :md="6">
-        <v-text-field label="RQE de Especialidade" v-model="item.rqe" />
+        <v-text-field
+        class="corpo" label="RQE de Especialidade" v-model="item.rqe" />
       </v-col>
       <!--<v-col cols="12" :xs="12" :md="4">
             <v-text-field
+            class="corpo"
               :hide-details="'auto'"
               type="number"
               label="Instituição"
@@ -263,6 +288,7 @@
           </v-col>-->
       <v-col cols="12" :xs="12" :md="6">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           type="number"
           label="Ano de Conclusão"
@@ -275,6 +301,7 @@
     <v-row>
       <v-col cols="12" :xs="12" :md="3">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           label="CRM"
           maxlength="20"
@@ -284,24 +311,27 @@
       </v-col>
       <v-col>
         <v-text-field
+        class="corpo"
           v-model="formData.dt_inscricao_crm"
           hide-details="auto"
           label="Data de Inscrição do CRM"
           type="date"
           max="3000-01-01"
-          class="medico-stepper-input-date"
           readonly
         >
         </v-text-field>
       </v-col>
       <v-col cols="12" :xs="12" :md="3" v-if="formData.categoria=='C'">
-        <v-text-field label="Categoria" v-model="tipoCategoria[2]" readonly />
+        <v-text-field
+        class="corpo" label="Categoria" v-model="tipoCategoria[2]" readonly />
       </v-col>
        <v-col cols="12" :xs="12" :md="3" v-if="formData.categoria=='E'">
-        <v-text-field label="Categoria" v-model="tipoCategoria[0]" readonly />
+        <v-text-field
+        class="corpo" label="Categoria" v-model="tipoCategoria[0]" readonly />
       </v-col>
        <v-col cols="12" :xs="12" :md="3" v-if="formData.categoria=='T'">
-        <v-text-field label="Categoria" v-model="tipoCategoria[1]" readonly />
+        <v-text-field
+        class="corpo" label="Categoria" v-model="tipoCategoria[1]" readonly />
       </v-col>
     </v-row>
     <!-- Faturamento, CNPJ, Unidade, Equipe -->
@@ -309,6 +339,7 @@
     <v-row>
       <v-col cols="12" :xs="12" :md="6" v-if="formData.faturamento == 'PJ'">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           v-model="tipoFaturamento[0]"
           label="Faturamento"
@@ -317,6 +348,7 @@
       </v-col>
         <v-col cols="12" :xs="12" :md="6" v-if="formData.faturamento == 'C'">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           v-model="tipoFaturamento[1]"
           label="Faturamento"
@@ -325,6 +357,7 @@
       </v-col>
       <v-col cols="12" :xs="12" :md="6" v-if="formData.faturamento == 'PJ'">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           label="CNPJ"
           v-model="formData.cnpj"
@@ -337,6 +370,7 @@
     <v-row>
       <v-col cols="12" :xs="12" :md="6">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           item-text="nome"
           item-value="id"
@@ -347,6 +381,7 @@
       </v-col>
       <v-col cols="12" :xs="12" :md="6">
         <v-text-field
+        class="corpo"
           :hide-details="'auto'"
           item-text="nome"
           item-value="id"
@@ -558,7 +593,7 @@ export default {
 </script>
 
 <style lang="scss">
-.v-text-field {
+.v-text-field.corpo{
   pointer-events: none; // unclickable element
 }
 </style>
