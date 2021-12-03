@@ -35,11 +35,12 @@ router.get('/usuario', [autenticacaoJwt.verificarToken], usuarioController.getAl
 router.delete('/usuario/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], usuarioController.delete)
 router.put('/usuario/:id',  usuarioController.update)
 // Medico
-router.post('/medico', multerUploadMedico, medicoController.create)
-router.get('/medico/this', [autenticacaoJwt.verificarToken], medicoController.getThis)
+router.post('/medico', multerUploadMedico, medicoController.create);
+router.get('/medico/this', [autenticacaoJwt.verificarToken], medicoController.getThis);
 router.get('/medico/:id', [autenticacaoJwt.verificarToken], medicoController.get)
 router.get('/medico', [autenticacaoJwt.verificarToken], medicoController.getAll)
 router.delete('/medico/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], medicoController.delete)
+router.put('/medico/marcarAssistidos', [autenticacaoJwt.verificarToken, autenticacaoJwt.isMedico], medicoController.updateThisVideosAssitidos);
 router.put('/medico/:id', multerUploadMedico, medicoController.update)
 // Equipe
 router.post('/equipe', equipeController.create)

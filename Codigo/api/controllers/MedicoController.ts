@@ -7,7 +7,7 @@ import Usuario, { IAtributosUsuarioCriacao } from "../models/Usuario";
 import UsuarioService from "../services/UsuarioService";
 
 import bcrypt from "bcryptjs";
-import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, GetThisRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
+import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
 import AppError from "../errors/AppError";
 import ArquivoService from "../services/ArquivoService";
 import Arquivo from "../models/Arquivo";
@@ -18,6 +18,7 @@ import { ISortPaginateQuery } from "../helpers/SortPaginate";
 import Retorno from "../models/Retorno";
 import MedicoFormacao, { IAtributosMedicoFormacao, IAtributosMedicoFormacaoCriacao } from "../models/MedicoFormacao";
 import MedicoEspecialidade from "../models/MedicoEspecialidade";
+import { RequestHandler } from "express";
 
 interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { especialidades : any, formacoes : any }
 interface IGetHandlerGetFilter extends ISortPaginateQuery, IGetAllMedicoFilter { }
@@ -307,6 +308,15 @@ class MedicoController {
       throw new AppError("Medico não encontrado!", 404);
     else
       response.status(200).json(medico);
+  }
+
+  public updateThisVideosAssitidos: RequestHandler = async (request, response) => {
+    const usuarioLogadoId = Number(request.headers.authorization);
+    const medico = await this.medicoService.getById(usuarioLogadoId);
+    await this.medicoService.update({
+      id: usuarioLogadoId,
+      assistiuVideos: true
+    });
   }
 
   public getThis: GetRequestHandler<IAtributosMedico> = async (request, response, next) => {
