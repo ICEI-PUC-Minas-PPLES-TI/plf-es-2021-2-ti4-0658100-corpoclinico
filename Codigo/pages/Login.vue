@@ -58,7 +58,7 @@
 import image from '/assets/logo.svg'
 export default {
     name: 'Login',
-    layout:'layoutlogin',
+    layout:'llogin',
     data(){
         return{
             email:'',
