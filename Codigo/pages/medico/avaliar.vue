@@ -294,17 +294,31 @@
         >
         </v-text-field>
       </v-col>
-      <v-col cols="12" :xs="12" :md="3">
-        <v-text-field label="Categoria" v-model="formData.categoria" readonly />
+      <v-col cols="12" :xs="12" :md="3" v-if="formData.categoria=='C'">
+        <v-text-field label="Categoria" v-model="tipoCategoria[2]" readonly />
+      </v-col>
+       <v-col cols="12" :xs="12" :md="3" v-if="formData.categoria=='E'">
+        <v-text-field label="Categoria" v-model="tipoCategoria[0]" readonly />
+      </v-col>
+       <v-col cols="12" :xs="12" :md="3" v-if="formData.categoria=='T'">
+        <v-text-field label="Categoria" v-model="tipoCategoria[1]" readonly />
       </v-col>
     </v-row>
     <!-- Faturamento, CNPJ, Unidade, Equipe -->
     <h3 class="my-4">Dados financeiros</h3>
     <v-row>
-      <v-col cols="12" :xs="12" :md="6">
+      <v-col cols="12" :xs="12" :md="6" v-if="formData.faturamento == 'PJ'">
         <v-text-field
           :hide-details="'auto'"
-          v-model="formData.faturamento"
+          v-model="tipoFaturamento[0]"
+          label="Faturamento"
+          readonly
+        />
+      </v-col>
+        <v-col cols="12" :xs="12" :md="6" v-if="formData.faturamento == 'C'">
+        <v-text-field
+          :hide-details="'auto'"
+          v-model="tipoFaturamento[1]"
           label="Faturamento"
           readonly
         />
@@ -349,9 +363,9 @@
     </v-row>
 
     <!-- Botoes -->
-    <v-row>
-      <v-col :md="8" :sm="0" :xl="8" cols="12"> </v-col>
-      <v-col :md="4" :sm="0" :xl="4" cols="12">
+    <v-row justify="end">
+      <v-col :md="9" :sm="0" :xl="9" cols="12"> </v-col>
+      <v-col :md="3" :sm="0" :xl="3" cols="12">
         <v-btn class="mr-2" color="white" @click="retorno()">
           Retornar
         </v-btn>
@@ -368,11 +382,12 @@ import modalAvalia from "@/components/medico/modal.vue";
 export default {
   //todo: Buscar formações e especialidaes e carregar na tela
   components: { modalAvalia },
-  layout: "cmedico",
   directives: { mask },
   data() {
     return {
       complementoVazio:"Não Possui",
+      tipoFaturamento:["Pessoa Jurídica","Cooperativa"],
+      tipoCategoria:["Efetivo","Temporário","Contratado"],
       medico: [],
       unidades: [],
       equipes: [],
@@ -543,10 +558,7 @@ export default {
 </script>
 
 <style lang="scss">
-.medico-stepper {
-  &-input-date input[type="date"]::-webkit-calendar-picker-indicator {
-    display: none;
-    -webkit-appearance: none;
-  }
+.v-text-field {
+  pointer-events: none; // unclickable element
 }
 </style>

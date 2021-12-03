@@ -73,7 +73,7 @@
 <script>
 export default {
   data: () => ({
-    items: ["Aprovado", "Pendente", "Recusado"],
+    items: ["Aprovado","Recusado"],
     selecionado:"",
     valid: true,
     dialog: false,
@@ -117,9 +117,7 @@ export default {
         .then(response => {
           this.medico = response;
           let retonroSelecionado = this.medico.candidatura.retornos[this.medico.candidatura.retornos.length-1].status
-          if(retonroSelecionado=="R"){
-            this.selecionado=this.items[2]
-          }else if(retonroSelecionado=="A"){
+          if(retonroSelecionado=="A"){
             this.selecionado=this.items[0]
           }else if(retonroSelecionado=="P"){
             this.selecionado=this.items[1]
