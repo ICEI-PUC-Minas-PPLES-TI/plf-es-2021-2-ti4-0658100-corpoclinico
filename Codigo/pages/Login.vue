@@ -78,8 +78,6 @@ export default {
   name: "Login",
   data() {
     return {
-      medicos: [],
-      usuarios: [],
       email: "",
       senha: "",
       image: image, //logo do corpo clinico
@@ -93,10 +91,6 @@ export default {
       }
     };
   },
-  mounted() {
-    this.listaUsuario();
-    this.listaMedicos();
-  },
   methods: {
     handleSubmit() {
       if (this.$refs.formulario.validate()) {
@@ -108,52 +102,12 @@ export default {
           })
           .then(res => {
             document.cookie = `token=${res.data.acessoToken}`;
-            this.comparaMedico();
           })
           .catch(err => {
             this.erroLogin = "Dados não encontrados";
           });
       }
     },
-    listaMedicos() {
-      this.$axios.$get("/medico/").then(response => {
-        this.medicos = response.dados;
-      });
-    },
-    listaUsuario() {
-      this.$axios.$get("/usuario/").then(response => {
-        this.usuarios = response.dados;
-      });
-    },
-    comparaMedico() {
-      let idUsuario = "";
-      let idMedico = "";
-      let medico = [];
-      let usuario = [];
-      for (let i = 0; i < this.usuarios.length; i++) {
-        if (this.email == this.usuarios[i].email) {
-          idUsuario = this.usuarios[i].id;
-          usuario = this.usuarios[i];
-        }
-      }
-      if (usuario.tipo == "M") {
-        for (let i = 0; i < this.medicos.length; i++) {
-          if (this.medicos[i].usuario_id == idUsuario) {
-            medico = this.medicos[i];
-          }
-        } 
-        // if(medico.viuovideo==true){
-
-        // }else{
-
-        // }
-      }
-      else if(usuario.tipo == "A"){
-        window.location.href="/medico"
-      }
-      
-
-    }
   }
 };
 </script>
