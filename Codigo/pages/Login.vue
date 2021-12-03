@@ -14,24 +14,24 @@
                             <v-card-text>
 
                                 <v-form ref="formulario" v-on:submit.prevent="handleSubmit" lazy-validation>
-                                    
-                                    <v-text-field label="Login" 
+
+                                    <v-text-field label="Login"
                                     :error-messages="erroLogin"
-                                    name="email" prepend-inner-icon="mdi-account-circle" type="email" 
-                                    class="p-0rounded-0" 
-                                    outlined placeholder="email@email.com" 
+                                    name="email" prepend-inner-icon="mdi-account-circle" type="email"
+                                    class="p-0rounded-0"
+                                    outlined placeholder="email@email.com"
                                     :rules="[rules.required,rules.emailValido]" v-model="email"></v-text-field>
 
                                     <v-text-field ref="password"
                                     :error-messages="erroLogin"
-                                    :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required]" 
-                                    label="Senha" 
-                                    name="senha" 
-                                    prepend-inner-icon="mdi-lock" 
-                                    :type="show1 ? 'text' : 'password'" 
-                                    outlined 
-                                    class="mb-0 rounded-0" 
-                                    v-model="senha" 
+                                    :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required]"
+                                    label="Senha"
+                                    name="senha"
+                                    prepend-inner-icon="mdi-lock"
+                                    :type="show1 ? 'text' : 'password'"
+                                    outlined
+                                    class="mb-0 rounded-0"
+                                    v-model="senha"
                                     @click:append="show1 = !show1"></v-text-field>
 
                                     <v-btn  @click.native="handleSubmit" class="rounded-0 mt-2" color="#25BAAE" x-large block dark > Entrar </v-btn>
@@ -54,9 +54,11 @@
 </template>
 
 <script>
-    import image from '/assets/logo.svg'
+    import layoutloginVue from '~/layouts/llogin.vue';
+import image from '/assets/logo.svg'
 export default {
     name: 'Login',
+    layout:'layoutlogin',
     data(){
         return{
             email:'',
