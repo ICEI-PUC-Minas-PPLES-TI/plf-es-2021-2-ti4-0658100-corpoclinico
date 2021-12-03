@@ -81,9 +81,9 @@
             <v-list>
               <v-list-item disabled>
                 <v-list-item-icon><v-icon>mdi-account-outline</v-icon></v-list-item-icon>
-                <v-list-item-title>Usuario Nome</v-list-item-title>
+                <v-list-item-title>{{ $store.getters['login/me'].nome }}</v-list-item-title>
               </v-list-item>
-              <v-list-item disabled>
+              <v-list-item @click="logout">
                 <v-list-item-icon><v-icon>mdi-logout</v-icon></v-list-item-icon>
                 <v-list-item-title>Sair</v-list-item-title>
               </v-list-item>
@@ -136,6 +136,13 @@ export default {
         }
       ]
     }
+  },
+  methods: {
+    logout(){
+      this.$store.dispatch('login/userLogout', {
+        router: this.$router
+      })
+    },
   }
 }
 </script>
