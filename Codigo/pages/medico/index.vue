@@ -13,12 +13,11 @@
           </v-col>
           <v-col :md="6" :sm="12" :xl="6" cols="12">
             <v-select
-              v-model="teste"
+              v-model="pesquisa.status"
               label="Status"
               :items="status"
               item-text="text"
               item-value="value"
-              disabled
             />
           </v-col>
         </v-row>
@@ -129,36 +128,15 @@ export default {
         { text: "Nome", value: "usuario.nome" },
         { text: "Email", value: "usuario.email" },
         { text: "Telefone", value: "celular" },
-        { text: "Status", value: "retorno.status" },
+        { text: "Status", value: "candidatura.retornos[0].status" },
         { text: "Data da candidatura", value: "candidatura.data_criado" },
         { text: "Ação", value: "actions", sortable: false },
       ],
-      medicos: [
-        {
-          id: "",
-          celular: "",
-
-          candidatura: {
-            id: "",
-            data_criado: "",
-          },
-
-          usuario: {
-            id: "",
-            nome: "",
-            email: "",
-          },
-
-          retorno: {
-            id: "",
-            status: "",
-          },
-        },
-      ],
+      medicos: [],
 
       pesquisa: {
         nome: "",
-        //status: "",
+        status: "",
         dt_inicio: "",
       },
 
