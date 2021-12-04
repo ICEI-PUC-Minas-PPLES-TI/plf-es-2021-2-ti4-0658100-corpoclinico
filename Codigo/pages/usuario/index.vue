@@ -19,7 +19,14 @@
           <v-data-table
             :headers="headers"
             :items="usuarios"
-            :items-per-page="5"
+            :items-per-page="-1"
+            :loading="tabelaCarregando"
+            :disable-sort="true"
+            :footer-props="{
+              'disable-items-per-page': true,
+              'disable-pagination': true
+            }"
+            class="usuario-table"
           >
             <template v-slot:item.data_excluido="{ item }">
               {{ formataStatus(item.data_excluido) }}
@@ -37,6 +44,11 @@
             </template>
           </v-data-table>
         </template>
+        <v-pagination
+          v-model="tabelaPaginaAtual"
+          :length="tabelaPaginas"
+          @input="listaUsuarios"
+        />
       </v-card-text>
     </v-card>
 
@@ -62,5 +74,8 @@
   align-items: center;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+.usuario-table .v-data-footer{
+  display: none;
 }
 </style>

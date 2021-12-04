@@ -55,6 +55,18 @@ export default class UsuarioService {
     })
   }
 
+  async getAllBy(field: keyof IAtributosUsuario, value: any, attributes?: Array<keyof IAtributosUsuario>) {
+    return Usuario.findAll({
+      where: {
+        [field]: value
+      },
+      attributes
+    })
+    .catch((err)=>{
+      throw new AppError("Erro interno no servidor", 500, err)
+    })
+  }
+
   async getAll(sortPaginate: ISortPaginateQuery) {
     const atributos = Object.keys(
       Usuario.rawAttributes

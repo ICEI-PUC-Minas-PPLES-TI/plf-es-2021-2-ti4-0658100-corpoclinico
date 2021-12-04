@@ -27,7 +27,10 @@ export default {
       toast: false,
       toastMensagem: '',
       modalAtivo: false,
-
+      tabelaPaginaAtual: 1,
+      tabelaPaginas: 1,
+      totalItems: 1,
+      tabelaCarregando: false,
     }
   },
   watch:{
@@ -41,10 +44,10 @@ export default {
   methods: {
 
     listaUsuarios() {
-
-      this.$axios.$get('/usuario').then(response => {
+      this.$axios.$get(`/usuario?pagina=${this.tabelaPaginaAtual}`).then(response => {
         this.usuarios = response.dados;
-
+        this.tabelaPaginas = response.paginas
+        this.totalItems = response.total
       }).catch(error => {
         console.log(error)
       })

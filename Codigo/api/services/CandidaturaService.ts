@@ -3,21 +3,63 @@ import { ISortPaginateQuery, SortPaginate } from "../helpers/SortPaginate";
 import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
 import Equipe from "../models/Equipe";
 import Medico from "../models/Medico";
+import EquipeService from "./EquipeService";
+import RetornoService from "./RetornoService";
+import UsuarioService from "./UsuarioService";
 
 export default class CandidaturaService{
+    equipeService!: EquipeService;
+    retornoService!: RetornoService;
+    usuarioService!: UsuarioService;
+
+    constructor(){
+        this.equipeService = new EquipeService();
+        this.retornoService = new RetornoService();
+        this.usuarioService = new UsuarioService();
+    }
+
     async create(candidatura: IAtributosCandidaturaCriacao){
         return Candidatura.create({...candidatura})
+        .then(async (candidatura)=>{
+            const usuarios = (await this.usuarioService.getAllBy('tipo', ['A'])).map(u=>(u.get().id))
+
+            const { /*equipe_id, */id: candidatura_id } = candidatura;
+            // criação de retorno no nome do responsável da equipe - requisito paralizado
+            /*const equipe = await this.equipeService.getById( equipe_id );
+            const avaliador_equipe_id = equipe?.get().usuario_id;
+
+            if (avaliador_equipe_id)
+                usuarios.push(avaliador_equipe_id);*/
+                
+            return Promise.all([
+                usuarios.map(async (avaliador_id) => await this.retornoService.create({
+                    avaliador_id,
+                    candidatura_id,
+                    status: 'P',
+                }))
+            ])
+            
+        })
         .catch (erro => {
             throw new AppError("Erro interno no servidor!", 500, erro);
         })
     }
     async update(candidatura: Partial<IAtributosCandidaturaCriacao>){
-        return Candidatura.update(candidatura, {
-            where: {id: candidatura.id},
-        })
-        .catch (erro => {
-            throw new AppError("Erro interno no servidor!", 500, erro);
-        })
+
+      let candidaturaAtualizada : any;
+      if(candidatura.id)
+        candidaturaAtualizada = await Candidatura.findByPk(candidatura.id);
+
+      if(!candidaturaAtualizada)
+        throw new AppError("Candidatura do médico não encontrada!", 500, ["'candidatura.id' da candidatura do médico não encontrada"]);
+
+      try {
+        await candidaturaAtualizada.update(candidatura)
+      } catch (erro) {
+        throw new AppError("Erro interno no servidor!", 500, erro);
+      }
+
+      return candidaturaAtualizada;
     }
     async delete(id: number) {
         return Candidatura.destroy({

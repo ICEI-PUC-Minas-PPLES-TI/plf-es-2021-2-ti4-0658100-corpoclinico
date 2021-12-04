@@ -1,6 +1,4 @@
 import { Model, DataTypes, Sequelize, Optional } from "sequelize";
-import Equipe from "./Equipe";
-import Especialidade from "./Especialidade";
 import Medico from "./Medico";
 
 export interface IAtributosCandidatura {

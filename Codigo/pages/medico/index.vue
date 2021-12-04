@@ -82,13 +82,29 @@
           </v-col>
         </v-row>
         <template>
-          <v-data-table :headers="headers" :items="medicos" :items-per-page="5">
+          <v-data-table
+            :headers="headers"
+            :items="medicos"
+            :items-per-page="-1"
+            :loading="tabelaCarregando"
+            :disable-sort="true"
+            :footer-props="{
+              'disable-items-per-page': true,
+              'disable-pagination': true
+            }"
+            class="medico-table"
+          >
             <template v-slot:item.actions="{ item }">
               <v-icon color="success" class="mr-2" @click="fazNada()">
                 mdi-square-edit-outline
               </v-icon>
             </template>
           </v-data-table>
+          <v-pagination
+            v-model="tabelaPaginaAtual"
+            :length="tabelaPaginas"
+            @input="listaMedicos"
+          />
         </template>
       </v-card-text>
     </v-card>
@@ -107,12 +123,6 @@
 
 <script>
 export default {
-  layout: "cmedico",
-  // components: {
-  //   modalEquipe,
-  //   modalEspecialidade,
-  // },
-
   data() {
     return {
       headers: [
@@ -176,6 +186,10 @@ export default {
       toastMensagem: "",
       modalAtivo: false,
       modalEspecialidadeAtivo: false,
+      tabelaPaginaAtual: 1,
+      tabelaPaginas: 1,
+      totalItems: 1,
+      tabelaCarregando: false,
     };
   },
   mounted() {
@@ -187,7 +201,7 @@ export default {
       let urlParams = new URLSearchParams(this.pesquisa).toString();
       //nome=Jose&dt_inicio=2021-10-20&dt_fim=2021-10-21
       this.$axios
-        .$get("/medico?" + urlParams)
+        .$get(`/medico?pagina=${this.tabelaPaginaAtual}&` + urlParams)
         .then((response) => {
           if (response.dados) {
             response.dados.forEach((medico) => {
@@ -204,7 +218,8 @@ export default {
             });
           }
           this.medicos = response.dados;
-          //console.log(response);
+          this.tabelaPaginas = response.paginas
+          this.totalItems = response.total
         })
         .catch((error) => {
           console.log(error);
@@ -251,5 +266,8 @@ export default {
   input[type="date"]::-webkit-calendar-picker-indicator {
   display: none;
   -webkit-appearance: none;
+}
+.medico-table .v-data-footer{
+  display: none;
 }
 </style>

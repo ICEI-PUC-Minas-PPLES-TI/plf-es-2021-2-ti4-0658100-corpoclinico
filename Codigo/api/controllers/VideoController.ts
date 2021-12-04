@@ -3,7 +3,7 @@ import AppError from "../errors/AppError";
 
 import { CreateRequestHandler, DeleteRequestHandler, GetAllSimpleRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
 import VideoService from "../services/VideoService";
-import { videoCreateValidationScheme } from "../validations/VideoValidations";
+import { videoCreateValidationScheme, videoUpdateValidationScheme } from "../validations/VideoValidations";
 
 interface IGetAllVideoRequest{
     ativo: boolean
@@ -34,7 +34,7 @@ class VideoController {
   }
 
   public update: UpddateRequestHandler<IAtributosVideoCriacao> = async (request, response) => {
-    const scheme = videoCreateValidationScheme;
+    const scheme = videoUpdateValidationScheme;
 
     // Validando com o esquema criado:
     await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
