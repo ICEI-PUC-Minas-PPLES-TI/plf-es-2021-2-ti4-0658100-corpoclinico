@@ -30,7 +30,7 @@
                                 color="success"
                                 class="mr-2"
                                 @click="sobeItem(item)"
-                                v-if="item.prioridade >= 1"
+                                v-if="item.prioridade != 1"
                             >mdi-arrow-up</v-icon>
                         </template>
 
@@ -39,7 +39,7 @@
                                 color="success"
                                 class="mr-2"
                                 @click="desceItem(item)"
-                                v-if="item.prioridade != total"
+                                v-if="item.prioridade != total && item.prioridade != videos.length"
                             >mdi-arrow-down</v-icon>
                         </template>
 
@@ -47,8 +47,24 @@
                             <v-icon
                                 color="success"
                                 class="mr-2"
-                                @click="abreToast('Em desenvolvimento')"
+                                @click="abreModal(item.id)"
                             >mdi-square-edit-outline</v-icon>
+                        </template>
+                        <template v-slot:item.ativo="{ item }">
+                            <v-switch 
+                                v-if=" item.ativo==0 "
+                                color="success"
+                                inset
+                                v-model="item.ativo"
+                                @change="ativaVideo(item.id)"
+                            ></v-switch>
+                            <v-switch 
+                                v-if=" item.ativo==1 "
+                                color="success"
+                                inset
+                                v-model="item.ativo"
+                                @change="desativaVideo(item.id)"
+                            ></v-switch>
                         </template>
                     </v-data-table>
                 </template>
@@ -80,6 +96,8 @@ export default {
                 { text:"Sobe", value:"sobe"},
                 { text: "Desce", value:"desce"},
                 { text: "Ação", value: "actions", sortable: false },
+                { text: "Ativo", value: "ativo", sortable: false },
+
             ],
             videos: [
                 {
@@ -119,13 +137,8 @@ export default {
         },
 
         abreModal(id) {
-            if (id) {
-                this.modalVideoAtivo = !this.modalVideoAtivo;
-                this.videoId = id;
-            } else {
-                this.modalVideoAtivo = !this.modalVideoAtivo;
-                this.videoId = 0;
-            }
+            this.videoId = id ? id : 0;
+            this.modalVideoAtivo = !this.modalVideoAtivo;
         },
 
         abreToast(mensagem) {
@@ -135,7 +148,6 @@ export default {
 
         desceItem(item) {
             item.prioridade = item.prioridade + 1;
-
             this.$axios.$put("/video/" + item.id, JSON.parse(JSON.stringify(item))).then((response) => {
                 this.listavideos();
             }).catch((error) => {
@@ -145,13 +157,39 @@ export default {
 
         sobeItem(item){
             item.prioridade = item.prioridade - 1;
-
             this.$axios.$put("/video/" + item.id, JSON.parse(JSON.stringify(item))).then((response) => {
                 this.listavideos();
             }).catch((error) => {
                 this.abreToast(error)
             });
-        }
+        },
+        
+        ativaVideo(id) {
+            let video = {
+            ativo:true
+            }
+            this.$axios.$put('/video/' + id,video).then(response => {
+                    this.listavideos();
+            this.abreToast('Video ativado com sucesso!');
+            }).catch(error => {
+                console.log("Erro:");
+            console.error(error)
+            })
+        },
+
+        desativaVideo(id){
+            this.$axios.$delete('/video/' + id).then(response => {
+                this.abreToast('Video desativado com sucesso!');
+                    this.listavideos();
+            }).catch(error => {
+                if (Array.isArray(error.response.data.errors)) {
+                this.abreToast(error.response.data.errors[0]);
+                } else {
+                this.abreToast(error.response.data.errors);
+                }
+        
+            })
+        },
     },
 };
 </script>

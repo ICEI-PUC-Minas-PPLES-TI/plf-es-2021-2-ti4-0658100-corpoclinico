@@ -76,7 +76,7 @@ export default {
 
               let video = JSON.parse(JSON.stringify(this.video))
               if(video.id && video.id > 0){
-                this.$axios.$put('/video', video).then(response => {
+                this.$axios.$put('/video/'+video.id, video).then(response => {
                     this.limpaDados();
                     this.$emit('abreToast', 'video atualizado!')
                     this.$emit('input', false) // Fecha modal
