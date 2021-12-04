@@ -186,12 +186,12 @@ export default {
               medico.candidatura.data_criado = this.formataData(
                 medico.candidatura.data_criado
               );
-              if (medico.retorno) {
-                medico.retorno.status = this.formataStatus(
-                  medico.retorno.status
+              if (medico.candidatura.retornos && medico.candidatura.retornos.length > 0) {
+                medico.candidatura.retornos[0].status = this.formataStatus(
+                  medico.candidatura.retornos[0].status
                 );
               } else {
-                medico.retorno = { status: "Pendente" };
+                medico.candidatura.retornos[0] = { status: "Pendente" };
               }
             });
           }

@@ -82,6 +82,9 @@ export default class MedicoService {
     const dataInicio: any = filtros.dt_inicio ? filtros.dt_inicio : pastDate;
 
     return Medico.findAndCountAll({
+      order: [
+        [{ model: Candidatura, as: "candidatura" }, { model: Retorno, as: 'retornos',}, 'id', "DESC"]
+      ],
       include: [
         {
           model: Usuario,
@@ -108,7 +111,7 @@ export default class MedicoService {
             required: filtros.status ? true : false,
             where: filtros.status ? {
               status : filtros.status
-            } : undefined
+            } : undefined,            
           }],
           where: {
             data_criado: {
@@ -116,8 +119,10 @@ export default class MedicoService {
             }
           },
           required: filtros.status ? true : false,
+
         }
-      ]
+      ],
+
     })
       .then(async dados => {
         const count: number = dados.count as any;
