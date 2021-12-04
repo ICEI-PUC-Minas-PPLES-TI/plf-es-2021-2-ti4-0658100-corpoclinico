@@ -30,7 +30,6 @@ class UsuarioController {
 
   public signin: RequestHandler<never, SigninReponse, ILoginUsuario> = async (req, res) => {
     const { email, senha } = req.body;
-
     await this.Service.getBy('email', email, ['id', 'senha'])
     .then(usuario => {
       if (!usuario) {

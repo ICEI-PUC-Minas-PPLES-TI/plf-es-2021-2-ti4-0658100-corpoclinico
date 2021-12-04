@@ -312,11 +312,20 @@ class MedicoController {
 
   public updateThisVideosAssitidos: RequestHandler = async (request, response) => {
     const usuarioLogadoId = Number(request.headers.authorization);
-    const medico = await this.medicoService.getById(usuarioLogadoId);
-    await this.medicoService.update({
-      id: usuarioLogadoId,
-      assistiuVideos: true
-    });
+    const medico = await this.medicoService.getBy('usuario_id', usuarioLogadoId);
+    if (!!medico){
+        await this.medicoService.update({
+          id: medico.get().id,
+          assistiuVideos: true
+      });
+      return response.status(200).json({
+        atualizado: true
+      })
+    }
+    else{
+      throw new AppError("Usuário logado não é um médico", 404)
+    }
+    
   }
 
   public getThis: GetRequestHandler<IAtributosMedico> = async (request, response, next) => {
