@@ -9,6 +9,7 @@ import Medico, {
 } from "../models/Medico";
 import Usuario from "../models/Usuario";
 import { IGetAllMedicoFilter } from "../types/Requests";
+import Retorno from "../models/Retorno";
 
 export default class MedicoService {
   async create(medico: IAtributosMedicoCriacao) {
@@ -102,12 +103,19 @@ export default class MedicoService {
             "unidade_id",
             "data_criado"
           ],
+          include: [{
+            model: Retorno, as: 'retornos',
+            required: filtros.status ? true : false,
+            where: filtros.status ? {
+              status : filtros.status
+            } : undefined
+          }],
           where: {
             data_criado: {
               [Op.between]: [dataInicio, dataFim]
             }
           },
-          required:false,
+          required: filtros.status ? true : false,
         }
       ]
     })

@@ -177,14 +177,7 @@ class MedicoController {
     if (!token) {
       throw new AppError("Usuário não autenticado!", 401);
     }
-    let idLogado : any;
-    token = Array.isArray(token) ? token[0] : token; //garante que token é uma string
-    jwt.verify(token, process.env.SECRET_KEY ?? " ", (err, decoded) => {
-      if (err) {
-        throw new AppError("Falha ao autenticar o token. Erro -> !", 500);
-      }
-      idLogado = decoded?.id;
-    })
+    let idLogado = request.headers.authorization;
 
     if(!idLogado)
       throw new AppError("Usuário não autenticado!", 401);
@@ -337,13 +330,13 @@ class MedicoController {
   // URI de exemplo: http://localhost:3000/api/medico?pagina=1&limite=5&atributo=nome&ordem=DESC
   // todos as querys são opicionais
   public getAll: GetAllRequestHandler<IAtributosMedico, IGetHandlerGetFilter> = async (request, response) => {
-    const { nome, dt_inicio, dt_fim } = request.query;
+    const { nome, dt_inicio, dt_fim, status } = request.query;
 
     await this.medicoService.getAll({
       ...request.query
     },
       Object.keys(Medico.rawAttributes),
-      { nome, dt_inicio, dt_fim },
+      { nome, dt_inicio, dt_fim, status },
     )
     .then(({ medicos, count, paginas, offset }) => {
       const total: number = (count) as any;
