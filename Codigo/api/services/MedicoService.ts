@@ -36,12 +36,12 @@ export default class MedicoService {
     }
     try {
       if (force){
-        medico.destroy({
+        await medico.destroy({
           force
         })
       }
       else {
-        medico.update({
+        await medico.update({
           ativo: 0,
         });
       }
