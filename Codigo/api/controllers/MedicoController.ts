@@ -176,14 +176,7 @@ class MedicoController {
     if (!token) {
       throw new AppError("Usuário não autenticado!", 401);
     }
-    let idLogado : any;
-    token = Array.isArray(token) ? token[0] : token; //garante que token é uma string
-    jwt.verify(token, process.env.SECRET_KEY ?? " ", (err, decoded) => {
-      if (err) {
-        throw new AppError("Falha ao autenticar o token. Erro -> !", 500);
-      }
-      idLogado = decoded?.id;
-    })
+    let idLogado = request.headers.authorization;
 
     if(!idLogado)
       throw new AppError("Usuário não autenticado!", 401);

@@ -75,7 +75,7 @@ export default {
             handleSubmit(){
                 if(this.$refs.formulario.validate()){
                     document.cookie = `token=`;
-                    this.$axios.post('http://localhost:3000/api/signin',{
+                    this.$axios.post('/signin',{
                         email:this.email,
                         senha: this.senha
                     }).then(res=>{
