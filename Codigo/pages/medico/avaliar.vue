@@ -388,7 +388,7 @@
         </v-row>
         <v-row>
           <v-col>
-            <a @click="baixarArquivos2()">Baixar arquivos do candidato</a>
+            <a @click="baixarArquivos()">Baixar arquivos do candidato</a>
           </v-col>
         </v-row>
 
@@ -558,7 +558,7 @@ export default {
           console.log(error);
         });
     },
-    baixarArquivos2() {
+    baixarArquivos() {
       for (let i = 0; i < this.medico.arquivos.length; i++) {
         this.$axios.get('/arquivo/' + this.medico.arquivos[i].id).then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data])); const link = document.createElement("a"); link.href = url; link.setAttribute("download", this.medico.arquivos[i].nome_arquivo);
@@ -567,13 +567,13 @@ export default {
         })
       }
     },
-    baixarArquivos() {
-      let urls = [];
-      for (let i = 0; i < this.medico.arquivos.length; i++) {
-        urls.push(window.location.protocol + "//" + window.location.host + "/api/arquivo/" + this.medico.arquivos[i].id)
-      }
-      this.downloadAll(urls)
-    },
+    // baixarArquivos() {
+    //   let urls = [];
+    //   for (let i = 0; i < this.medico.arquivos.length; i++) {
+    //     urls.push(window.location.protocol + "//" + window.location.host + "/api/arquivo/" + this.medico.arquivos[i].id)
+    //   }
+    //   this.downloadAll(urls)
+    // },
     downloadAll(urls) {
       var link = document.createElement('a');
 
