@@ -19,30 +19,25 @@ export default class CandidaturaService{
     }
 
     async create(candidatura: IAtributosCandidaturaCriacao){
-        return Candidatura.create({...candidatura})
-        .then(async (candidatura)=>{
-            const usuarios = (await this.usuarioService.getAllBy('tipo', ['A'])).map(u=>(u.get().id))
+        const candidaturaCriada = await Candidatura.create({...candidatura})
+        const usuarios = (await this.usuarioService.getAllBy('tipo', ['A'])).map(u=>(u.get().id))
 
-            const { /*equipe_id, */id: candidatura_id } = candidatura;
-            // criação de retorno no nome do responsável da equipe - requisito paralizado
-            /*const equipe = await this.equipeService.getById( equipe_id );
-            const avaliador_equipe_id = equipe?.get().usuario_id;
+        const { /*equipe_id, */id: candidatura_id } = candidaturaCriada;
+        // criação de retorno no nome do responsável da equipe - requisito paralizado
+        /*const equipe = await this.equipeService.getById( equipe_id );
+        const avaliador_equipe_id = equipe?.get().usuario_id;
 
-            if (avaliador_equipe_id)
-                usuarios.push(avaliador_equipe_id);*/
-                
-            return Promise.all([
-                usuarios.map(async (avaliador_id) => await this.retornoService.create({
-                    avaliador_id,
-                    candidatura_id,
-                    status: 'P',
-                }))
-            ])
-            
-        })
-        .catch (erro => {
-            throw new AppError("Erro interno no servidor!", 500, erro);
-        })
+        if (avaliador_equipe_id)
+            usuarios.push(avaliador_equipe_id);*/
+
+        await Promise.all([
+            usuarios.map(async (avaliador_id) => await this.retornoService.create({
+                avaliador_id,
+                candidatura_id,
+                status: 'P',
+            }))
+        ])
+        return candidaturaCriada;
     }
     async update(candidatura: Partial<IAtributosCandidaturaCriacao>){
 

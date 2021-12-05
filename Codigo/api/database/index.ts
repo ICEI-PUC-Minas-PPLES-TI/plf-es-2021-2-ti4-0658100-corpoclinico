@@ -90,6 +90,7 @@ export default {
         foreignKey: 'medico_id'
       })
       MedicoFormacao.hasMany(Arquivo, {
+        foreignKey: 'id',
         onDelete: 'cascade', hooks:true
       });
 
@@ -113,7 +114,7 @@ export default {
       });
       MedicoEspecialidade.hasOne(Arquivo, {
         as: 'arquivo',
-        foreignKey: 'arquivo_id',
+        foreignKey: 'id',
       });
       MedicoEspecialidade.belongsTo(Especialidade, {
         as: 'especialidade',

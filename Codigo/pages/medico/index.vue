@@ -95,8 +95,8 @@
             class="medico-table"
           >
             <template v-slot:item.actions="{ item }">
-              <v-icon color="success" class="mr-2" @click="fazNada()">
-                mdi-square-edit-outline
+              <v-icon color="success" class="mr-2" @click="fazNada(item.id)">
+                mdi-star-outline
               </v-icon>
             </template>
           </v-data-table>
@@ -129,7 +129,7 @@ export default {
         { text: "Nome", value: "usuario.nome" },
         { text: "Email", value: "usuario.email" },
         { text: "Telefone", value: "celular" },
-        { text: "Status", value: "retorno.status" },
+        { text: "Status", value: "1" },
         { text: "Data da candidatura", value: "candidatura.data_criado" },
         { text: "Ação", value: "actions", sortable: false },
       ],
@@ -158,7 +158,7 @@ export default {
 
       pesquisa: {
         nome: "",
-        //status: "",
+        status: "",
         dt_inicio: "",
       },
 
@@ -203,6 +203,7 @@ export default {
       this.$axios
         .$get(`/medico?pagina=${this.tabelaPaginaAtual}&` + urlParams)
         .then((response) => {
+          console.log(response);
           if (response.dados) {
             response.dados.forEach((medico) => {
               medico.candidatura.data_criado = this.formataData(
@@ -210,7 +211,7 @@ export default {
               );
               if (medico.retorno) {
                 medico.retorno.status = this.formataStatus(
-                  medico.retorno.status
+                  "P"
                 );
               } else {
                 medico.retorno = { status: "Pendente" };
@@ -226,8 +227,8 @@ export default {
         });
     },
 
-    fazNada() {
-      console.log("não to pronto ainda");
+    fazNada(id) {
+      window.location.href="/medico/avaliar?id="+id;
     },
 
     abreToast(mensagem) {
