@@ -18,6 +18,7 @@
               :items="status"
               item-text="text"
               item-value="value"
+              clearable
             />
           </v-col>
         </v-row>
@@ -176,6 +177,9 @@ export default {
   methods: {
     listaMedicos() {
       //this.pesquisa.dt_fim = this.pesquisa.dt_inicio;
+      if(!this.pesquisa?.status){
+        this.pesquisa.status = '';
+      }
       let urlParams = new URLSearchParams(this.pesquisa).toString();
       //nome=Jose&dt_inicio=2021-10-20&dt_fim=2021-10-21
       this.$axios
