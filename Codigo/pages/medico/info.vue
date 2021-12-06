@@ -45,6 +45,32 @@
           </v-alert>
         </v-col>
       </v-row>
+      <!-- Troca de Senha -->
+      <v-row>
+        <v-col class="info-subtitle">
+          <span>
+            Troca de Senha
+            <small v-if="!formTrocaSenha" class="float-right info-editbutton" @click="formTrocaSenha = true">
+              Trocar
+            </small>
+          </span>
+        </v-col>
+      </v-row>
+      <v-row v-if="formTrocaSenha">
+        <v-col cols="12" :sm="12" :md="4">
+          <span class="info-label">Nova Senha</span>
+          <v-text-field :hide-details="'auto'" type="password" v-model="formSenha.senha" :rules="[v => !!v || 'Senha é obrigatório', v => (v && v.length >= 8) || 'Min 8 caracteres']" />
+        </v-col>
+        <v-col cols="12" :sm="12" :md="4">
+          <span class="info-label">Confirmar Senha</span>
+          <v-text-field :hide-details="'auto'" type="password" v-model="formSenha.confirmarSenha" :rules="[v => !!v || 'É obrigatório confirmar a senha', passwordConfirmationRule]" />
+        </v-col>
+        <v-col :cols="12" :sm="12">
+          <v-btn color="primary" block @click="atualizaDados(formSenha); formTrocaSenha=false;clearSenha()">
+            Salvar
+          </v-btn>
+        </v-col>
+      </v-row>
       <!-- Informações Básicas -->
       <v-row>
         <v-col class="info-subtitle">
@@ -178,6 +204,30 @@
             ></v-date-picker>
           </v-menu>
         </v-col>
+        <v-col v-if="editBasico" cols="12" :xs="12" :sm="6" :md="3">
+          <v-file-input
+            accept="image/*"
+            label="Doc. RG (Frente e Verso)"
+            :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+            @change="carregaArquivo($event, 'doc_rg')"
+          />
+        </v-col>
+        <v-col v-if="editBasico" cols="12" :xs="12" :sm="6" :md="3">
+          <v-file-input
+            accept="image/*"
+            label="Doc. CPF"
+            :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+            @change="carregaArquivo($event, 'doc_cpf')"
+          />
+        </v-col>
+        <v-col v-if="editBasico" cols="12" :xs="12" :sm="6" :md="3">
+          <v-file-input
+            accept="image/*"
+            label="Foto 3x4"
+            :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+            @change="carregaArquivo($event, 'doc_foto_txq')"
+          />
+        </v-col>
         <v-col v-if="editBasico" :cols="12" :sm="12">
           <v-btn color="primary" block @click="atualizaDados(formBasico); editBasico=false">
             Salvar
@@ -267,6 +317,14 @@
           <span v-if="!editMoradia">{{ info.bairro }}</span>
           <v-text-field v-else :hide-details="'auto'" v-model="formMoradia.bairro" maxlength="45" :rules="[v => !!v || 'Bairro obrigatório']" />
         </v-col>
+        <v-col v-if="editMoradia" cols="12" :xs="12" :md="3">
+          <v-file-input
+            accept="image/*"
+            label="Comp. de Endereço"
+            :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+            @change="carregaArquivo($event, 'doc_comp_ender')"
+          />
+        </v-col>
         <v-col v-if="editMoradia" :cols="12" :sm="12">
           <v-btn color="primary" block @click="atualizaDados(formMoradia); editMoradia=false">
             Salvar
@@ -341,6 +399,7 @@
                     accept="image/*"
                     label="Certificado"
                     :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+                    @change="carregaArquivo($event, 'docs_cert_form', false);formAcademico.formacoes[fidx].arquivo_id=null"
                   />
                 </v-col>
                 <v-col cols="12" :xs="12" :sm="6" :md="3">
@@ -473,6 +532,7 @@
                     accept="image/*"
                     label="Certificado"
                     :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+                    @change="carregaArquivo($event, 'docs_cert_espec', false);formProfissional.especialidades[eidx].arquivo_id=null"
                   />
                 </v-col>
                 <v-col cols="12" :xs="12" :md="2">
@@ -558,6 +618,30 @@
             v-model="formCandidatura.equipe_id"
           />
         </v-col>
+        <v-col v-if="editCandidatura" cols="12" :xs="12" :md="4">
+          <v-file-input
+            accept="image/*"
+            label="Cert. Quitação CRMMG"
+            :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+            @change="carregaArquivo($event, 'doc_cert_quit_crmmg')"
+          />
+        </v-col>
+        <v-col v-if="editCandidatura" cols="12" :xs="12" :md="4">
+          <v-file-input
+            accept="image/*"
+            label="Termo de Vigilância"
+            :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+            @change="carregaArquivo($event, 'doc_term_vigi')"
+          />
+        </v-col>
+        <v-col v-if="editCandidatura" cols="12" :xs="12" :md="4">
+          <v-file-input
+            accept="image/*"
+            label="Termo de Compromisso"
+            :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+            @change="carregaArquivo($event, 'doc_term_compr')"
+          />
+        </v-col>
         <v-col v-if="editCandidatura" :cols="12" :sm="12">
           <v-btn color="primary" block @click="atualizaDados(formCandidatura); editCandidatura=false">
             Salvar
@@ -578,6 +662,7 @@
 
 <script>
 import {mask} from 'vue-the-mask'
+const Swal = require('sweetalert2')
 export default {
   layout: 'cmedico',
   directives: {mask},
@@ -599,6 +684,23 @@ export default {
       editProfissional: false,
       formProfissional: null,
       menuDataCrm: false,
+      arquivos: {
+        doc_rg: null,
+        doc_cpf: null,
+        doc_foto_txq: null,
+        doc_comp_ender: null,
+        doc_crm: null,
+        doc_cert_quit_crmmg: null,
+        doc_term_vigi: null,
+        doc_term_compr: null,
+        docs_cert_espec: [],
+        docs_cert_form: [],
+      },
+      formTrocaSenha: false,
+      formSenha: {
+        senha: null,
+        confirmarSenha: null,
+      }
     }
   },
   async asyncData({ params, app }) {
@@ -671,6 +773,9 @@ export default {
           return null
         
       } else return null
+    },
+    passwordConfirmationRule() {
+      return () => (this.formSenha.senha === this.formSenha.confirmarSenha) || 'Senhas não coincidem'
     }
   },
   methods: {
@@ -778,16 +883,58 @@ export default {
         data.titulo_eleitoral = data.titulo_eleitoral.replace(/ /g,'')
       if(data.cnpj)
         data.cnpj = data.cnpj.replace(/\D/g,'')
+
+      let formData = new FormData()
+      for (var key in data){
+        if(Array.isArray(data[key])) {
+          formData.append(key, JSON.stringify(data[key]))
+        } else
+          formData.append(key, data[key])
+      }
+
+      for (var key in this.arquivos) {
+        if(Array.isArray(this.arquivos[key])) {
+          for(let i=0; i<this.arquivos[key].length; i++) {
+            formData.append(key, this.arquivos[key][i])
+          }
+        } else if(this.arquivos[key])
+          formData.append(key, this.arquivos[key])
+      }
       
       this.$axios
-        .put('/medico/'+this.info.id, data)
+        .put('/medico/'+this.info.id, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
         .then(res => {
           this.reloadDados()
-          alert('Dados atualizados!')
+          Swal.fire({
+            title: 'Dados atualizados!',
+            icon: 'success',
+            confirmButtonText: 'OK'
+          })
         }) .catch(err => {
           console.log(err.response)
-          alert(err.response.data.erros)
+          Swal.fire({
+            title: err.response.data.message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+          })
         })
+    },
+    carregaArquivo(ev, nome, unico=true){
+      if(unico)
+        this.arquivos[nome] = ev
+      else
+        this.arquivos[nome].push(ev)
+      
+    },
+    clearSenha(){
+      this.formSenha = {
+        senha: null,
+        confirmarSenha: null,
+      }
     }
   }
 }

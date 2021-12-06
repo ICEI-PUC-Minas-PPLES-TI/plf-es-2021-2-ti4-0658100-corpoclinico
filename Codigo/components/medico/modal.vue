@@ -71,6 +71,7 @@
 </template>
 
 <script>
+const Swal = require('sweetalert2')
 export default {
   data: () => ({
     items: ["Aprovado","Recusado"],
@@ -108,6 +109,11 @@ export default {
           })
           .catch(error => {
             console.log(error);
+            Swal.fire({
+              title: error.response.data.message,
+              icon: 'error',
+              confirmButtonText: 'OK'
+            })
           });
       }
     },
@@ -124,7 +130,11 @@ export default {
           }
         })
         .catch(error => {
-          alert(error);
+          Swal.fire({
+            title: error.response.data.message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+          })
           setTimeout((window.location.href = "/medico"), 2000);
         });
     },

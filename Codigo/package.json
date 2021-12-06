@@ -22,6 +22,7 @@
     "mysql2": "^2.3.0",
     "nuxt": "latest",
     "sequelize": "^6.6.5",
+    "sweetalert2": "^11.3.0",
     "vue-the-mask": "^0.11.1",
     "vue-youtube": "^1.4.0",
     "yup": "^0.32.9"

@@ -90,6 +90,7 @@
 </template>
 
 <script>
+const Swal = require('sweetalert2')
 export default {
   name: "modal",
   props: ["value", "equipeId"],
@@ -143,16 +144,20 @@ export default {
             .$post("/equipe", equipe)
             .then((response) => {
               this.limpaDados();
-              this.abreToast("Equipe Cadastrada!");
+              Swal.fire({
+                title: 'Equipe Cadastrada!',
+                icon: 'success',
+                confirmButtonText: 'OK'
+              })
               this.$emit("input", false); // Fecha modal
               this.$emit("listaEquipes");
             })
             .catch((error) => {
-              if (Array.isArray(error.response.data.erros)) {
-                this.abreToast(error.response.data.erros[0]);
-              } else {
-                this.abreToast(error.response.data.erros);
-              }
+              Swal.fire({
+                title: error.response.data.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+              })
             });
         }
       }
@@ -166,6 +171,11 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+          Swal.fire({
+            title: error.response.data.message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+          })
         });
     },
 
@@ -177,15 +187,19 @@ export default {
           .$put("/equipe/" + id, equipe)
           .then((response) => {
             this.limpaDados();
-            this.abreToast("Equipe Atualizado!");
+            Swal.fire({
+              title: 'Equipe Atualizada!',
+              icon: 'success',
+              confirmButtonText: 'OK'
+            })
             this.$emit("input", false); // Fecha modal
           })
           .catch((error) => {
-            if (Array.isArray(error.response.data.erros)) {
-              this.abreToast(error.response.data.erros[0]);
-            } else {
-              this.abreToast(error.response.data.erros);
-            }
+            Swal.fire({
+              title: error.response.data.message,
+              icon: 'error',
+              confirmButtonText: 'OK'
+            })
           });
       }
     },
@@ -213,6 +227,11 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+          Swal.fire({
+            title: error.response.data.message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+          })
         });
     },
   },

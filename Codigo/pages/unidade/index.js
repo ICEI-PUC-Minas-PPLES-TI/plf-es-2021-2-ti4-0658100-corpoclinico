@@ -1,4 +1,5 @@
 import modal from '@/components/unidade/modal.vue'
+const Swal = require('sweetalert2')
 export default {
   components: {
     modal,
@@ -18,11 +19,11 @@ export default {
         {
           id: '',
           nome: '',
-          cep:'',
+          cep: '',
           cidade: '',
-          bairro:'',
+          bairro: '',
           logradouro: '',
-          ativo:'',
+          ativo: '',
         },
       ],
 
@@ -34,8 +35,8 @@ export default {
 
     }
   },
-  watch:{
-    modalAtivo: function (modalAtivo){
+  watch: {
+    modalAtivo: function (modalAtivo) {
       modalAtivo ? false : this.listaUnidades();
     },
 
@@ -55,41 +56,45 @@ export default {
 
     },
 
-    abreModal(id){
-      if(id){
+    abreModal(id) {
+      if (id) {
         this.modalAtivo = !this.modalAtivo;
         this.unidadeId = id;
-      }else{
+      } else {
         this.modalAtivo = !this.modalAtivo;
         this.unidadeId = 0;
       }
     },
 
     ativaUnidade(id) {
-        let unidade = {
-          ativo:true
-        }
-        this.$axios.$put('/unidade/' + id,unidade).then(response => {
-          this.$emit('listaUnidade')
-          this.abreToast('Unidade Ativa!');
-          }).catch(error => {
-            console.log("Erro:");
-          console.error(error)
+      let unidade = {
+        ativo: true
+      }
+      this.$axios.$put('/unidade/' + id, unidade).then(response => {
+        this.$emit('listaUnidade')
+        this.abreToast('Unidade Ativa!');
+      }).catch(error => {
+        console.log("Erro:");
+        console.error(error)
+        Swal.fire({
+          title: error.response.data.message,
+          icon: 'error',
+          confirmButtonText: 'OK'
         })
+      })
     },
 
-    deleteUnidade(id){
-          this.$axios.$delete('/unidade/' + id).then(response => {
-            this.abreToast('Unidade Inativa!');
-            this.listaUnidades();
-          }).catch(error => {
-            if (Array.isArray(error.response.data.errors)) {
-              this.abreToast(error.response.data.errors[0]);
-            } else {
-              this.abreToast(error.response.data.errors);
-            }
-    
-          })
+    deleteUnidade(id) {
+      this.$axios.$delete('/unidade/' + id).then(response => {
+        this.abreToast('Unidade Inativa!');
+        this.listaUnidades();
+      }).catch(error => {
+        Swal.fire({
+          title: error.response.data.message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        })
+      })
     },
 
     abreToast(mensagem) {

@@ -243,11 +243,11 @@ class MedicoController {
         } catch (error) {
           throw new AppError("Candidatura para médico não atualizada!" + error, 500);
         }
-        /*try {
+        try {
           arquivosAtualizados = await this.arquivoService.update(request.files, medico?.get().id, formacoesArray, especialidadesArray, candidaturaAtualizada.dataValues.id);
         } catch (error) {
           throw new AppError("Arquivos para médico não atualizados!" + error, 500);
-        }*/
+        }
 
         return response.status(201).json({
           atualizado: true,
