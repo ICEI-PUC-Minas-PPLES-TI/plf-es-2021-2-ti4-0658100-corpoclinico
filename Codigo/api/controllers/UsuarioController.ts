@@ -17,6 +17,8 @@ interface ILoginUsuario {
 
 type SigninReponse = string | {
   acessoToken: string | null,
+  tipo: string | null,
+  nome: string | null,
   razao?: "Senha incorreta!"
 }
 
@@ -30,7 +32,8 @@ class UsuarioController {
 
   public signin: RequestHandler<never, SigninReponse, ILoginUsuario> = async (req, res) => {
     const { email, senha } = req.body;
-    await this.Service.getBy('email', email, ['id', 'senha'])
+
+    await this.Service.getBy('email', email, ['id', 'senha','tipo', 'nome'])
     .then(usuario => {
       if (!usuario) {
         throw new AppError("Usuário não encontrado", 404);
@@ -43,8 +46,7 @@ class UsuarioController {
       const token = jwt.sign({ id: usuario.get().id }, process.env.SECRET_KEY ?? "fill-the-env-file.this-is-only-to-prevent-type-error", {
         expiresIn: 604800 * 4 // 4 semana expira
       });
-
-      res.status(200).send({ acessoToken: token });
+      res.status(200).send({ acessoToken: token, nome: usuario.get().nome, tipo: usuario.get().tipo });
     })
   }
 

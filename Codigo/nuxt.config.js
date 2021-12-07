@@ -35,6 +35,7 @@ export default {
   plugins: [
     { src: '~/plugins/vueYoutube.js' },
     { src: '~/plugins/axios.js', ssr: true },
+    { src: '~/plugins/localStorage.js', ssr: false },
   ],
 
   /*
