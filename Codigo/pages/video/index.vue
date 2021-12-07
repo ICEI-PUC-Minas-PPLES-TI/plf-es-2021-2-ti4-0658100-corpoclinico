@@ -34,14 +34,14 @@
                             >mdi-arrow-up</v-icon>
                         </template>
 
-                        <template v-slot:item.desce="{ item }">
+                        <!-- <template v-slot:item.desce="{ item }">
                             <v-icon
                                 color="success"
                                 class="mr-2"
                                 @click="desceItem(item)"
                                 v-if="item.prioridade != total && item.prioridade != videos.length"
                             >mdi-arrow-down</v-icon>
-                        </template>
+                        </template> -->
 
                         <template v-slot:item.actions="{ item }">
                             <v-icon
@@ -50,7 +50,7 @@
                                 @click="abreModal(item.id)"
                             >mdi-square-edit-outline</v-icon>
                         </template>
-                        <template v-slot:item.ativo="{ item }">
+                        <!-- <template v-slot:item.ativo="{ item }">
                             <v-switch 
                                 v-if=" item.ativo==0 "
                                 color="success"
@@ -65,7 +65,7 @@
                                 v-model="item.ativo"
                                 @change="desativaVideo(item.id)"
                             ></v-switch>
-                        </template>
+                        </template> -->
                     </v-data-table>
                 </template>
             </v-card-text>
@@ -94,9 +94,9 @@ export default {
                 { text: "Link", value: "link" },
                 { text: "Ordem", value: "prioridade" },
                 { text:"Sobe", value:"sobe"},
-                { text: "Desce", value:"desce"},
+                //{ text: "Desce", value:"desce"},
                 { text: "Ação", value: "actions", sortable: false },
-                { text: "Ativo", value: "ativo", sortable: false },
+                //{ text: "Ativo", value: "ativo", sortable: false },
 
             ],
             videos: [
@@ -117,14 +117,14 @@ export default {
     },
     watch: {
         modalVideoAtivo: function (modalVideoAtivo) {
-            modalVideoAtivo ? false : this.listavideos();
+            modalVideoAtivo ? false : this.listaVideos();
         },
     },
     mounted() {
-        this.listavideos();
+        this.listaVideos();
     },
     methods: {
-        listavideos() {
+        listaVideos() {
             this.$axios
                 .$get("/video")
                 .then((response) => {
@@ -149,7 +149,7 @@ export default {
         desceItem(item) {
             item.prioridade = item.prioridade + 1;
             this.$axios.$put("/video/" + item.id, JSON.parse(JSON.stringify(item))).then((response) => {
-                this.listavideos();
+                this.listaVideos();
             }).catch((error) => {
                 this.abreToast(error)
             });
@@ -158,7 +158,7 @@ export default {
         sobeItem(item){
             item.prioridade = item.prioridade - 1;
             this.$axios.$put("/video/" + item.id, JSON.parse(JSON.stringify(item))).then((response) => {
-                this.listavideos();
+                this.listaVideos();
             }).catch((error) => {
                 this.abreToast(error)
             });
@@ -169,7 +169,7 @@ export default {
             ativo:true
             }
             this.$axios.$put('/video/' + id,video).then(response => {
-                    this.listavideos();
+                    this.listaVideos();
             this.abreToast('Video ativado com sucesso!');
             }).catch(error => {
                 console.log("Erro:");
@@ -180,7 +180,7 @@ export default {
         desativaVideo(id){
             this.$axios.$delete('/video/' + id).then(response => {
                 this.abreToast('Video desativado com sucesso!');
-                    this.listavideos();
+                    this.listaVideos();
             }).catch(error => {
                 if (Array.isArray(error.response.data.errors)) {
                 this.abreToast(error.response.data.errors[0]);
