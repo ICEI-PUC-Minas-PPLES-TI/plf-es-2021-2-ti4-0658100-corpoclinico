@@ -39,6 +39,7 @@ router.post('/medico', multerUploadMedico, medicoController.create);
 router.get('/medico/this', [autenticacaoJwt.verificarToken], medicoController.getThis);
 router.get('/medico/:id', [autenticacaoJwt.verificarToken], medicoController.get)
 router.get('/medico', [autenticacaoJwt.verificarToken], medicoController.getAll)
+router.get('/me', [autenticacaoJwt.verificarToken], medicoController.getMe)
 router.delete('/medico/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], medicoController.delete)
 router.put('/medico/marcarAssistidos', [autenticacaoJwt.verificarToken, autenticacaoJwt.isMedico], medicoController.updateThisVideosAssitidos);
 router.put('/medico/:id', [autenticacaoJwt.verificarToken], multerUploadMedico, medicoController.update)

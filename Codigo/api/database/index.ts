@@ -48,6 +48,11 @@ export default {
       Equipe.belongsTo(Especialidade, { foreignKey: 'especialidade_id'})
       Especialidade.hasOne(Equipe, { foreignKey: 'id' })
 
+      Usuario.hasOne(Medico, {
+        as: 'medico',
+        foreignKey: 'usuario_id'
+      })
+      
       Medico.belongsTo(Usuario, {
         as: 'usuario',
         foreignKey: 'usuario_id'
@@ -88,6 +93,16 @@ export default {
         foreignKey: 'id',
         onDelete: 'cascade', hooks:true
       });
+
+      Candidatura.belongsTo(Equipe, {
+        as: 'equipe',
+        foreignKey: 'equipe_id'
+      })
+
+      Candidatura.belongsTo(Unidade, {
+        as: 'unidade',
+        foreignKey: 'unidade_id'
+      })
 
       Medico.hasMany(MedicoEspecialidade, {
         as: 'especialidades',
