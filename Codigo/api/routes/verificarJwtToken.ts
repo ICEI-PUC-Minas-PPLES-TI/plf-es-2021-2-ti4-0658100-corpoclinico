@@ -32,8 +32,8 @@ const verificarToken: RequestHandler = (req, res, next) => {
 
 };
 
-const isAdmin: RequestHandler = (req, res, next) => {
-  Usuario.findByPk(req.headers.authorization).then(usuario => {
+const isAdmin: RequestHandler = async (req, res, next) => {
+  await Usuario.findByPk(req.headers.authorization).then(usuario => {
     req.headers["user-tipo"] = usuario?.get().tipo;
     if (usuario?.get().tipo === "A") {
       next();
@@ -43,22 +43,35 @@ const isAdmin: RequestHandler = (req, res, next) => {
       throw new AppError("Necessita de ser um usuário administrador!", 403)
   });
 };
-const isAdminOrMedico: RequestHandler = (req, res, next) => {
-  Usuario.findByPk(req.headers.authorization).then(usuario => {
+const isAdminOrMedico: RequestHandler = async (req, res, next) => {
+  await Usuario.findByPk(req.headers.authorization).then(usuario => {
     req.headers["user-tipo"] = usuario?.get().tipo;
     if (usuario?.get().tipo === "A" || usuario?.get().tipo === "M") {
       next();
       return;
     }
     else
-      throw new AppError("Necessita de ser um usuário administrador!", 403)
+      throw new AppError("Necessita de ser um usuário administrador ou médico!", 403)
+  });
+};
+const isMedico: RequestHandler = async (req, res, next) => {
+  await Usuario.findByPk(req.headers.authorization).then(usuario => {
+    req.headers["user-tipo"] = usuario?.get().tipo;
+    if (usuario?.get().tipo === "M") {
+      next();
+      return;
+    }
+    else
+      throw new AppError("Necessita de ser um usuário médico!");
   });
 };
 
 
 const autenticacaoJwt = {
   verificarToken,
-  isAdmin
+  isAdmin,
+  isMedico,
+  isAdminOrMedico
 };
 
 export default autenticacaoJwt;

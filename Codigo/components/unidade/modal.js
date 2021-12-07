@@ -41,9 +41,9 @@ export default {
         .get(`https://viacep.com.br/ws/${this.unidade.cep}/json`)
         .then(res => {
           if (!res.data.erro) {
-            this.unidade.logradouro ||= res.data.logradouro;
-            this.unidade.cidade ||= res.data.localidade;
-            this.unidade.bairro ||= res.data.bairro;
+            this.unidade.logradouro = this.unidade.logradouro || res.data.logradouro;
+            this.unidade.cidade = this.unidade.cidade || res.data.localidade;
+            this.unidade.bairro = this.unidade.bairro || res.data.bairro;
           }
         })
         .catch(err => {

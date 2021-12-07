@@ -962,10 +962,10 @@ export default {
         .get(`https://viacep.com.br/ws/${this.formData.cep}/json`)
         .then(res => {
           if(!res.data.erro){
-            this.formData.logradouro ||= res.data.logradouro
-            this.formData.estado ||= res.data.uf
-            this.formData.cidade ||= res.data.localidade
-            this.formData.bairro ||= res.data.bairro
+            this.formData.logradouro = this.formData.logradouro || res.data.logradouro 
+            this.formData.estado = this.formData.estado || res.data.uf
+            this.formData.cidade = this.formData.cidade || res.data.localidade
+            this.formData.bairro = this.formData.bairro || res.data.bairro
           }
           this.salvarEmCache()
         })
