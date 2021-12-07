@@ -92,14 +92,10 @@ export default {
       this.player.playVideo()
     },
     playing() {
-      console.log('\o/ we are watching!!!')
+      //console.log('\o/ we are watching!!!')
     },
     async nextStep(index) {
-      // console.log(this.$refs.youtube);
-      // console.log(this.$refs.youtube[index].player.getPlayerState());
       let result = await this.$refs.youtube[index].player.getPlayerState();
-      // console.log(result);
-      // console.log(result == 0);
       if (result == 0) {
         this.step = index + 2;
       } else {
@@ -121,7 +117,7 @@ export default {
       return new Promise(resolve => {      
         setTimeout(function() {
         t.$axios
-          .$get("/video")
+          .$get("/video?ativo=1")
           .then((response) => {
             resolve(response);
           })
@@ -131,8 +127,6 @@ export default {
         }, 50);
       });
     }
-
-
 
   },
 };

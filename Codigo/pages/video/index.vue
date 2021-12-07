@@ -50,7 +50,7 @@
                                 @click="abreModal(item.id)"
                             >mdi-square-edit-outline</v-icon>
                         </template>
-                        <!-- <template v-slot:item.ativo="{ item }">
+                        <template v-slot:item.ativo="{ item }">
                             <v-switch 
                                 v-if=" item.ativo==0 "
                                 color="success"
@@ -65,7 +65,7 @@
                                 v-model="item.ativo"
                                 @change="desativaVideo(item.id)"
                             ></v-switch>
-                        </template> -->
+                        </template>
                     </v-data-table>
                 </template>
             </v-card-text>
@@ -96,7 +96,7 @@ export default {
                 { text:"Sobe", value:"sobe"},
                 //{ text: "Desce", value:"desce"},
                 { text: "Ação", value: "actions", sortable: false },
-                //{ text: "Ativo", value: "ativo", sortable: false },
+                { text: "Ativo", value: "ativo", sortable: false },
 
             ],
             videos: [
