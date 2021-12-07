@@ -95,8 +95,8 @@
             class="medico-table"
           >
             <template v-slot:item.actions="{ item }">
-              <v-icon color="success" class="mr-2" @click="fazNada()">
-                mdi-square-edit-outline
+              <v-icon color="success" class="mr-2" @click="fazNada(item.id)">
+                mdi-star-outline
               </v-icon>
             </template>
           </v-data-table>
@@ -185,6 +185,7 @@ export default {
       this.$axios
         .$get(`/medico?pagina=${this.tabelaPaginaAtual}&` + urlParams)
         .then((response) => {
+          console.log(response);
           if (response.dados) {
             response.dados.forEach((medico) => {
               medico.candidatura.data_criado = this.formataData(
@@ -208,8 +209,8 @@ export default {
         });
     },
 
-    fazNada() {
-      console.log("não to pronto ainda");
+    fazNada(id) {
+      window.location.href="/medico/avaliar?id="+id;
     },
 
     abreToast(mensagem) {

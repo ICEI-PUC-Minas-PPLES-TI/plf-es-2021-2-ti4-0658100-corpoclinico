@@ -28,9 +28,10 @@ export interface IAtributosMedico {
   sociedade_cientifica: string | null,
   escolaridade_max: 'BACHA' | 'ESPE' | 'MESTRE' | 'DOUTOR',
   ativo: number,
+  assistiuVideos: boolean
 }
 export interface IAtributosMedicoCriacao
-  extends Optional<IAtributosMedico, "id" | "cartao_sus" | "categoria" | "rg" | "rg_orgao_emissor" | "rg_data_emissao" | "dt_nascimento" | "cpf" | "titulo_eleitoral" | "zona" | "secao" | "complemento" | "sociedade_cientifica" | "ativo"> { }
+  extends Optional<IAtributosMedico, "id" | "cartao_sus" | "categoria" | "rg" | "rg_orgao_emissor" | "rg_data_emissao" | "dt_nascimento" | "cpf" | "titulo_eleitoral" | "zona" | "secao" | "complemento" | "sociedade_cientifica" | "ativo" | "assistiuVideos"> { }
 
 class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
   implements IAtributosMedico {
@@ -61,6 +62,7 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
   sociedade_cientifica!: string | null;
   escolaridade_max!: 'BACHA' | 'ESPE' | 'MESTRE' | 'DOUTOR';
   ativo!: number;
+  assistiuVideos!: boolean
 
   static initialize(sequelize: Sequelize) {
     Medico.init(
@@ -251,6 +253,11 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
           allowNull: false,
           defaultValue: 1,
         },
+        assistiuVideos: {
+          type: DataTypes.TINYINT().UNSIGNED,
+          allowNull: false,
+          defaultValue: false
+        }
       },
       {
         tableName: "medico",

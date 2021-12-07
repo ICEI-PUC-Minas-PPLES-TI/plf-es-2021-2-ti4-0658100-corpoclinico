@@ -7,7 +7,7 @@ import Usuario, { IAtributosUsuarioCriacao } from "../models/Usuario";
 import UsuarioService from "../services/UsuarioService";
 
 import bcrypt from "bcryptjs";
-import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, GetThisRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
+import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
 import AppError from "../errors/AppError";
 import ArquivoService from "../services/ArquivoService";
 import Arquivo from "../models/Arquivo";
@@ -18,6 +18,7 @@ import { ISortPaginateQuery } from "../helpers/SortPaginate";
 import Retorno from "../models/Retorno";
 import MedicoFormacao, { IAtributosMedicoFormacao, IAtributosMedicoFormacaoCriacao } from "../models/MedicoFormacao";
 import MedicoEspecialidade from "../models/MedicoEspecialidade";
+import { RequestHandler } from "express";
 
 interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { especialidades : any, formacoes : any }
 interface IGetHandlerGetFilter extends ISortPaginateQuery, IGetAllMedicoFilter { }
@@ -176,14 +177,7 @@ class MedicoController {
     if (!token) {
       throw new AppError("Usuário não autenticado!", 401);
     }
-    let idLogado : any;
-    token = Array.isArray(token) ? token[0] : token; //garante que token é uma string
-    jwt.verify(token, process.env.SECRET_KEY ?? " ", (err, decoded) => {
-      if (err) {
-        throw new AppError("Falha ao autenticar o token. Erro -> !", 500);
-      }
-      idLogado = decoded?.id;
-    })
+    let idLogado = request.headers.authorization;
 
     if(!idLogado)
       throw new AppError("Usuário não autenticado!", 401);
@@ -307,6 +301,24 @@ class MedicoController {
       throw new AppError("Medico não encontrado!", 404);
     else
       response.status(200).json(medico);
+  }
+
+  public updateThisVideosAssitidos: RequestHandler = async (request, response) => {
+    const usuarioLogadoId = Number(request.headers.authorization);
+    const medico = await this.medicoService.getBy('usuario_id', usuarioLogadoId);
+    if (!!medico){
+        await this.medicoService.update({
+          id: medico.get().id,
+          assistiuVideos: true
+      });
+      return response.status(200).json({
+        atualizado: true
+      })
+    }
+    else{
+      throw new AppError("Usuário logado não é um médico", 404)
+    }
+    
   }
 
   public getThis: GetRequestHandler<IAtributosMedico> = async (request, response, next) => {
