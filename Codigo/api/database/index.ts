@@ -10,6 +10,7 @@ import Medico from '../models/Medico';
 import Usuario from "../models/Usuario";
 import Candidatura from '../models/Candidatura';
 import Unidade from "../models/Unidade";
+import Video from '../models/Video';
 import Retorno from '../models/Retorno';
 import MedicoFormacao from '../models/MedicoFormacao';
 import MedicoEspecialidade from '../models/MedicoEspecialidade';
@@ -40,6 +41,8 @@ export default {
       Equipe.initialize(sequelize);
       Arquivo.initialize(sequelize);
       Candidatura.initialize(sequelize);
+      Video.initialize(sequelize);
+      
       Retorno.initialize(sequelize);
       MedicoFormacao.initialize(sequelize);
       MedicoEspecialidade.initialize(sequelize);
