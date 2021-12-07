@@ -19,7 +19,6 @@ class VideoController {
 
   public create: CreateRequestHandler<IAtributosVideoCriacao> = async (request, response) => {
     const scheme = videoCreateValidationScheme;
-
     // Validando com o esquema criado:
     await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 

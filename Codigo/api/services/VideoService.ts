@@ -79,7 +79,9 @@ export default class VideoService {
   }
 
   async getAll() {
-    return Video.findAll()
+    return Video.findAll({
+      order: [[ 'prioridade', 'ASC' ]]
+    })
     .catch(error => {
         throw new AppError("Erro interno do servidor!", 500, error);
     });
