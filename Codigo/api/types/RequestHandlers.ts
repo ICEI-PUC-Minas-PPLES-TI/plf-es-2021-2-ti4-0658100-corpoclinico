@@ -12,7 +12,7 @@ export type GetRequestHandler<TModel> = RequestHandler<{ id: string }, TModel | 
 
 export type GetThisRequestHandler<TModel> = RequestHandler<never, TModel | undefined | null>;
 
-export type GetAllSimpleRequestHandler<TModel> = RequestHandler<{id: string}, TModel|undefined|null|TModel[]>
+export type GetAllSimpleRequestHandler<TModel> = RequestHandler<never, TModel|undefined|null|TModel[], {ativo: boolean}>
 
 export type UpddateRequestHandler<TRequestBody = any> = RequestHandler<{id: string}, UpdateResponse, TRequestBody>;
 

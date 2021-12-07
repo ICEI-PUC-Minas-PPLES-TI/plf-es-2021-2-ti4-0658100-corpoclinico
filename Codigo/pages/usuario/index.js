@@ -1,5 +1,5 @@
 import modal from '@/components/usuario/modal.vue'
-
+const Swal = require('sweetalert2')
 export default {
   components: {
     modal,
@@ -71,12 +71,11 @@ export default {
         this.listaUsuarios();
 
       }).catch(error => {
-        if (Array.isArray(error.response.data.errors)) {
-          this.abreToast(error.response.data.errors[0]);
-        } else {
-          this.abreToast(error.response.data.errors);
-        }
-
+        Swal.fire({
+          title: error.response.data.message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        })
       })
 
 

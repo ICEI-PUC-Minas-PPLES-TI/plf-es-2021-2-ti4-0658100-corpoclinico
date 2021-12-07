@@ -10,6 +10,7 @@ import Medico from '../models/Medico';
 import Usuario from "../models/Usuario";
 import Candidatura from '../models/Candidatura';
 import Unidade from "../models/Unidade";
+import Video from '../models/Video';
 import Retorno from '../models/Retorno';
 import MedicoFormacao from '../models/MedicoFormacao';
 import MedicoEspecialidade from '../models/MedicoEspecialidade';
@@ -40,6 +41,8 @@ export default {
       Equipe.initialize(sequelize);
       Arquivo.initialize(sequelize);
       Candidatura.initialize(sequelize);
+      Video.initialize(sequelize);
+      
       Retorno.initialize(sequelize);
       MedicoFormacao.initialize(sequelize);
       MedicoEspecialidade.initialize(sequelize);
@@ -48,6 +51,11 @@ export default {
       Equipe.belongsTo(Especialidade, { foreignKey: 'especialidade_id'})
       Especialidade.hasOne(Equipe, { foreignKey: 'id' })
 
+      Usuario.hasOne(Medico, {
+        as: 'medico',
+        foreignKey: 'usuario_id'
+      })
+      
       Medico.belongsTo(Usuario, {
         as: 'usuario',
         foreignKey: 'usuario_id'
@@ -85,8 +93,19 @@ export default {
         foreignKey: 'medico_id'
       })
       MedicoFormacao.hasMany(Arquivo, {
+        foreignKey: 'id',
         onDelete: 'cascade', hooks:true
       });
+
+      Candidatura.belongsTo(Equipe, {
+        as: 'equipe',
+        foreignKey: 'equipe_id'
+      })
+
+      Candidatura.belongsTo(Unidade, {
+        as: 'unidade',
+        foreignKey: 'unidade_id'
+      })
 
       Medico.hasMany(MedicoEspecialidade, {
         as: 'especialidades',
@@ -98,7 +117,7 @@ export default {
       });
       MedicoEspecialidade.hasOne(Arquivo, {
         as: 'arquivo',
-        foreignKey: 'arquivo_id',
+        foreignKey: 'id',
       });
       MedicoEspecialidade.belongsTo(Especialidade, {
         as: 'especialidade',

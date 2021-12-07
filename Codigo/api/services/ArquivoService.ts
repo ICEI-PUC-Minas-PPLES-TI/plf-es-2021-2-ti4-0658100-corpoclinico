@@ -268,152 +268,156 @@ export default class ArquivoService {
         }
       }
 
-    let formacoesId : number[] = [];
-    let indexFormacoes : number = 0;
-    for (let formacao of formacoes) {
-      try {
-        const medicoFormacaoService = new MedicoFormacaoService();
+    if (arquivosObj.docs_cert_form){
+        let formacoesId : number[] = [];
+        let indexFormacoes : number = 0;
+        for (let formacao of formacoes) {
+          try {
+            const medicoFormacaoService = new MedicoFormacaoService();
 
-        // Verificar se é para atualizar uma formação existente ou criar outra
-        let forma: any;
-        try {
-          forma = await MedicoFormacao.findByPk(formacao.id);
-        } catch (e) {
-          forma = null;
+            // Verificar se é para atualizar uma formação existente ou criar outra
+            let forma: any;
+            try {
+              forma = await MedicoFormacao.findByPk(formacao.id);
+            } catch (e) {
+              forma = null;
+            }
+
+            let arquivoApagar: number = 0; // Se houver um arquivo da formação existente para apagar, salve o id aqui para apagar
+
+
+            // Se o 'arquivo_id' é null quer dizer que tem arquivo novo para a formação
+            if (formacao.arquivo_id === null) {
+
+              // Captura o arquivo antigo para apagar
+              if (forma)
+                arquivoApagar = forma?.get().arquivo_id;
+
+              // Gera o novo arquivo
+              const certFormFields = arquivosObj.docs_cert_form[indexFormacoes];
+              const nome_arquivo = certFormFields.filename;
+              const tipo = 'FORM';
+              const certForm = await this.gerar({ nome_arquivo, tipo, medico_id });
+              formacao.arquivo_id = certForm.id;
+              arquivosAtualizados.push(certForm);
+            }
+
+            // Quer dizer que é para criar a nova formação, pois não passou 'id'
+            if (!forma) {
+              formacao.medico_id = medico_id;
+              formacoesId.push(formacao.id);
+              formacao = await medicoFormacaoService.create(formacao);
+            } else {
+              formacao.medico_id = medico_id;
+              formacoesId.push(formacao.id); // Para apagar todas as formações que não foram enviadas
+              await medicoFormacaoService.update(formacao);
+            }
+
+            // Apaga o arquivo se tiver id do antigo
+            if (arquivoApagar != 0) {
+              if (!arquivoApagar)
+                throw new AppError("");
+              await this.deleteById(arquivoApagar);
+            }
+
+            indexFormacoes++;
+          } catch (erro) {
+            throw new AppError("Arquivo não criado!" + erro, 500);
+          }
         }
-
-        let arquivoApagar: number = 0; // Se houver um arquivo da formação existente para apagar, salve o id aqui para apagar
-
-
-        // Se o 'arquivo_id' é null quer dizer que tem arquivo novo para a formação
-        if (formacao.arquivo_id === null) {
-
-          // Captura o arquivo antigo para apagar
-          if (forma)
-            arquivoApagar = forma?.get().arquivo_id;
-
-          // Gera o novo arquivo
-          const certFormFields = arquivosObj.docs_cert_form[indexFormacoes];
-          const nome_arquivo = certFormFields.filename;
-          const tipo = 'FORM';
-          const certForm = await this.gerar({ nome_arquivo, tipo, medico_id });
-          formacao.arquivo_id = certForm.id;
-          arquivosAtualizados.push(certForm);
+      
+      // Apaga todas as formações não enviadas
+      await MedicoFormacao.destroy({
+        where: {
+          [Op.and]: [
+            { medico_id: medico_id },
+            {
+              id: {
+                [Op.notIn]: formacoesId
+              }
+            }
+          ]
         }
-
-        // Quer dizer que é para criar a nova formação, pois não passou 'id'
-        if (!forma) {
-          formacao.medico_id = medico_id;
-          formacoesId.push(formacao.id);
-          formacao = await medicoFormacaoService.create(formacao);
-        } else {
-          formacao.medico_id = medico_id;
-          formacoesId.push(formacao.id); // Para apagar todas as formações que não foram enviadas
-          await medicoFormacaoService.update(formacao);
-        }
-
-        // Apaga o arquivo se tiver id do antigo
-        if (arquivoApagar != 0) {
-          if (!arquivoApagar)
-            throw new AppError("");
-          await this.deleteById(arquivoApagar);
-        }
-
-        indexFormacoes++;
-      } catch (erro) {
-        throw new AppError("Arquivo não criado!" + erro, 500);
-      }
+      })
     }
 
-    // Apaga todas as formações não enviadas
-    await MedicoFormacao.destroy({
-      where: {
-        [Op.and]: [
-          { medico_id: medico_id },
-          {
-            id: {
-              [Op.notIn]: formacoesId
-            }
-          }
-        ]
-      }
-    })
-
-    let especialidadesId: number[] = [];
-    let index = 0;
-    for (const especialidade of especialidades) {
-      try {
-        const candidatura = await Candidatura.findByPk(candidatura_id)
-          .catch(erro => {
-            throw new AppError("Erro interno no servidor!", 500, erro);
-          })
-        const equipe = await Equipe.findByPk(candidatura?.get().equipe_id)
-        const especialidadeId = equipe?.get().especialidade_id; // Captura o id da especialidade candidatada
-
-        const medicoEspecialidadeService = new MedicoEspecialidadeService();
-        let espec: any;
-
-        // Verificar se vai atualizar uma especialidade para caso não, criar outra.
+    if (arquivosObj.docs_cert_espec){
+      let especialidadesId: number[] = [];
+      let index = 0;
+      for (const especialidade of especialidades) {
         try {
-          espec = await medicoEspecialidadeService.getById(especialidade.id);
+          const candidatura = await Candidatura.findByPk(candidatura_id)
+            .catch(erro => {
+              throw new AppError("Erro interno no servidor!", 500, erro);
+            })
+          const equipe = await Equipe.findByPk(candidatura?.get().equipe_id)
+          const especialidadeId = equipe?.get().especialidade_id; // Captura o id da especialidade candidatada
+
+          const medicoEspecialidadeService = new MedicoEspecialidadeService();
+          let espec: any;
+
+          // Verificar se vai atualizar uma especialidade para caso não, criar outra.
+          try {
+            espec = await medicoEspecialidadeService.getById(especialidade.id);
+          } catch (error) {
+            espec = null;
+          }
+
+          let arquivoApagar: number = 0;
+
+          // Se o "arquivo_id" for null quer dizer que vai ter arquivo novo e precisa do arquivoApagar para apagar o antigo
+          if (especialidade.arquivo_id == null) {
+
+            // Captura o id do antigo arquivo da especialidade, para apagar
+            if (espec)
+              arquivoApagar = espec?.get().arquivo_id;
+
+            // Já que o arquivo_id é null, criar um novo arquivo para a especialidade
+            const nome_arquivo = arquivosObj.docs_cert_espec[index].filename;
+            const tipo = 'RQE';
+            const certEspec = await this.gerar({ nome_arquivo, tipo, medico_id });
+            arquivosAtualizados.push(certEspec);
+            especialidade.arquivo_id = certEspec.id; // Atualiza o id do novo arquivo enviado
+          }
+
+          // Caso for atualizar criando uma especialidade nova
+          if (!espec) {
+            especialidade.medico_id = medico_id;
+            especialidade.especialidade_id = especialidadeId;
+            await medicoEspecialidadeService.create(especialidade);
+            especialidadesId.push(especialidade.id);
+          } else { // Caso seja atualizar uma existente
+            especialidade.medico_id = medico_id;
+            especialidade.especialidade_id = especialidadeId;
+            especialidadesId.push(especialidade.id);
+            await medicoEspecialidadeService.update(especialidade);
+          }
+
+          if (arquivoApagar != 0) {
+            if (!arquivoApagar)
+              throw new AppError("Erro ao deletar artigo arquivo.", 500);
+            await this.deleteById(arquivoApagar);
+          }
+
+          index++;
         } catch (error) {
-          espec = null;
+          throw new AppError("Arquivo não criado!" + error, 500);
         }
-
-        let arquivoApagar: number = 0;
-
-        // Se o "arquivo_id" for null quer dizer que vai ter arquivo novo e precisa do arquivoApagar para apagar o antigo
-        if (especialidade.arquivo_id == null) {
-
-          // Captura o id do antigo arquivo da especialidade, para apagar
-          if (espec)
-            arquivoApagar = espec?.get().arquivo_id;
-
-          // Já que o arquivo_id é null, criar um novo arquivo para a especialidade
-          const nome_arquivo = arquivosObj.docs_cert_espec[index].filename;
-          const tipo = 'RQE';
-          const certEspec = await this.gerar({ nome_arquivo, tipo, medico_id });
-          arquivosAtualizados.push(certEspec);
-          especialidade.arquivo_id = certEspec.id; // Atualiza o id do novo arquivo enviado
-        }
-
-        // Caso for atualizar criando uma especialidade nova
-        if (!espec) {
-          especialidade.medico_id = medico_id;
-          especialidade.especialidade_id = especialidadeId;
-          await medicoEspecialidadeService.create(especialidade);
-          especialidadesId.push(especialidade.id);
-        } else { // Caso seja atualizar uma existente
-          especialidade.medico_id = medico_id;
-          especialidade.especialidade_id = especialidadeId;
-          especialidadesId.push(especialidade.id);
-          await medicoEspecialidadeService.update(especialidade);
-        }
-
-        if (arquivoApagar != 0) {
-          if (!arquivoApagar)
-            throw new AppError("Erro ao deletar artigo arquivo.", 500);
-          await this.deleteById(arquivoApagar);
-        }
-
-        index++;
-      } catch (error) {
-        throw new AppError("Arquivo não criado!" + error, 500);
       }
-    }
-    // Deletar todas as especialidades do médico que não estiverem nas especialidadesId atualizadas
-    await MedicoEspecialidade.destroy({
-      where: {
-        [Op.and]: [
-          { medico_id: medico_id },
-          {
-            id: {
-              [Op.notIn]: especialidadesId
+      // Deletar todas as especialidades do médico que não estiverem nas especialidadesId atualizadas
+      await MedicoEspecialidade.destroy({
+        where: {
+          [Op.and]: [
+            { medico_id: medico_id },
+            {
+              id: {
+                [Op.notIn]: especialidadesId
+              }
             }
-          }
-        ]
-      }
-    })
+          ]
+        }
+      })
+    }
 
     return arquivosAtualizados;
   }
@@ -441,12 +445,13 @@ export default class ArquivoService {
             medico_id: medico_id
           }
         });
-        await Arquivo.destroy({
-          where: {
-            id: arquivo?.get().id
-          },
-          force: true
-        });
+        if(arquivo)
+          await Arquivo.destroy({
+            where: {
+              id: arquivo?.get().id
+            },
+            force: true
+          });
       } catch (erro) {
         throw new AppError("Arquivo não criado! " + erro, 404);
       }

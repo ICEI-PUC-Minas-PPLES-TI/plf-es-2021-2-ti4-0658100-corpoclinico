@@ -9,6 +9,7 @@ import Medico, {
 } from "../models/Medico";
 import Usuario from "../models/Usuario";
 import { IGetAllMedicoFilter } from "../types/Requests";
+import Retorno from "../models/Retorno";
 
 export default class MedicoService {
   async create(medico: IAtributosMedicoCriacao) {
@@ -35,12 +36,12 @@ export default class MedicoService {
     }
     try {
       if (force){
-        medico.destroy({
+        await medico.destroy({
           force
         })
       }
       else {
-        medico.update({
+        await medico.update({
           ativo: 0,
         });
       }
@@ -81,6 +82,9 @@ export default class MedicoService {
     const dataInicio: any = filtros.dt_inicio ? filtros.dt_inicio : pastDate;
 
     return Medico.findAndCountAll({
+      order: [
+        [{ model: Candidatura, as: "candidatura" }, { model: Retorno, as: 'retornos',}, 'id', "DESC"]
+      ],
       include: [
         {
           model: Usuario,
@@ -102,14 +106,23 @@ export default class MedicoService {
             "unidade_id",
             "data_criado"
           ],
+          include: [{
+            model: Retorno, as: 'retornos',
+            required: filtros.status ? true : false,
+            where: filtros.status ? {
+              status : filtros.status
+            } : undefined,            
+          }],
           where: {
             data_criado: {
               [Op.between]: [dataInicio, dataFim]
             }
           },
-          required:false,
+          required: filtros.status ? true : false,
+
         }
-      ]
+      ],
+
     })
       .then(async dados => {
         const count: number = dados.count as any;

@@ -25,11 +25,11 @@ export default function({ $axios, store, req, redirect }) {
   })
 }
 
-  function getCookie(cookieName, stringCookie) {
-    let strCookie = new RegExp('' + cookieName + '[^;]+').exec(stringCookie)
-    if (strCookie == null) return null
-    else
-      return unescape(
-        strCookie[0] ? strCookie[0].toString().replace(/^[^=]+./, '') : ''
-      )
-  }
+function getCookie(cookieName, stringCookie) {
+  let strCookie = new RegExp("" + cookieName + "[^;]+").exec(stringCookie);
+  if (strCookie == null) return null;
+  else
+    return unescape(
+      strCookie[0] ? strCookie[0].toString().replace(/^[^=]+./, "") : ""
+    );
+}

@@ -12,7 +12,7 @@
       <v-card>
         <v-card-title class="text-h5 usuario-modal-title">
           <h4>
-            <span> {{titulo}} </span>
+            <span> {{ titulo }} </span>
           </h4>
           <v-btn icon @click="$emit('input', false)">
             <v-icon>mdi-close</v-icon>
@@ -29,7 +29,11 @@
                     hide-details="auto"
                     :clearable="true"
                     label="Nome"
-                    :rules="[v => !!v || 'Nome é obrigatório', v => (v && v.length <= 120) || 'Maximo de 120 caracteres']"
+                    :rules="[
+                      (v) => !!v || 'Nome é obrigatório',
+                      (v) =>
+                        (v && v.length <= 120) || 'Maximo de 120 caracteres',
+                    ]"
                   />
                 </v-col>
               </v-row>
@@ -41,7 +45,11 @@
                     :clearable="true"
                     hide-details="auto"
                     label="Email"
-                    :rules="[v => !!v || 'Email é obrigatório', v => (v && v.length <= 100) || 'Maximo de 100 caracteres']"
+                    :rules="[
+                      (v) => !!v || 'Email é obrigatório',
+                      (v) =>
+                        (v && v.length <= 100) || 'Maximo de 100 caracteres',
+                    ]"
                   />
                 </v-col>
               </v-row>
@@ -56,15 +64,22 @@
                     @click:append="show1 = !show1"
                     hide-details="auto"
                     label="Senha"
-                    :rules="[v => !!v || 'Senha é obrigatório',
-                    v => (v && v.length >= 8 ) || 'Minimo de 8 caracteres']"
+                    :rules="[
+                      (v) => !!v || 'Senha é obrigatório',
+                      (v) => (v && v.length >= 8) || 'Minimo de 8 caracteres',
+                    ]"
                   />
                 </v-col>
               </v-row>
               <!-- Botão de criar -->
-              <v-row class="mx-auto" justify="space-between" >
+              <v-row class="mx-auto" justify="space-between">
                 <v-col class="text-center">
-                  <v-btn color="secondary" block large @click="$emit('input', false)">
+                  <v-btn
+                    color="secondary"
+                    block
+                    large
+                    @click="$emit('input', false)"
+                  >
                     Cancelar
                   </v-btn>
                 </v-col>
@@ -80,142 +95,143 @@
       </v-card>
     </v-dialog>
 
-      <v-snackbar
-      v-model="toast"
-      shaped
-      >
+    <v-snackbar v-model="toast" shaped>
       {{ toastMensagem }}
 
       <template v-slot:action="{ attrs }">
-        <v-btn color="blue" text v-bind="attrs " @click="toast = false">
+        <v-btn color="blue" text v-bind="attrs" @click="toast = false">
           Ok
         </v-btn>
       </template>
     </v-snackbar>
-
   </div>
 </template>
 
 <script>
+const Swal = require("sweetalert2");
 export default {
-  name: 'modal',
-  props: ['value', 'usuarioId'],
+  name: "modal",
+  props: ["value", "usuarioId"],
   data() {
     return {
       valid: true,
       show1: false,
 
-      titulo:'Novo Usuário',
+      titulo: "Novo Usuário",
 
       usuario: {
-        id: '',
-        nome: '',
-        email: '',
-        senha: '',
-        tipo: ''
+        id: "",
+        nome: "",
+        email: "",
+        senha: "",
+        tipo: "",
       },
 
-      toastMensagem: '',
+      toastMensagem: "",
       toast: false,
-
-    }
+    };
   },
-  watch:{
-    usuarioId: function(usuarioId){
-      if(usuarioId){
+  watch: {
+    usuarioId: function (usuarioId) {
+      if (usuarioId) {
         this.editUsuario(usuarioId);
-        this.titulo = 'Editar Usuário';
-      }else{
+        this.titulo = "Editar Usuário";
+      } else {
         this.limpaDados();
-        this.titulo = 'Novo Usuário';
+        this.titulo = "Novo Usuário";
       }
-    }
+    },
   },
-  mounted() {
-
-  },
+  mounted() {},
   methods: {
-
     submitUsuario() {
-      if(this.usuario.id > 0){
+      if (this.usuario.id > 0) {
         this.updateUsuario(this.usuario.id);
-      }else{
-      if (this.$refs.formUsuario.validate()){
-        let usuario = JSON.parse(JSON.stringify(this.usuario))
-        this.$axios.$post('/usuario', usuario).then(response => {
-          this.limpaDados();
-          this.abreToast('Usuario Cadastrado!');
-          this.$emit('input', false) // Fecha modal
-          this.$emit('listaUsuarios')
-        }).catch(error => {
-
-          if (Array.isArray(error.response.data.erros)) {
-            this.abreToast(error.response.data.erros[0]);
-          } else {
-            this.abreToast(error.response.data.erros);
-          }
-
-        })
-
+      } else {
+        if (this.$refs.formUsuario.validate()) {
+          let usuario = JSON.parse(JSON.stringify(this.usuario));
+          this.$axios
+            .$post("/usuario", usuario)
+            .then((response) => {
+              this.limpaDados();
+              Swal.fire({
+                title: 'Usuario Cadastrado!',
+                icon: 'success',
+                confirmButtonText: 'OK'
+              })
+              this.$emit("input", false); // Fecha modal
+              this.$emit("listaUsuarios");
+            })
+            .catch((error) => {
+              Swal.fire({
+                title: error.response.data.message,
+                icon: "error",
+                confirmButtonText: "OK",
+              });
+            });
+        }
       }
-    }
-
     },
 
     editUsuario(id) {
-
-      this.$axios.$get('/usuario/' + id).then(response => {
-        this.usuario = response;
-      }).catch(error => {
-        console.log(error);
-      })
-
-    },
-
-    updateUsuario(id){
-
-      if (this.$refs.formUsuario.validate() && id ) {
-
-        let usuario = JSON.parse(JSON.stringify(this.usuario))
-
-        this.$axios.$put('/usuario/' + id, usuario).then(response => {
-          this.limpaDados();
-          this.abreToast('Usuario Atualizado!');
-          this.$emit('input', false) // Fecha modal
-
-        }).catch(error => {
-          if(Array.isArray(error.response.data.erros)){
-            this.abreToast(error.response.data.erros[0]);
-          }else{
-            this.abreToast(error.response.data.erros);
-          }
+      this.$axios
+        .$get("/usuario/" + id)
+        .then((response) => {
+          this.usuario = response;
         })
-
-      }
-
+        .catch((error) => {
+          console.log(error);
+          Swal.fire({
+            title: error.response.data.message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+          })
+        });
     },
 
-    abreToast(mensagem){
+    updateUsuario(id) {
+      if (this.$refs.formUsuario.validate() && id) {
+        let usuario = JSON.parse(JSON.stringify(this.usuario));
+
+        this.$axios
+          .$put("/usuario/" + id, usuario)
+          .then((response) => {
+            this.limpaDados();
+            Swal.fire({
+              title: 'Usuario Atualizado!',
+              icon: 'success',
+              confirmButtonText: 'OK'
+            })
+            this.$emit("input", false); // Fecha modal
+          })
+          .catch((error) => {
+            Swal.fire({
+              title: error.response.data.message,
+              icon: 'error',
+              confirmButtonText: 'OK'
+            })
+          });
+      }
+    },
+
+    abreToast(mensagem) {
       this.toastMensagem = mensagem;
       this.toast = true;
     },
 
-
-    limpaDados(){
+    limpaDados() {
       this.usuario = {
-        id: '',
-        nome: '',
-        email: '',
-        senha: '',
-        tipo: ''
-      }
+        id: "",
+        nome: "",
+        email: "",
+        senha: "",
+        tipo: "",
+      };
 
       this.$refs.formUsuario.reset();
-    }
-
-  }
-}
-
+    },
+  },
+};
 </script>
 
 <style>
@@ -235,5 +251,4 @@ export default {
   background: #fff;
   padding: 0 10px;
 }
-
 </style>

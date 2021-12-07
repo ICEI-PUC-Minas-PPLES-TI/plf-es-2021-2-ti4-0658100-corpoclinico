@@ -14,6 +14,7 @@ import RetornoController from '../controllers/RetornoController';
 
 import { upload } from '../helpers/files/MulterSettings';
 import { documentosMedico } from '../helpers/files/DocumentosEnum';
+import VideoController from '../controllers/VideoController';
 
 // Iniciar controllers
 const usuarioController = new UsuarioController();
@@ -22,6 +23,7 @@ const unidadeController = new UnidadeController();
 const equipeController = new EquipeController();
 const especialidadeController = new EspecialidadeController();
 const arquivoController = new ArquivoController();
+const videoController = new VideoController();
 const retornoController = new RetornoController();
 
 const multerUploadMedico = upload.fields(documentosMedico);
@@ -35,12 +37,14 @@ router.get('/usuario', [autenticacaoJwt.verificarToken], usuarioController.getAl
 router.delete('/usuario/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], usuarioController.delete)
 router.put('/usuario/:id',  usuarioController.update)
 // Medico
-router.post('/medico', multerUploadMedico, medicoController.create)
-router.get('/medico/this', [autenticacaoJwt.verificarToken], medicoController.getThis)
+router.post('/medico', multerUploadMedico, medicoController.create);
+router.get('/medico/this', [autenticacaoJwt.verificarToken], medicoController.getThis);
 router.get('/medico/:id', [autenticacaoJwt.verificarToken], medicoController.get)
 router.get('/medico', [autenticacaoJwt.verificarToken], medicoController.getAll)
+router.get('/me', [autenticacaoJwt.verificarToken], medicoController.getMe)
 router.delete('/medico/:id', [autenticacaoJwt.verificarToken, autenticacaoJwt.isAdmin], medicoController.delete)
-router.put('/medico/:id', multerUploadMedico, medicoController.update)
+router.put('/medico/marcarAssistidos', [autenticacaoJwt.verificarToken, autenticacaoJwt.isMedico], medicoController.updateThisVideosAssitidos);
+router.put('/medico/:id', [autenticacaoJwt.verificarToken], multerUploadMedico, medicoController.update)
 // Equipe
 router.post('/equipe', equipeController.create)
 router.get('/equipe/:id', equipeController.get )
@@ -65,5 +69,12 @@ router.delete('/arquivo/:id', arquivoController.delete)
 //Retorno
 router.get('/retorno', [autenticacaoJwt.verificarToken], retornoController.getAll)
 router.put('/retorno/:id', retornoController.update)
+
+//Video
+router.get('/video/:id', videoController.get);
+router.get('/video', videoController.getAll);
+router.post('/video', videoController.create);
+router.put('/video/:id', videoController.update);
+router.delete('/video/:id', videoController.delete);
 
 export default router;

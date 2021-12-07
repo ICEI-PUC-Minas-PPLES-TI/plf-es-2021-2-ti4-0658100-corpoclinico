@@ -252,7 +252,7 @@
               <v-file-input
                 accept="image/*"
                 label="Doc. RG (Frente e Verso)"
-                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',v => !!v || 'Doc RG obrigatório']"
                 @change="carregaArquivo($event, 'doc_rg')"
               />
             </v-col>
@@ -260,7 +260,7 @@
               <v-file-input
                 accept="image/*"
                 label="Doc. CPF"
-                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',v => !!v || 'Doc CPF obrigatório']"
                 @change="carregaArquivo($event, 'doc_cpf')"
               />
             </v-col>
@@ -268,7 +268,7 @@
               <v-file-input
                 accept="image/*"
                 label="Foto 3x4"
-                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',v => !!v || 'Foto 3x4 obrigatório']"
                 @change="carregaArquivo($event, 'doc_foto_txq')"
               />
             </v-col>
@@ -410,7 +410,7 @@
               <v-file-input
                 accept="image/*"
                 label="Comp. de Endereço"
-                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',v => !!v || 'Comp. de Endereço obrigatório']"
                 @change="carregaArquivo($event, 'doc_comp_ender')"
               />
             </v-col>
@@ -506,7 +506,7 @@
                       <v-file-input
                         accept="image/*"
                         label="Certificado"
-                        :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+                        :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',v => !!v || 'Certificado obrigatório']"
                         @change="carregaArquivo($event, 'docs_cert_form', false)"
                       />
                     </v-col>
@@ -618,7 +618,7 @@
             <v-col cols="12" :xs="12" :md="2">
               <v-file-input
                 accept="image/*"
-                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+                :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',v => !!v || 'Doc. CRM obrigatório']"
                 label="Doc. CRM"
                 @change="carregaArquivo($event, 'doc_crm')"
               />
@@ -697,7 +697,7 @@
                       <v-file-input
                         accept="image/*"
                         label="Certificado"
-                        :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+                        :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',v => !!v || 'Certificado obrigatório']"
                         @change="carregaArquivo($event, 'docs_cert_espec', false)"
                       />
                     </v-col>
@@ -711,7 +711,7 @@
                         @blur="salvarEmCache"
                       />
                     </v-col>
-                    <v-col cols="12" :xs="12" :md="1" @click="formData.especialidade.splice(eidx, 1);salvarEmCache()">
+                    <v-col cols="12" :xs="12" :md="1" @click="formData.especialidades.splice(eidx, 1);salvarEmCache()">
                       <v-btn icon class="mt-3">
                         <v-icon>mdi-close</v-icon>
                       </v-btn>
@@ -803,7 +803,7 @@
         <v-row>
           <v-col>
             <small class="text-muted">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vitae egestas leo. Nam faucibus non lorem sit amet porta.
+              Os seguintes documentos devem ser assinados e anexados para a conclusão da candidatura:
             </small>
             <a href="/documentos.zip" download class="d-block">Link de Download</a>
           </v-col>
@@ -814,7 +814,7 @@
             <v-file-input
               accept="image/*"
               label="Cert. Quitação CRMMG"
-              :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+              :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',v => !!v || 'Cert. Quitação obrigatório']"
               @change="carregaArquivo($event, 'doc_cert_quit_crmmg')"
             />
           </v-col>
@@ -822,7 +822,7 @@
             <v-file-input
               accept="image/*"
               label="Termo de Vigilância"
-              :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+              :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',v => !!v || 'Termo obrigatório']"
               @change="carregaArquivo($event, 'doc_term_vigi')"
             />
           </v-col>
@@ -830,7 +830,7 @@
             <v-file-input
               accept="image/*"
               label="Termo de Compromisso"
-              :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',]"
+              :rules="[v => !v || v.size < 2000000 || 'Foto deve ser menor que 2 MB!',v => !!v || 'Termo obrigatório']"
               @change="carregaArquivo($event, 'doc_term_compr')"
             />
           </v-col>
@@ -859,6 +859,7 @@
 <script>
 import axios2 from 'axios';
 import {mask} from 'vue-the-mask'
+const Swal = require('sweetalert2')
 const MODALV = '0.0.2' // Versão dos dados no modal, caso seja diferente da versao salva no PC do usuario nao vai carregar dados anteriores
 export default {
   layout: 'cmedico',
@@ -961,10 +962,10 @@ export default {
         .get(`https://viacep.com.br/ws/${this.formData.cep}/json`)
         .then(res => {
           if(!res.data.erro){
-            this.formData.logradouro ||= res.data.logradouro
-            this.formData.estado ||= res.data.uf
-            this.formData.cidade ||= res.data.localidade
-            this.formData.bairro ||= res.data.bairro
+            this.formData.logradouro = this.formData.logradouro || res.data.logradouro 
+            this.formData.estado = this.formData.estado || res.data.uf
+            this.formData.cidade = this.formData.cidade || res.data.localidade
+            this.formData.bairro = this.formData.bairro || res.data.bairro
           }
           this.salvarEmCache()
         })
@@ -997,17 +998,7 @@ export default {
       info.cnpj = info.cnpj ? info.cnpj.replace(/\D/g,''): null
       info.rg = `${info.rg_estado}-${info.rg}`
       info.titulo_eleitoral = info.titulo_eleitoral.replace(/ /g,'')
-      
-      /*for (var key in this.arquivos) {
-        if(Array.isArray(this.arquivos[key])) {
-          for(let i=0; i<this.arquivos[key].length; i++) {
-            console.log(info, key, this.arquivos[key][i])
-            info[key + '[]'] = this.arquivos[key][i]
-          }
-        } else if(this.arquivos[key])
-          info[key] = this.arquivos[key]
-      }*/
-
+    
       let formData = new FormData()
       for (var key in info){
         if(Array.isArray(info[key])) {
@@ -1033,13 +1024,21 @@ export default {
           }
         })
         .then(res => {
-          alert('Cadastro concluido!')
-          //localStorage.removeItem('corpoclinico-medico-version')
-          //localStorage.removeItem('corpoclinico-medico')
-          //window.location.href = '/'
-        }) .catch(err => {
+          Swal.fire({
+            title: 'Cadastro concluido!',
+            icon: 'success',
+            confirmButtonText: 'OK'
+          })
+          localStorage.removeItem('corpoclinico-medico-version')
+          localStorage.removeItem('corpoclinico-medico')
+          window.location.href = '/login'
+        }).catch(err => {
           console.log(err.response)
-          alert(err.response.data.erros)
+          Swal.fire({
+            title: err.response.data.message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+          })
         })
     },
     salvarEmCache(){
@@ -1052,7 +1051,6 @@ export default {
       if(unico)
         this.arquivos[nome] = ev
       else{
-        console.log('here', nome)
         this.arquivos[nome].push(ev)
       }
     }

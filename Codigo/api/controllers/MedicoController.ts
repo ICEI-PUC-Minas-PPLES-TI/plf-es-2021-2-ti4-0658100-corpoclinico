@@ -7,7 +7,7 @@ import Usuario, { IAtributosUsuarioCriacao } from "../models/Usuario";
 import UsuarioService from "../services/UsuarioService";
 
 import bcrypt from "bcryptjs";
-import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, GetThisRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
+import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
 import AppError from "../errors/AppError";
 import ArquivoService from "../services/ArquivoService";
 import Arquivo from "../models/Arquivo";
@@ -15,9 +15,12 @@ import CandidaturaService from "../services/CandidaturaService";
 import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
 import { IGetAllMedicoFilter } from "../types/Requests";
 import { ISortPaginateQuery } from "../helpers/SortPaginate";
+import Equipe from "../models/Equipe";
+import Unidade from "../models/Unidade";
 import Retorno from "../models/Retorno";
 import MedicoFormacao, { IAtributosMedicoFormacao, IAtributosMedicoFormacaoCriacao } from "../models/MedicoFormacao";
 import MedicoEspecialidade from "../models/MedicoEspecialidade";
+import { RequestHandler } from "express";
 
 interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { especialidades : any, formacoes : any }
 interface IGetHandlerGetFilter extends ISortPaginateQuery, IGetAllMedicoFilter { }
@@ -176,14 +179,7 @@ class MedicoController {
     if (!token) {
       throw new AppError("Usuário não autenticado!", 401);
     }
-    let idLogado : any;
-    token = Array.isArray(token) ? token[0] : token; //garante que token é uma string
-    jwt.verify(token, process.env.SECRET_KEY ?? " ", (err, decoded) => {
-      if (err) {
-        throw new AppError("Falha ao autenticar o token. Erro -> !", 500);
-      }
-      idLogado = decoded?.id;
-    })
+    let idLogado = request.headers.authorization;
 
     if(!idLogado)
       throw new AppError("Usuário não autenticado!", 401);
@@ -309,6 +305,69 @@ class MedicoController {
       response.status(200).json(medico);
   }
 
+  // URI de exemplo: http://localhost:3000/api/medico/1
+  public getMe: GetRequestHandler<IAtributosMedico> = async (request, response) => {
+    const medico = await Medico.findOne({
+      where: {
+        usuario_id: request.headers.authorization
+      },
+      include: [
+        {
+          model: Usuario, as: 'usuario',
+          attributes: ['email', 'nome']
+        },
+        {
+          model: Arquivo, as: 'arquivos',
+          attributes: ['id', 'nome_arquivo', 'tipo']
+        },
+        {
+          model: MedicoFormacao, as: 'formacoes',
+        },
+        {
+          model: MedicoEspecialidade, as: 'especialidades',
+        },
+        {
+          model: Candidatura, as: 'candidatura',
+          attributes: ['cnpj', 'faturamento', 'equipe_id', 'unidade_id', 'data_criado'],
+          include: [{
+            model: Equipe,
+            as: 'equipe'
+          },{
+            model: Unidade,
+            as: 'unidade'
+          },{
+            model: Retorno,
+            as: 'retornos'
+          }]
+        }
+      ]
+    });
+
+    if (!medico)
+      throw new AppError("Medico não encontrado!", 404);
+    else
+      response.status(200).json(medico);
+  }
+
+
+  public updateThisVideosAssitidos: RequestHandler = async (request, response) => {
+    const usuarioLogadoId = Number(request.headers.authorization);
+    const medico = await this.medicoService.getBy('usuario_id', usuarioLogadoId);
+    if (!!medico){
+        await this.medicoService.update({
+          id: medico.get().id,
+          assistiuVideos: true
+      });
+      return response.status(200).json({
+        atualizado: true
+      })
+    }
+    else{
+      throw new AppError("Usuário logado não é um médico", 404)
+    }
+
+  }
+
   public getThis: GetRequestHandler<IAtributosMedico> = async (request, response, next) => {
     const id = request.headers.authorization;
     request.params.id = ((await this.medicoService.getBy('usuario_id', id))?.get().id ?? "") + "" ;
@@ -318,13 +377,13 @@ class MedicoController {
   // URI de exemplo: http://localhost:3000/api/medico?pagina=1&limite=5&atributo=nome&ordem=DESC
   // todos as querys são opicionais
   public getAll: GetAllRequestHandler<IAtributosMedico, IGetHandlerGetFilter> = async (request, response) => {
-    const { nome, dt_inicio, dt_fim } = request.query;
+    const { nome, dt_inicio, dt_fim, status } = request.query;
 
     await this.medicoService.getAll({
       ...request.query
     },
       Object.keys(Medico.rawAttributes),
-      { nome, dt_inicio, dt_fim },
+      { nome, dt_inicio, dt_fim, status },
     )
     .then(({ medicos, count, paginas, offset }) => {
       const total: number = (count) as any;

@@ -4,7 +4,7 @@ import Retorno, { IAtributosRetorno, IAtributosRetornoCriacao } from "../models/
 export default class RetornoService {
 
   async create(retorno: IAtributosRetornoCriacao) {
-    return Retorno.create(retorno)
+    return await Retorno.create(retorno)
     .catch (error => {
       throw new AppError("Retorno não criado!", 500, error);
     })

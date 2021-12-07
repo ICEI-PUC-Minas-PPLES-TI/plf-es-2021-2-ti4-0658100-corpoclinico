@@ -13,12 +13,12 @@
           </v-col>
           <v-col :md="6" :sm="12" :xl="6" cols="12">
             <v-select
-              v-model="teste"
+              v-model="pesquisa.status"
               label="Status"
               :items="status"
               item-text="text"
               item-value="value"
-              disabled
+              clearable
             />
           </v-col>
         </v-row>
@@ -95,8 +95,8 @@
             class="medico-table"
           >
             <template v-slot:item.actions="{ item }">
-              <v-icon color="success" class="mr-2" @click="fazNada()">
-                mdi-square-edit-outline
+              <v-icon color="success" class="mr-2" @click="fazNada(item.id)">
+                mdi-star-outline
               </v-icon>
             </template>
           </v-data-table>
@@ -129,36 +129,15 @@ export default {
         { text: "Nome", value: "usuario.nome" },
         { text: "Email", value: "usuario.email" },
         { text: "Telefone", value: "celular" },
-        { text: "Status", value: "retorno.status" },
+        { text: "Status", value: "candidatura.retornos[0].status" },
         { text: "Data da candidatura", value: "candidatura.data_criado" },
         { text: "Ação", value: "actions", sortable: false },
       ],
-      medicos: [
-        {
-          id: "",
-          celular: "",
-
-          candidatura: {
-            id: "",
-            data_criado: "",
-          },
-
-          usuario: {
-            id: "",
-            nome: "",
-            email: "",
-          },
-
-          retorno: {
-            id: "",
-            status: "",
-          },
-        },
-      ],
+      medicos: [],
 
       pesquisa: {
         nome: "",
-        //status: "",
+        status: "",
         dt_inicio: "",
       },
 
@@ -198,22 +177,26 @@ export default {
   methods: {
     listaMedicos() {
       //this.pesquisa.dt_fim = this.pesquisa.dt_inicio;
+      if(!this.pesquisa?.status){
+        this.pesquisa.status = '';
+      }
       let urlParams = new URLSearchParams(this.pesquisa).toString();
       //nome=Jose&dt_inicio=2021-10-20&dt_fim=2021-10-21
       this.$axios
         .$get(`/medico?pagina=${this.tabelaPaginaAtual}&` + urlParams)
         .then((response) => {
+          console.log(response);
           if (response.dados) {
             response.dados.forEach((medico) => {
               medico.candidatura.data_criado = this.formataData(
                 medico.candidatura.data_criado
               );
-              if (medico.retorno) {
-                medico.retorno.status = this.formataStatus(
-                  medico.retorno.status
+              if (medico.candidatura.retornos && medico.candidatura.retornos.length > 0) {
+                medico.candidatura.retornos[0].status = this.formataStatus(
+                  medico.candidatura.retornos[0].status
                 );
               } else {
-                medico.retorno = { status: "Pendente" };
+                medico.candidatura.retornos[0] = { status: "Pendente" };
               }
             });
           }
@@ -226,8 +209,8 @@ export default {
         });
     },
 
-    fazNada() {
-      console.log("não to pronto ainda");
+    fazNada(id) {
+      window.location.href="/medico/avaliar?id="+id;
     },
 
     abreToast(mensagem) {
