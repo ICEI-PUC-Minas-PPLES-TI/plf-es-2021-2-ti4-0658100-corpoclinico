@@ -35,9 +35,7 @@
           </div>
         </v-stepper-header>
       </v-stepper>
-      <div class="text-center" v-else>
-        Nenhum video cadastrado
-      </div>
+      <div class="text-center" v-else>Nenhum video cadastrado</div>
     </transition>
 
     <v-snackbar v-model="toast" shaped>
@@ -75,15 +73,15 @@ export default {
     };
   },
   async beforeMount() {
-     this.listaVideos(this).then(data =>{
-       data.forEach(element => {
-              if (element.link) {
-                this.videoIds.push(getIdFromUrl(element.link));
-              }
+    this.listaVideos(this).then(data => {
+      data.forEach(element => {
+        if (element.link) {
+          this.videoIds.push(getIdFromUrl(element.link));
+        }
       });
-     });
+    });
   },
-   created() {
+  created() {
   },
   async mounted() {
   },
@@ -96,8 +94,23 @@ export default {
     },
     async nextStep(index) {
       let result = await this.$refs.youtube[index].player.getPlayerState();
+
       if (result == 0) {
+
+        if (index == this.videoIds.length - 1) {
+          let usuario = this.$store.getters['login/me'];
+          if (['M'].includes(usuario.tipo)) {
+            this.$axios.put('medico/marcarAssistidos')
+              .then(response => {
+                this.abreToast("Obrigado por assistir os videos de treinamento!");
+              }).catch(error => {
+                this.abreToast(error.response.data.message)
+              });
+          }
+        }
+
         this.step = index + 2;
+
       } else {
         this.abreToast("Termine o vídeo atual para avançar!");
       }
@@ -114,16 +127,16 @@ export default {
     },
 
     listaVideos(t) {
-      return new Promise(resolve => {      
-        setTimeout(function() {
-        t.$axios
-          .$get("/video?ativo=1")
-          .then((response) => {
-            resolve(response);
-          })
-          .catch((error) => {
-            t.abreToast(error)
-          });
+      return new Promise(resolve => {
+        setTimeout(function () {
+          t.$axios
+            .$get("/video?ativo=1")
+            .then((response) => {
+              resolve(response);
+            })
+            .catch((error) => {
+              t.abreToast(error)
+            });
         }, 50);
       });
     }
