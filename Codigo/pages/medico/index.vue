@@ -23,55 +23,6 @@
           </v-col>
         </v-row>
 
-        <v-row>
-          <v-col :md="6" :sm="12" :xl="12" cols="12">
-            <v-menu
-              v-model="menuDataCandidatura"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-              min-width="auto"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                  v-model="pesquisa.dt_inicio"
-                  hide-details="auto"
-                  label="Data da candidatura inicio"
-                  append-icon="mdi-calendar"
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                </v-text-field>
-              </template>
-              <v-date-picker v-model="pesquisa.dt_inicio"></v-date-picker>
-            </v-menu>
-          </v-col>
-          <v-col :md="6" :sm="12" :xl="12" cols="12">
-            <v-menu
-              v-model="menuDataCandidaturaFim"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-              min-width="auto"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                  v-model="pesquisa.dt_fim"
-                  hide-details="auto"
-                  label="Data da candidatura fim"
-                  append-icon="mdi-calendar"
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                </v-text-field>
-              </template>
-              <v-date-picker v-model="pesquisa.dt_fim"></v-date-picker>
-            </v-menu>
-          </v-col>
-        </v-row>
-
         <v-row class="mb-2">
           <v-col :md="12" :sm="12" :xl="12" cols="12">
             <div class="text-center">
@@ -138,7 +89,6 @@ export default {
       pesquisa: {
         nome: "",
         status: "",
-        dt_inicio: "",
       },
 
       teste: "",
@@ -159,8 +109,6 @@ export default {
       ],
 
       equipeId: 0,
-      menuDataCandidatura: false,
-      menuDataCandidaturaFim: false,
       toast: false,
       toastMensagem: "",
       modalAtivo: false,
@@ -176,12 +124,10 @@ export default {
   },
   methods: {
     listaMedicos() {
-      //this.pesquisa.dt_fim = this.pesquisa.dt_inicio;
       if(!this.pesquisa?.status){
         this.pesquisa.status = '';
       }
       let urlParams = new URLSearchParams(this.pesquisa).toString();
-      //nome=Jose&dt_inicio=2021-10-20&dt_fim=2021-10-21
       this.$axios
         .$get(`/medico?pagina=${this.tabelaPaginaAtual}&` + urlParams)
         .then((response) => {

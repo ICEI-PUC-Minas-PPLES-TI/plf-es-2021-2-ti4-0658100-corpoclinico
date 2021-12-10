@@ -15,7 +15,7 @@ export default function({ $axios, store, req, redirect }) {
 
   $axios.onError(error => {
     const code = parseInt(error.response && error.response.status)
-    if (code === 403) {
+    if (code === 403 || code === 401) {
       store.dispatch('login/userLogout', {
         router: null
       })

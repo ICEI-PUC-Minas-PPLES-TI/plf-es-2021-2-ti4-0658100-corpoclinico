@@ -29,7 +29,7 @@ export const state = () => ({
       if(tipo == 'M')
         router.push('/medico/info')
     else if(['A','CC','DC','DT'])
-        router.push('/')
+        router.push('/medico')
       
     },
     async userLogout({ commit }, { router }) {
