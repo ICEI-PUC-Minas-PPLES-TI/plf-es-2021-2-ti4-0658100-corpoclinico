@@ -54,7 +54,7 @@ iframe {
 </style>
 
 <script>
-
+const Swal = require('sweetalert2')
 import { getIdFromUrl } from 'vue-youtube'
 
 export default {
@@ -102,7 +102,14 @@ export default {
           if (['M'].includes(usuario.tipo)) {
             this.$axios.put('medico/marcarAssistidos')
               .then(response => {
-                this.abreToast("Obrigado por assistir os videos de treinamento!");
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Todos os passos concluídos',
+                  text: 'Obrigado por assistir os videos de treinamento! Para prosseguir ',
+                  html:
+                    'Obrigado por assistir os videos de treinamento! Para prosseguir ' +
+                    '<a target="_blank" href="https://saofrancisco.renforce.com.br/login/">Clique Aqui</a>'
+                })
               }).catch(error => {
                 this.abreToast(error.response.data.message)
               });
