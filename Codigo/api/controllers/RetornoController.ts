@@ -1,16 +1,22 @@
-import { IAtributosRetorno , IAtributosRetornoCriacao } from "../models/Retorno";
+import Retorno, { IAtributosRetorno , IAtributosRetornoCriacao } from "../models/Retorno";
 import AppError from "../errors/AppError";
 
 import { GetAllSimpleRequestHandler, GetRequestHandler, UpddateRequestHandler } from "../types/RequestHandlers";
 import RetornoService from "../services/RetornoService";
 import { retornoUpdateScheme } from "../validations/RetornoValidations";
+import CandidaturaService from "../services/CandidaturaService";
+import MedicoService from "../services/MedicoService";
 
 class RetornoController {
 
   private Service!: RetornoService;
+  private CandidaturaService!: CandidaturaService;
+  private MedicoService!: MedicoService;
 
   constructor(){
     this.Service = new RetornoService();
+    this.CandidaturaService = new CandidaturaService();
+    this.MedicoService = new MedicoService();
   }
 
   public update: UpddateRequestHandler<IAtributosRetornoCriacao> = async (request, response) => {
@@ -50,6 +56,32 @@ class RetornoController {
     else
       throw new AppError("Necessario logar para acessar os retornos", 405);
     
+  }
+
+  public requestReview: UpddateRequestHandler = async (request, response) => {
+    if (request.headers.authorization){
+      const usuarioLogadoId = Number(request.headers.authorization);
+      const medicoId = (await this.MedicoService.getBy("usuario_id", usuarioLogadoId))?.get().id;
+      if (medicoId){
+        const candidaturas = await this.CandidaturaService.getBy("medico_id", medicoId);
+        const retornos = candidaturas.flatMap((c: any)=>{
+          return c.get().retornos?.map((r: Retorno)=>r.get())
+        });
+        await Promise.all([
+          retornos.map(async (retorno)=>{
+            await this.Service.update({
+              ...retorno,
+              status: "P"
+            })
+          })
+        ]);
+        response.status(200).json();
+      }
+      else
+        throw new AppError("Necessario ser um usuário médico para executar essa ação", 403);
+    }
+    else
+      throw new AppError("Necessario logar para acessar os retornos", 405);
   }
 }
 

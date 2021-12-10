@@ -69,6 +69,7 @@ router.delete('/arquivo/:id', arquivoController.delete)
 //Retorno
 router.get('/retorno', [autenticacaoJwt.verificarToken], retornoController.getAll)
 router.put('/retorno/:id', retornoController.update)
+router.post('/retorno/review', [autenticacaoJwt.verificarToken, autenticacaoJwt.isMedico], retornoController.requestReview)
 
 //Video
 router.get('/video/:id', videoController.get);
