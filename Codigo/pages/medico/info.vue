@@ -651,7 +651,7 @@
       <br>
       <v-row v-if="retorno && retorno.status == 'R'">
         <v-col>
-          <v-btn color="info" block>
+          <v-btn color="info" block @click="review">
             Reenviar candidatura
           </v-btn>
         </v-col>
@@ -935,6 +935,23 @@ export default {
         senha: null,
         confirmarSenha: null,
       }
+    },
+    review(){
+      Swal.fire({
+        title: 'Tem certeza que deseja reenviar os dados da candidatura ?',
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: 'Sim',
+        denyButtonText: 'Não',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.$axios.post('/retorno/review')
+            .then(() => {
+              Swal.fire('Candidatura reenviada', '', 'success')
+              this.reloadDados()
+            })
+        }
+      })
     }
   }
 }
