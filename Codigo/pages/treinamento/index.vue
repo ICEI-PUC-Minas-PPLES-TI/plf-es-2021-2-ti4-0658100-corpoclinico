@@ -109,6 +109,9 @@ export default {
                   html:
                     'Obrigado por assistir os videos de treinamento! Para prosseguir ' +
                     '<a target="_blank" href="https://saofrancisco.renforce.com.br/login/">Clique Aqui</a>'
+                }).then((result) => {
+                  if (result.isConfirmed)
+                    this.$router.push('/medico/info')
                 })
               }).catch(error => {
                 this.abreToast(error.response.data.message)
