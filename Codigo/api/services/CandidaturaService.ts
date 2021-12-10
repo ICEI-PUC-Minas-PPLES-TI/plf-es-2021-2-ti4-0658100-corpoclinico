@@ -3,6 +3,7 @@ import { ISortPaginateQuery, SortPaginate } from "../helpers/SortPaginate";
 import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
 import Equipe from "../models/Equipe";
 import Medico from "../models/Medico";
+import Retorno from "../models/Retorno";
 import EquipeService from "./EquipeService";
 import RetornoService from "./RetornoService";
 import UsuarioService from "./UsuarioService";
@@ -73,11 +74,15 @@ export default class CandidaturaService{
             throw new AppError("Erro interno no servidor!", 500, erro);
         })
     }
-    async getBy(key: keyof Candidatura, atributo: string) {
+    async getBy(key: keyof Candidatura, atributo: any) {
         return Candidatura.findAll({
             where: {
                 [key]: atributo
-            }
+            },
+            include: [{
+                model: Retorno,
+                as: "retornos",
+            }]
         })
         .catch (erro => {
             throw new AppError("Erro interno no servidor!", 500, erro);

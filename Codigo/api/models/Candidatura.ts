@@ -1,5 +1,6 @@
 import { Model, DataTypes, Sequelize, Optional } from "sequelize";
 import Medico from "./Medico";
+import Retorno from "./Retorno";
 
 export interface IAtributosCandidatura {
   id: number,
@@ -23,6 +24,9 @@ class Candidatura extends Model<IAtributosCandidatura, IAtributosCandidaturaCria
   cnpj!: string;
   faturamento!: "PJ" | "C";
   data_criado!: Date;
+
+  // para associação
+  retornos: Retorno[] | undefined;
   
   static initialize(sequelize: Sequelize) {
     Candidatura.init(
