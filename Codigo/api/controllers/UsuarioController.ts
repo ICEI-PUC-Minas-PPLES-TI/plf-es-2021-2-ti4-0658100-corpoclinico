@@ -40,7 +40,7 @@ class UsuarioController {
       }
       const senhaValida = bcrypt.compareSync(senha, usuario.get().senha);
       if (!senhaValida) {
-        throw new AppError("Senha incorreta!", 401);
+        throw new AppError("Senha incorreta!", 405);
       }
 
       const token = jwt.sign({ id: usuario.get().id }, process.env.SECRET_KEY ?? "fill-the-env-file.this-is-only-to-prevent-type-error", {
