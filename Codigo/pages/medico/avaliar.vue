@@ -619,6 +619,7 @@ export default {
     imprimir(){
       this.podeImprimir = true;
       setTimeout(()=>{
+        let prtContent = document.getElementById("areaPrint")
         window.print();
         this.podeImprimir = false;
       },100);
@@ -637,6 +638,15 @@ body{
 
 hr.solid {
   border-top: 1px solid rgb(148, 148, 148);
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .v-card * {
+    visibility: visible;
+  }
 }
 </style>
 

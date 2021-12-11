@@ -35,6 +35,7 @@
                   label="Observações"
                   v-model="retorno.comentario"
                   :disabled = "retorno.status == 'Aprovado' "
+                  :rules="'retorno.status'== 'Reprovado' ? [v => !!v || 'Comentário é obrigatório'] : []"
                 />
               </v-card-text>
             </v-form>
