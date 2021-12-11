@@ -31,6 +31,9 @@
             <template v-slot:item.data_excluido="{ item }">
               {{ formataStatus(item.data_excluido) }}
             </template>
+            <template v-slot:item.tipo="{ item }">
+              {{ item.tipo == 'A' ? "Administrador" : "Médico"}}
+            </template>
             <template v-slot:item.actions="{ item }">
               <v-icon color="success" class="mr-2" @click="abreModal(item.id)">
                 mdi-square-edit-outline
