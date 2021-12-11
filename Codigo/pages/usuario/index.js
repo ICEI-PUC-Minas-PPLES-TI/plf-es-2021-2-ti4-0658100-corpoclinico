@@ -11,6 +11,7 @@ export default {
         { text: 'Nome', value: 'nome' },
         { text: 'Email', value: 'email' },
         { text: 'Status', value: 'data_excluido' },
+        { text: 'Tipo',   value: 'tipo'},
         { text: 'Ação', value: 'actions', sortable: false },
       ],
       usuarios: [
