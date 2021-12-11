@@ -567,13 +567,6 @@ export default {
         })
       }
     },
-    // baixarArquivos() {
-    //   let urls = [];
-    //   for (let i = 0; i < this.medico.arquivos.length; i++) {
-    //     urls.push(window.location.protocol + "//" + window.location.host + "/api/arquivo/" + this.medico.arquivos[i].id)
-    //   }
-    //   this.downloadAll(urls)
-    // },
     downloadAll(urls) {
       var link = document.createElement('a');
 

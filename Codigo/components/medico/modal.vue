@@ -34,7 +34,7 @@
                   :clearable="true"
                   label="Observações"
                   v-model="retorno.comentario"
-                  :rules="[v => !!v || 'Observações obrigatórias']"
+                  :disabled = "retorno.status == 'Aprovado' "
                 />
               </v-card-text>
             </v-form>
@@ -100,6 +100,9 @@ export default {
         let letra = this.retorno.status.substring(0, 1);
         retornos[0].status = letra;
         retornos[0].comentario = this.retorno.comentario;
+        if(letra=="A"){
+          retornos[0].comentario = "";
+        }
         let retorno = JSON.parse(JSON.stringify(retornos[0]));
         let idRetorno = retorno.id;
         this.$axios
