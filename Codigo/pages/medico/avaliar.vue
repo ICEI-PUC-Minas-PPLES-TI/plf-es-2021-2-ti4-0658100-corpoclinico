@@ -450,7 +450,7 @@
           <v-col class="text-center" :md="5" :sm="12" :xl="12" cols="12">
             <v-btn class="mr-2" color="white" @click="imprimir()">Imprimir</v-btn>
             <v-btn class="mr-2" color="white" @click="retorno()">Retornar</v-btn>
-            <modalAvalia />
+            <modalAvalia v-if="podeAvaliar == true"/>
           </v-col>
         </v-row>
       </v-card-text>
@@ -463,7 +463,6 @@ import axios2 from "axios";
 import { mask } from "vue-the-mask";
 import modalAvalia from "@/components/medico/modal.vue";
 export default {
-  //todo: Buscar formações e especialidaes e carregar na tela
   components: { modalAvalia },
   directives: { mask },
   data() {
@@ -472,6 +471,7 @@ export default {
       tipoFaturamento: ["Pessoa Jurídica", "Cooperativa"],
       tipoCategoria: ["Efetivo", "Temporário", "Contratado"],
       podeImprimir:false,
+      podeAvaliar:false,
       medico: [],
       unidades: [],
       equipes: [],
@@ -528,10 +528,10 @@ export default {
   mounted() {
     this.listaEquipes();
     this.listaUnidades();
-    console.log(this.$store.getters["login/me"].id);
     const urlParams = new URLSearchParams(window.location.search);
     const myParam = urlParams.get("id");
     this.listaMedico(myParam);
+    
   },
   methods: {
     carregaArquivo(ev, nome) {
@@ -582,6 +582,7 @@ export default {
             faturamento: this.medico.candidatura.faturamento,
             cnpj: this.medico.candidatura.cnpj
           };
+          this.verificaAvaliador(this.$store.getters["login/me"].id)
         })
         .catch(error => {
           console.log(error);
@@ -653,6 +654,14 @@ export default {
         this.podeImprimir = false;
       },100);
     },
+    verificaAvaliador(id){
+      for(let i=0;i<this.medico.candidatura.retornos.length;i++){
+        if(this.medico.candidatura.retornos[i].avaliador.id==id){
+          this.podeAvaliar=true;
+        }
+      }
+      
+    }
   },
 };
 </script>
