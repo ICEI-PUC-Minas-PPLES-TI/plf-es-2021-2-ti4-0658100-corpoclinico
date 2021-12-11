@@ -2,7 +2,15 @@
   <div class="info-container">
     <v-row>
       <v-col class="info-title">
-        <h4>Minha Ficha</h4>
+        <h4>
+          Minha Ficha
+          <v-btn class="float-right" text @click="logout">
+            <v-icon>
+              mdi-logout
+            </v-icon>
+            Sair
+          </v-btn>
+        </h4>
       </v-col>
     </v-row>
     <div v-if="info">
@@ -951,6 +959,11 @@ export default {
               this.reloadDados()
             })
         }
+      })
+    },
+    logout(){
+      this.$store.dispatch('login/userLogout', {
+        router: this.$router
       })
     }
   }

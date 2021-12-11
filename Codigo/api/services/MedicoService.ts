@@ -81,6 +81,15 @@ export default class MedicoService {
     const dataFim: any = filtros.dt_fim ? filtros.dt_fim : todayDate;
     const dataInicio: any = filtros.dt_inicio ? filtros.dt_inicio : pastDate;
 
+    const whereRetoro = (filtros.idAvalidor && filtros.status) ? {
+      avaliador_id: filtros.idAvalidor,
+      status: filtros.status
+    } : filtros.idAvalidor ? {
+      avaliador_id: filtros.idAvalidor
+    } : filtros.status ? {
+      status: filtros.status
+    } : undefined
+
     return Medico.findAndCountAll({
       order: [
         [{ model: Candidatura, as: "candidatura" }, { model: Retorno, as: 'retornos',}, 'id', "DESC"]
@@ -108,17 +117,15 @@ export default class MedicoService {
           ],
           include: [{
             model: Retorno, as: 'retornos',
-            required: filtros.status ? true : false,
-            where: filtros.status ? {
-              status : filtros.status
-            } : undefined,            
+            required: (filtros.status || filtros.idAvalidor) ? true : false,
+            where: whereRetoro            
           }],
           where: {
             data_criado: {
               [Op.between]: [dataInicio, dataFim]
             }
           },
-          required: filtros.status ? true : false,
+          required: (filtros.status || filtros.idAvalidor) ? true : false,
 
         }
       ],
@@ -139,6 +146,7 @@ export default class MedicoService {
         };
       })
       .catch (erro => {
+        console.log(erro)
         throw new AppError("Erro interno no servidor!", 500, erro);
       })
   }
