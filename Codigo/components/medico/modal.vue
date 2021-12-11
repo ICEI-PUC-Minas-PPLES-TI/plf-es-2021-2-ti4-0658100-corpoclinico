@@ -126,10 +126,11 @@ export default {
         .$get("/medico/" + id)
         .then(response => {
           this.medico = response;
+          console.log(response)
           let retonroSelecionado = this.medico.candidatura.retornos[this.medico.candidatura.retornos.length-1].status
           if(retonroSelecionado=="A"){
             this.selecionado=this.items[0]
-          }else if(retonroSelecionado=="P"){
+          }else if(retonroSelecionado=="R"){
             this.selecionado=this.items[1]
           }
         })
