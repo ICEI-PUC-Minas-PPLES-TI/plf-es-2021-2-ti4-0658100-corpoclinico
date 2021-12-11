@@ -23,12 +23,17 @@ class RetornoController {
     const id = Number(request.params.id);
     const scheme = retornoUpdateScheme;
 
+    const avaliador_id = Number(request.headers.authorization);
+
     // Validando com o esquema criado:
     await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
     const retorno = await this.Service.getById(id);
     if (!retorno)
         throw new AppError("Retorno não encontrado", 404);
+
+    if (retorno.get().avaliador_id !== avaliador_id)
+      throw new AppError("Você não é avaliador desse retorno!", 403);
 
     const { status, comentario } = request.body;
 
