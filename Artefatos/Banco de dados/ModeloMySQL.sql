@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `corpoclinico`.`medico` (
   `sociedade_cientifica` VARCHAR(100) NULL,
   `escolaridade_max` ENUM('BACHA', 'ESPE', 'MESTRE', 'DOUTOR') NOT NULL COMMENT 'BACHA = bacharel\nESPE = especialista',
   `ativo` TINYINT(1) UNSIGNED NOT NULL COMMENT '0 = desativado\nOutro valor = ativo',
-  `assistiuVideos` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+  `assistiu_videos` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `cartao_sus_UNIQUE` (`cartao_sus` ASC) VISIBLE,
   UNIQUE INDEX `crm_UNIQUE` (`crm` ASC) VISIBLE,
