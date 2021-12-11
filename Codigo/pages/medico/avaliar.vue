@@ -257,7 +257,11 @@
         <!-- Formações -->
         <v-row v-for="item in this.medico.formacoes" v-bind:key="item.id">
           <v-col cols="12" :xs="12" :md="6">
-            <v-text-field class="corpo" label="Faculdade" v-model="item.faculdade_nome" />
+            <v-text-field
+              class="corpo"
+              label="Faculdade"
+              v-model="item.faculdade_nome"
+            />
           </v-col>
           <v-col>
             <v-text-field
@@ -273,7 +277,11 @@
         <h3 class="my-4">Dados Profissionais</h3>
         <v-row v-for="item in this.medico.especialidades" v-bind:key="item.id">
           <v-col cols="12" :xs="12" :md="6">
-            <v-text-field class="corpo" label="RQE de Especialidade" v-model="item.rqe" />
+            <v-text-field
+              class="corpo"
+              label="RQE de Especialidade"
+              v-model="item.rqe"
+            />
           </v-col>
           <!--<v-col cols="12" :xs="12" :md="4">
             <v-text-field
@@ -320,13 +328,28 @@
             ></v-text-field>
           </v-col>
           <v-col cols="12" :xs="12" :md="3" v-if="formData.categoria == 'C'">
-            <v-text-field class="corpo" label="Categoria" v-model="tipoCategoria[2]" readonly />
+            <v-text-field
+              class="corpo"
+              label="Categoria"
+              v-model="tipoCategoria[2]"
+              readonly
+            />
           </v-col>
           <v-col cols="12" :xs="12" :md="3" v-if="formData.categoria == 'E'">
-            <v-text-field class="corpo" label="Categoria" v-model="tipoCategoria[0]" readonly />
+            <v-text-field
+              class="corpo"
+              label="Categoria"
+              v-model="tipoCategoria[0]"
+              readonly
+            />
           </v-col>
           <v-col cols="12" :xs="12" :md="3" v-if="formData.categoria == 'T'">
-            <v-text-field class="corpo" label="Categoria" v-model="tipoCategoria[1]" readonly />
+            <v-text-field
+              class="corpo"
+              label="Categoria"
+              v-model="tipoCategoria[1]"
+              readonly
+            />
           </v-col>
         </v-row>
         <!-- Faturamento, CNPJ, Unidade, Equipe -->
@@ -396,7 +419,9 @@
         <v-row justify="end">
           <v-col :md="9" :sm="0" :xl="9" cols="12"></v-col>
           <v-col :md="3" :sm="0" :xl="3" cols="12">
-            <v-btn class="mr-2" color="white" @click="retorno()">Retornar</v-btn>
+            <v-btn class="mr-2" color="white" @click="retorno()"
+              >Retornar</v-btn
+            >
             <modalAvalia />
           </v-col>
         </v-row>
@@ -453,7 +478,7 @@ export default {
         equipe: null,
         unidade: null,
         faturamento: null,
-        cnpj: null,
+        cnpj: null
       },
       arquivos: {
         doc_rg: null,
@@ -463,17 +488,18 @@ export default {
         doc_crm: null,
         doc_cert_quit_crmmg: null,
         doc_term_vigi: null,
-        doc_term_compr: null,
+        doc_term_compr: null
       },
       menuNascimento: false,
       menuEmissao: false,
       menuDataCrm: false,
-      senhaVisivel: false,
+      senhaVisivel: false
     };
   },
   mounted() {
     this.listaEquipes();
     this.listaUnidades();
+    console.log(this.$store.getters["login/me"].id);
     const urlParams = new URLSearchParams(window.location.search);
     const myParam = urlParams.get("id");
     this.listaMedico(myParam);
@@ -485,7 +511,7 @@ export default {
     listaMedico(id) {
       this.$axios
         .$get("/medico/" + id)
-        .then((response) => {
+        .then(response => {
           this.medico = response;
           this.formData = {
             id: this.medico.id,
@@ -518,20 +544,20 @@ export default {
             formacao: [
               {
                 faculdade_nome: null,
-                faculdade_ano_formatura: null,
-              },
+                faculdade_ano_formatura: null
+              }
             ],
             especialidade: [],
             equipe: this.equipes[this.medico.candidatura.equipe_id - 1].nome,
             unidade: this.unidades[this.medico.candidatura.unidade_id - 1],
             faturamento: this.medico.candidatura.faturamento,
-            cnpj: this.medico.candidatura.cnpj,
+            cnpj: this.medico.candidatura.cnpj
           };
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
           this.formData = {
-            id: "Médico não encontrado",
+            id: "Médico não encontrado"
           };
           setTimeout((window.location.href = "/medico"), 3000);
         });
@@ -539,51 +565,49 @@ export default {
     listaUnidades() {
       this.$axios
         .$get("/unidade")
-        .then((response) => {
+        .then(response => {
           for (let i = 0; i < response.length; i++) {
             this.unidades.push(response[i].nome);
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
         });
     },
     listaEquipes() {
       this.$axios
         .$get("/equipe")
-        .then((response) => {
+        .then(response => {
           this.equipes = response.dados;
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
         });
     },
     baixarArquivos() {
       for (let i = 0; i < this.medico.arquivos.length; i++) {
-        this.$axios.get('/arquivo/' + this.medico.arquivos[i].id).then((response) => {
-          const url = window.URL.createObjectURL(new Blob([response.data])); const link = document.createElement("a"); link.href = url; link.setAttribute("download", this.medico.arquivos[i].nome_arquivo);
-          document.body.appendChild(link);
-          link.click();
-        })
+        this.$axios
+          .get("/arquivo/" + this.medico.arquivos[i].id)
+          .then(response => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", this.medico.arquivos[i].nome_arquivo);
+            document.body.appendChild(link);
+            link.click();
+          });
       }
     },
-    // baixarArquivos() {
-    //   let urls = [];
-    //   for (let i = 0; i < this.medico.arquivos.length; i++) {
-    //     urls.push(window.location.protocol + "//" + window.location.host + "/api/arquivo/" + this.medico.arquivos[i].id)
-    //   }
-    //   this.downloadAll(urls)
-    // },
     downloadAll(urls) {
-      var link = document.createElement('a');
+      var link = document.createElement("a");
 
-      link.setAttribute('download', null);
-      link.style.display = 'none';
+      link.setAttribute("download", null);
+      link.style.display = "none";
 
       document.body.appendChild(link);
 
       for (var i = 0; i < urls.length; i++) {
-        link.setAttribute('href', urls[i]);
+        link.setAttribute("href", urls[i]);
         link.click();
       }
 
@@ -591,23 +615,19 @@ export default {
     },
     retorno() {
       window.location.href = "/medico";
-    },
-  },
+    }
+  }
 };
 </script>
 
 <style lang="scss">
-body{
-  background-color: white;
-}
-.v-text-field.corpo{
-  pointer-events: none; // unclickable element
-}
-</style>
-
 body {
   background-color: white;
 }
 .v-text-field.corpo {
   pointer-events: none; // unclickable element
 }
+</style>
+
+body { background-color: white; } .v-text-field.corpo { pointer-events: none; //
+unclickable element }

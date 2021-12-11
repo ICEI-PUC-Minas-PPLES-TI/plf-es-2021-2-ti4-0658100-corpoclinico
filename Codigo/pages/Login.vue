@@ -104,6 +104,7 @@ export default {
               loginData: res.data.acessoToken,
               nome: res.data.nome,
               tipo: res.data.tipo,
+              id: res.data.id,
               router: this.$router
             })
           })
