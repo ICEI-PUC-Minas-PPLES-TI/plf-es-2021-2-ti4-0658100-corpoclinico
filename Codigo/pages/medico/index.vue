@@ -32,6 +32,14 @@
             </div>
           </v-col>
         </v-row>
+        <v-row>
+          <v-col>
+            <v-tabs v-model="tabValue" @change="listaMedicos">
+              <v-tab>Todos os Médicos</v-tab>
+              <v-tab>Avaliações Pendentes</v-tab>
+            </v-tabs>
+          </v-col>
+        </v-row>
         <template>
           <v-data-table
             :headers="headers"
@@ -47,7 +55,8 @@
           >
             <template v-slot:item.actions="{ item }">
               <v-icon color="success" class="mr-2" @click="fazNada(item.id)">
-                mdi-star-outline
+                {{ tabValue == '0'? 'mdi-eye-outline': 'mdi-star-outline'}}
+                
               </v-icon>
             </template>
           </v-data-table>
@@ -117,6 +126,7 @@ export default {
       tabelaPaginas: 1,
       totalItems: 1,
       tabelaCarregando: false,
+      tabValue: 0
     };
   },
   mounted() {
@@ -124,12 +134,18 @@ export default {
   },
   methods: {
     listaMedicos() {
+      this.tabelaCarregando = true
       if(!this.pesquisa?.status){
         this.pesquisa.status = '';
       }
+
+      let revisa = ''
+      if(this.tabValue == 1)
+        revisa = '&paraRevisar=true'
+
       let urlParams = new URLSearchParams(this.pesquisa).toString();
       this.$axios
-        .$get(`/medico?pagina=${this.tabelaPaginaAtual}&` + urlParams)
+        .$get(`/medico?pagina=${this.tabelaPaginaAtual}&` + urlParams+revisa)
         .then((response) => {
           console.log(response);
           if (response.dados) {
@@ -152,6 +168,9 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+        })
+        .finally(() => {
+          this.tabelaCarregando = false
         });
     },
 
@@ -177,7 +196,7 @@ export default {
       } else {
         return "Pendente";
       }
-    },
+    }
   },
 };
 </script>
