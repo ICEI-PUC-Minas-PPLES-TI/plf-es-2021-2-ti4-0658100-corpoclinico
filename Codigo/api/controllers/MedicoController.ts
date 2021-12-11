@@ -377,13 +377,13 @@ class MedicoController {
   // URI de exemplo: http://localhost:3000/api/medico?pagina=1&limite=5&atributo=nome&ordem=DESC
   // todos as querys são opicionais
   public getAll: GetAllRequestHandler<IAtributosMedico, IGetHandlerGetFilter> = async (request, response) => {
-    const { nome, dt_inicio, dt_fim, status } = request.query;
-
+    const { nome, dt_inicio, dt_fim, status, paraRevisar } = request.query;
+    const idAvalidor = paraRevisar ? Number(request.headers.authorization) : undefined ;
     await this.medicoService.getAll({
       ...request.query
     },
       Object.keys(Medico.rawAttributes),
-      { nome, dt_inicio, dt_fim, status },
+      { nome, dt_inicio, dt_fim, status, idAvalidor },
     )
     .then(({ medicos, count, paginas, offset }) => {
       const total: number = (count) as any;
