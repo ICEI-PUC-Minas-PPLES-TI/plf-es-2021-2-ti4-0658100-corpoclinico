@@ -36,7 +36,7 @@
           <v-col>
             <v-tabs v-model="tabValue" @change="listaMedicos">
               <v-tab>Todos os Médicos</v-tab>
-              <v-tab>Avaliações Pendentes</v-tab>
+              <v-tab>Minhas Avaliações</v-tab>
             </v-tabs>
           </v-col>
         </v-row>
@@ -147,7 +147,6 @@ export default {
       this.$axios
         .$get(`/medico?pagina=${this.tabelaPaginaAtual}&` + urlParams+revisa)
         .then((response) => {
-          console.log(response);
           if (response.dados) {
             response.dados.forEach((medico) => {
               medico.candidatura.data_criado = this.formataData(
