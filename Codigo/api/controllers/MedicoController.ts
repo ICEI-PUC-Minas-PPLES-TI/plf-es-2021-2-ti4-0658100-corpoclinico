@@ -109,7 +109,7 @@ class MedicoController {
           throw new AppError("Erro interno no servidor", 500, error);
         }
         try {
-          arquivosCriados = await this.arquivoService.create(request.files, medico.id, formacoesArray, especialidadesArray, candidaturaCriada.id);
+          arquivosCriados = await this.arquivoService.create(request.files, medico.id, formacoesArray, especialidadesArray);
         } catch (error) {
           await this.medicoService.delete(medico.id, true);
           throw new AppError("Erro interno no servidor", 500, error);
@@ -245,7 +245,7 @@ class MedicoController {
           throw new AppError("Candidatura para médico não atualizada!" + error, 500);
         }
         try {
-          arquivosAtualizados = await this.arquivoService.update(request.files, medico?.get().id, formacoesArray, especialidadesArray, candidaturaAtualizada.dataValues.id);
+          arquivosAtualizados = await this.arquivoService.update(request.files, medico?.get().id, formacoesArray, especialidadesArray);
         } catch (error) {
           throw new AppError("Arquivos para médico não atualizados!" + error, 500);
         }

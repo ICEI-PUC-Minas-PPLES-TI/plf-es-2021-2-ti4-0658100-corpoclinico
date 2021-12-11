@@ -12,7 +12,7 @@ import MedicoEspecialidadeService from "./MedicoEspecialidadeService";
 
 export default class ArquivoService {
 
-  async create(arquivos: any, medico_id: number, formacoes: IAtributosMedicoFormacaoCriacao[], especialidades: any, candidatura_id: number) {
+  async create(arquivos: any, medico_id: number, formacoes: IAtributosMedicoFormacaoCriacao[], especialidades: any) {
     const arqString = JSON.stringify(arquivos).replace("[Object: null prototype] ", "");
     const arquivosObj = JSON.parse(arqString);
     const arquivosCriados: any = [];
@@ -133,19 +133,16 @@ export default class ArquivoService {
     if (arquivosObj.docs_cert_espec) {
       let rqeIndex = 0;
       for (const certEspecFields of arquivosObj.docs_cert_espec) {
+        console.log(especialidades[rqeIndex].especialidade_id)
         try {
+          console.log(certEspecFields.especialidade_id)
           const nome_arquivo = certEspecFields.filename;
           const tipo = 'RQE';
           const certEspec = await this.gerar({ nome_arquivo, tipo, medico_id });
           arquivosCriados.push(certEspec);
 
-          const candidatura = await Candidatura.findByPk(candidatura_id)
-            .catch(erro => {
-              throw new AppError("Erro interno no servidor!", 500, erro);
-            })
-          const equipe = await Equipe.findByPk(candidatura?.get().equipe_id)
           especialidades[rqeIndex].medico_id = medico_id;
-          especialidades[rqeIndex].especialidade_id = equipe?.get().especialidade_id;
+          especialidades[rqeIndex].especialidade_id = especialidades[rqeIndex].especialidade_id ? especialidades[rqeIndex].especialidade_id : null;
           especialidades[rqeIndex].arquivo_id = certEspec.id;
           const medicoEspecialidadeService = new MedicoEspecialidadeService();
           await medicoEspecialidadeService.create(especialidades[rqeIndex]);
@@ -159,7 +156,7 @@ export default class ArquivoService {
     return arquivosCriados;
   }
 
-  async update(arquivos: any, medico_id: number, formacoes: IAtributosMedicoFormacao[], especialidades: any, candidatura_id: number) {
+  async update(arquivos: any, medico_id: number, formacoes: IAtributosMedicoFormacao[], especialidades: any) {
     const arqString = JSON.stringify(arquivos).replace("[Object: null prototype] ", "");
     const arquivosObj = JSON.parse(arqString);
     let arquivosAtualizados: any = [];
@@ -325,7 +322,7 @@ export default class ArquivoService {
             throw new AppError("Arquivo não criado!" + erro, 500);
           }
         }
-      
+
       // Apaga todas as formações não enviadas
       await MedicoFormacao.destroy({
         where: {
@@ -345,13 +342,9 @@ export default class ArquivoService {
       let especialidadesId: number[] = [];
       let index = 0;
       for (const especialidade of especialidades) {
+        console.log(especialidade.especialidade_id)
         try {
-          const candidatura = await Candidatura.findByPk(candidatura_id)
-            .catch(erro => {
-              throw new AppError("Erro interno no servidor!", 500, erro);
-            })
-          const equipe = await Equipe.findByPk(candidatura?.get().equipe_id)
-          const especialidadeId = equipe?.get().especialidade_id; // Captura o id da especialidade candidatada
+          const especialidadeId = especialidade.especialidade_id ? especialidade.especialidade_id : null;
 
           const medicoEspecialidadeService = new MedicoEspecialidadeService();
           let espec: any;
