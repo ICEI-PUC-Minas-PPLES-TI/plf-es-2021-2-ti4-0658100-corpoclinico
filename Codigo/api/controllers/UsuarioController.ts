@@ -78,7 +78,7 @@ class UsuarioController {
     const token = jwt.sign({ id: usuario.get().id }, process.env.SECRET_KEY ?? "fill-the-env-file.this-is-only-to-prevent-type-error", {
       expiresIn: 604800 * 4 // 4 semana expira
     });
-    return res.status(200).send({ acessoToken: token, nome: usuario.get().nome, tipo: usuario.get().tipo });
+    return res.status(200).send({ acessoToken: token, nome: usuario.get().nome, tipo: usuario.get().tipo, id:usuario.get().id });
   }
 
   public create: CreateRequestHandler = async (request, response) => {
