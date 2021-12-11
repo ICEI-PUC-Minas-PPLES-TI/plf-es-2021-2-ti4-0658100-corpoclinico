@@ -9,6 +9,7 @@ import { CreateRequestHandler, DeleteRequestHandler, GetAllRequestHandler, GetRe
 import AppError from "../errors/AppError";
 import UsuarioService from "../services/UsuarioService";
 import { usuarioCreateValidation, usuarioUpdateValidation } from "../validations/UsuarioValidations";
+import Medico from "../models/Medico";
 
 interface ILoginUsuario {
   email: string,
@@ -33,21 +34,50 @@ class UsuarioController {
   public signin: RequestHandler<never, SigninReponse, ILoginUsuario> = async (req, res) => {
     const { email, senha } = req.body;
 
-    await this.Service.getBy('email', email, ['id', 'senha','tipo', 'nome'])
-    .then(usuario => {
-      if (!usuario) {
-        throw new AppError("Usuário não encontrado", 404);
-      }
-      const senhaValida = bcrypt.compareSync(senha, usuario.get().senha);
-      if (!senhaValida) {
-        throw new AppError("Senha incorreta!", 405);
-      }
-
-      const token = jwt.sign({ id: usuario.get().id }, process.env.SECRET_KEY ?? "fill-the-env-file.this-is-only-to-prevent-type-error", {
-        expiresIn: 604800 * 4 // 4 semana expira
-      });
-      res.status(200).send({ acessoToken: token, nome: usuario.get().nome, tipo: usuario.get().tipo });
+    const medicoCpf = await Medico.findOne({
+      where: {
+        cpf: email
+      },
     })
+
+    const medicoCRM = await Medico.findOne({
+      where: {
+        crm: email
+      },
+    })
+
+    let usuario : any;
+    usuario = await this.Service.getBy('email', email, ['id', 'senha','tipo', 'nome'])
+    if(!usuario && medicoCpf) {
+      usuario = await Usuario.findOne({
+        where: {
+          id: medicoCpf.get().usuario_id
+        },
+        attributes: ['id', 'senha','tipo', 'nome']
+      })
+    }
+    if(!usuario && medicoCRM) {
+      usuario = await Usuario.findOne({
+        where: {
+          id: medicoCRM.get().usuario_id
+        },
+        attributes: ['id', 'senha','tipo', 'nome']
+      })
+    }
+
+    if (!usuario) {
+      throw new AppError("Usuário não encontrado", 404);
+    }
+
+    const senhaValida = bcrypt.compareSync(senha, usuario.get().senha);
+    if (!senhaValida) {
+      throw new AppError("Senha incorreta!", 405);
+    }
+
+    const token = jwt.sign({ id: usuario.get().id }, process.env.SECRET_KEY ?? "fill-the-env-file.this-is-only-to-prevent-type-error", {
+      expiresIn: 604800 * 4 // 4 semana expira
+    });
+    return res.status(200).send({ acessoToken: token, nome: usuario.get().nome, tipo: usuario.get().tipo });
   }
 
   public create: CreateRequestHandler = async (request, response) => {
@@ -141,7 +171,7 @@ class UsuarioController {
         quantidade: dados.dados.length
       });
     });
-    
+
   }
 }
 
