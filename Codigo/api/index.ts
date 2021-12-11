@@ -27,6 +27,7 @@ db.connect();
 
 app.use([(err, request, response, next) => {
   if (err instanceof AppError) {
+    console.log(err)
     return response.status(err.statusCode).json({
       message: err.message,
       error: err.error ?? err
@@ -41,6 +42,7 @@ app.use([(err, request, response, next) => {
 
   // Caso seja outro erro
   if (process.env.APP_DEBUG) {
+    console.log(err)
     return response.status(500).json({
       error: err.error,
       message: err.message,

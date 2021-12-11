@@ -61,10 +61,10 @@ class VideoController {
 
   // URI de exemplo: {{server}}/api/video
   public getAll: GetAllSimpleRequestHandler<IAtributosVideo> = async (request, response) => {
-    
-    const videos = (request.query.ativo && request.query.ativo === "true") ?
+
+    const videos = (request.query.ativo && request.query.ativo == "1") ?
       await this.Service.getAllBy('ativo', true) :
-      await this.Service.getAll();
+    await this.Service.getAll();
     response.status(200).json(videos);
   }
 }
