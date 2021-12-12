@@ -218,6 +218,7 @@ class MedicoController {
 
     let candidaturaExiste = true;
     const candidatura = await this.candidaturaService.getBy("medico_id", medicoAlterado?.get().id.toString());
+
     if (!candidatura)
       candidaturaExiste = false;
 
