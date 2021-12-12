@@ -47,7 +47,7 @@ export default class CandidaturaService{
         candidaturaAtualizada = await Candidatura.findByPk(candidatura.id);
 
       if(!candidaturaAtualizada)
-        throw new AppError("Candidatura do médico não encontrada!", 500, ["'candidatura.id' da candidatura do médico não encontrada"]);
+        this.create({...candidatura} as IAtributosCandidaturaCriacao);
 
       try {
         await candidaturaAtualizada.update(candidatura)
