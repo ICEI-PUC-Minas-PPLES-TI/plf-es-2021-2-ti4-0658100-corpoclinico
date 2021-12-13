@@ -148,19 +148,22 @@ export const medicoCreateValidationScheme = yup.object().shape({
     .required("'escolaridade_max' obrigatório!"),
 
   // campos da candidatura
-  equipe_id: yup
-    .number()
-    .nullable(),
-  faturamento: yup
-    .mixed()
-    .oneOf(['PJ', 'C'])
-    .required('faturamento é obrigatório'),
-  unidade_id: yup
-    .number()
-    .nullable(),
-  cnpj: yup
-    .string()
-    .max(14),
+  candidaturas: yup
+    .array(yup.object().shape({
+      equipe_id: yup
+        .number()
+        .nullable(),
+      faturamento: yup
+        .mixed()
+        .oneOf(['PJ', 'C'])
+        .required('candidatura.faturamento é obrigatório'),
+      unidade_id: yup
+        .number()
+        .nullable(),
+      cnpj: yup
+        .string()
+        .max(14)
+    })).min(1).required('"candidaturas" é obrigatório'),
 
   especialidades: yup
   .string()
@@ -275,5 +278,29 @@ export const medicoUpdateValidationScheme = yup.object().shape({
     .oneOf(
       escolaridades,
       `'escolaridade_max' deve ser algum destes valores: ${escolaridades}!`
-    )
+    ),
+
+    // campos de candidatura
+    candidaturas: yup
+    .array(yup.object().shape({
+      id: yup
+        .number()
+        .nullable(),
+      candidatura_id: yup
+        .number()
+        .nullable(),
+      equipe_id: yup
+        .number()
+        .nullable(),
+      faturamento: yup
+        .mixed()
+        .oneOf(['PJ', 'C'])
+        .nullable(),
+      unidade_id: yup
+        .number()
+        .nullable(),
+      cnpj: yup
+        .string()
+        .max(14)
+    })).notRequired().nullable()
 });

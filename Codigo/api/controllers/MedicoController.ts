@@ -12,7 +12,7 @@ import AppError from "../errors/AppError";
 import ArquivoService from "../services/ArquivoService";
 import Arquivo from "../models/Arquivo";
 import CandidaturaService from "../services/CandidaturaService";
-import Candidatura, { IAtributosCandidaturaCriacao } from "../models/Candidatura";
+import Candidatura, { IAtributosCandidatura, IAtributosCandidaturaCriacao } from "../models/Candidatura";
 import { IGetAllMedicoFilter } from "../types/Requests";
 import { ISortPaginateQuery } from "../helpers/SortPaginate";
 import Equipe from "../models/Equipe";
@@ -22,9 +22,12 @@ import MedicoFormacao, { IAtributosMedicoFormacao, IAtributosMedicoFormacaoCriac
 import MedicoEspecialidade from "../models/MedicoEspecialidade";
 import { RequestHandler } from "express";
 
-interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { especialidades : any, formacoes : any }
+interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { 
+  especialidades : any, 
+  formacoes : any, 
+  candidaturas: Array<IAtributosCandidatura> 
+}
 interface IGetHandlerGetFilter extends ISortPaginateQuery, IGetAllMedicoFilter { }
-
 class MedicoController {
   private medicoService!: MedicoService;
   private usuarioSerive!: UsuarioService;
@@ -39,6 +42,9 @@ class MedicoController {
   }
 
   public create: CreateRequestHandler<IAtributosMedicoUsuarioCriacao> = async (request, response) => {
+    if(typeof request.body.candidaturas == "string")
+      request.body.candidaturas = JSON.parse(request.body.candidaturas);
+
     const scheme = medicoCreateValidationScheme;
 
     // Validando com o esquema criado:
@@ -47,7 +53,7 @@ class MedicoController {
 
 
     const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max, especialidades, formacoes } = request.body;
-    const { equipe_id, cnpj, faturamento, unidade_id } = request.body;
+    const { candidaturas } = request.body;
     const { nome, email, senha } = request.body;
     const password = bcrypt.hashSync(senha, 8);
 
@@ -103,13 +109,18 @@ class MedicoController {
         let candidaturaCriada : any;
 
         try {
-          candidaturaCriada = await this.candidaturaService.create({ cnpj, equipe_id, faturamento, medico_id: medico.id, unidade_id });
+          await Promise.all( candidaturas.map(async (candidatura) => {
+            await this.candidaturaService.create({
+              ...candidatura,
+              medico_id: medico.id
+            });
+          }))
         } catch (error) {
           await this.medicoService.delete(medico.id, true);
           throw new AppError("Erro interno no servidor", 500, error);
         }
         try {
-          arquivosCriados = await this.arquivoService.create(request.files, medico.id, formacoesArray, especialidadesArray, candidaturaCriada.id);
+          arquivosCriados = await this.arquivoService.create(request.files, medico.id, formacoesArray, especialidadesArray);
         } catch (error) {
           await this.medicoService.delete(medico.id, true);
           throw new AppError("Erro interno no servidor", 500, error);
@@ -125,7 +136,7 @@ class MedicoController {
           where: {
             id: usuario.id
           },
-          force: true
+          force: true,
         });
         throw new AppError("Médico não criado!", 500, erro);
       });
@@ -148,13 +159,16 @@ class MedicoController {
 
   // URI de exemplo: http://localhost:3000/api/medico/1
   public update: UpddateRequestHandler<IAtributosMedicoUsuarioCriacao> = async (request, response) => {
+    if(typeof request.body.candidaturas == "string")
+      request.body.candidaturas = JSON.parse(request.body.candidaturas);
+
     const scheme = medicoUpdateValidationScheme
 
     // Validando com o esquema criado:
     await scheme.validate(request.body, { abortEarly: false }); // AbortEarly para fazer todas as validações
 
     const { crm, regiao, dt_inscricao_crm, celular, cartao_sus, categoria, rg, rg_orgao_emissor, rg_data_emissao, dt_nascimento, cpf, titulo_eleitoral, zona, secao, logradouro, numero, complemento, bairro, cidade, estado, cep, sociedade_cientifica, escolaridade_max, especialidades, formacoes } = request.body;
-    const { equipe_id, cnpj, faturamento, unidade_id } = request.body;
+    const { candidaturas } = request.body;
     const { nome, email, senha } = request.body;
 
     let especialidadesArray : any;
@@ -204,6 +218,7 @@ class MedicoController {
 
     let candidaturaExiste = true;
     const candidatura = await this.candidaturaService.getBy("medico_id", medicoAlterado?.get().id.toString());
+
     if (!candidatura)
       candidaturaExiste = false;
 
@@ -240,12 +255,17 @@ class MedicoController {
         let candidaturaAtualizada : any;
 
         try {
-          candidaturaAtualizada = await this.candidaturaService.update({ id: candidatura[0]?.get().id, cnpj, equipe_id, faturamento, medico_id: medico?.get().id, unidade_id });
+          await Promise.all( candidaturas.map(async (candidatura) => {
+            await this.candidaturaService.update({
+              ...candidatura,
+              medico_id: medico.get().id
+            });
+          }))
         } catch (error) {
           throw new AppError("Candidatura para médico não atualizada!" + error, 500);
         }
         try {
-          arquivosAtualizados = await this.arquivoService.update(request.files, medico?.get().id, formacoesArray, especialidadesArray, candidaturaAtualizada.dataValues.id);
+          arquivosAtualizados = await this.arquivoService.update(request.files, medico?.get().id, formacoesArray, especialidadesArray);
         } catch (error) {
           throw new AppError("Arquivos para médico não atualizados!" + error, 500);
         }

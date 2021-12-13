@@ -41,7 +41,7 @@ class MedicoEspecialidade extends Model<IAtributosMedicoEspecialidade, IAtributo
       },
       especialidade_id: {
         type: DataTypes.INTEGER().UNSIGNED,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: Especialidade,
           key: 'id'
