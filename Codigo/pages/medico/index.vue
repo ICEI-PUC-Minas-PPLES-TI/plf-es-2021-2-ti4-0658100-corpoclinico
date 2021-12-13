@@ -89,8 +89,8 @@ export default {
         { text: "Nome", value: "usuario.nome" },
         { text: "Email", value: "usuario.email" },
         { text: "Telefone", value: "celular" },
-        { text: "Status", value: "candidatura.retornos[0].status" },
-        { text: "Data da candidatura", value: "candidatura.data_criado" },
+        { text: "Status", value: "status" },
+        { text: "Data da candidatura", value: "data_criado" },
         { text: "Ação", value: "actions", sortable: false },
       ],
       medicos: [],
@@ -149,16 +149,25 @@ export default {
         .then((response) => {
           if (response.dados) {
             response.dados.forEach((medico) => {
-              medico.candidatura.data_criado = this.formataData(
-                medico.candidatura.data_criado
-              );
-              if (medico.candidatura.retornos && medico.candidatura.retornos.length > 0) {
-                medico.candidatura.retornos[0].status = this.formataStatus(
-                  medico.candidatura.retornos[0].status
-                );
-              } else {
-                medico.candidatura.retornos[0] = { status: "Pendente" };
-              }
+              medico.data_criado = this.formataData(medico.candidatura[0].data_criado) 
+              medico.status = ""
+              medico.candidatura.forEach((candidatura) => {
+                const denied = candidatura.retornos.filter((f) => {
+                  return f.status == 'R'
+                })
+                if(denied.length > 0)
+                  medico.status += "Reprovado "
+                else {
+                  const pending = candidatura.retornos.filter((f) => {
+                    return f.status == 'P'
+                  })
+                  if(pending.length > 0)
+                    medico.status += "Pendente "
+                  else
+                    medico.status += "Aprovado "
+                  
+                }
+              })
             });
           }
           this.medicos = response.dados;

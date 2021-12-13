@@ -778,31 +778,45 @@ export default {
     retorno(){
       if(this.info){
         if(this.info.candidatura){
-          return null
-          /*let denied = this.info.candidatura.retornos.filter((f) => {
-            return f.status == 'R'
-          })
-          if(denied.length > 0)
-            return {
-              status: 'R',
-              result: denied
-            }
-          else {
-            let pending = this.info.candidatura.retornos.filter((f) => {
-              return f.status == 'P'
+          let res = {
+            status: null,
+            result: []
+          }
+          this.info.candidatura.forEach((candidatura) => {
+            const denied = candidatura.retornos.filter((f) => {
+              return f.status == 'R'
             })
-            if(pending.length > 0)
-              return {status: 'P' }
-            else {
-              let approved = this.info.candidatura.retornos.filter((f) => {
+            if(denied.length > 0){
+              res.status = 'R'
+              res.result = res.result.concat(denied)
+            }
+          })
+          if(!res.status)
+            this.info.candidatura.forEach((candidatura) => {
+              const pending = candidatura.retornos.filter((f) => {
+                return f.status == 'P'
+              })
+              if(pending.length > 0){
+                res.status = 'P'
+                res.result = []
+              }
+            })
+
+          if(!res.status)
+            this.info.candidatura.forEach((candidatura) => {
+              const approved = candidatura.retornos.filter((f) => {
                 return f.status == 'A'
               })
-              if(approved.length > 0)
-                return {status: 'A' }
-              else
-                return null
-            }
-          }*/
+              if(approved.length == candidatura.retornos.length){
+                res.status = 'A'
+                res.result = []
+              }
+            })
+
+          if(res.status)
+            return res
+          else
+            return null
         } else 
           return null
         
