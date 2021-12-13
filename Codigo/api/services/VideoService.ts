@@ -13,12 +13,13 @@ export default class VideoService {
 
   async update(video: Partial<IAtributosVideo>) {
     const videoBD = await Video.findByPk(video.id);
-    if (videoBD){
+    if (videoBD && videoBD.get().prioridade){
         let videoComPrioridadeAtual: Video | null = null;
         if (videoBD.get().prioridade != video.prioridade)
-          videoComPrioridadeAtual = await this.getBy('prioridade', video.prioridade);
+          videoComPrioridadeAtual = await this.getBy('prioridade', videoBD.get().prioridade);
         await videoBD.update(video)
         .catch(error => {
+            console.log(error)
             throw new AppError("Erro interno do servidor!", 500, error);
         });
         if (videoComPrioridadeAtual){
@@ -68,7 +69,7 @@ export default class VideoService {
   }
 
   async getAllBy(field: keyof Video, value: any) {
-    return Video.findAll({
+    return await Video.findAll({
       where: {
         [field]: value
       }
