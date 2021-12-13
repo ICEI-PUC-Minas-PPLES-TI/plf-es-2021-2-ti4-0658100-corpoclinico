@@ -1,7 +1,7 @@
 <template>
   <v-container fluid style="overflow: auto; padding: 6vh">
     <v-card>
-      <v-card-text>
+      <v-card-text id="areaPrint">
         <h1 class="mb-4">Avaliando Médico #{{ this.formData.id }}</h1>
         <h3>Dados Pessoais</h3>
         <v-row>
@@ -386,16 +386,46 @@
             />
           </v-col>
         </v-row>
-        <v-row>
-          <v-col>
+        <v-row class="pb-6">
+          <v-col  v-if="podeImprimir == false">
             <a @click="baixarArquivos()">Baixar arquivos do candidato</a>
           </v-col>
         </v-row>
-
+        <v-row
+          v-if="podeImprimir == true"
+          class="py-4"
+        >
+          <v-col :md="4" :sm="12" :xl="12" cols="12"></v-col>
+          <v-col :md="4" :sm="12" :xl="12" cols="12">
+            <hr class="solid">
+          </v-col>
+          <v-col :md="4" :sm="12" :xl="12" cols="12"></v-col>
+        </v-row>
+        <v-row
+          v-if="podeImprimir == true"
+          class="py-4"
+        >
+          <v-col :md="4" :sm="12" :xl="12" cols="12"></v-col>
+          <v-col :md="4" :sm="12" :xl="12" cols="12">
+            <hr class="solid">
+          </v-col>
+          <v-col :md="4" :sm="12" :xl="12" cols="12"></v-col>
+        </v-row>
+        <v-row
+          v-if="podeImprimir == true"
+          class="py-4"
+        >
+          <v-col :md="4" :sm="12" :xl="12" cols="12"></v-col>
+          <v-col :md="4" :sm="12" :xl="12" cols="12">
+            <hr class="solid">
+          </v-col>
+          <v-col :md="4" :sm="12" :xl="12" cols="12"></v-col>
+        </v-row>
         <!-- Botoes -->
-        <v-row justify="end">
-          <v-col :md="9" :sm="0" :xl="9" cols="12"></v-col>
-          <v-col :md="3" :sm="0" :xl="3" cols="12">
+        <v-row justify="end" v-if="podeImprimir == false">
+          <v-col :md="7" :sm="12" :xl="12" cols="12"></v-col>
+          <v-col class="text-center" :md="5" :sm="12" :xl="12" cols="12">
+            <v-btn class="mr-2" color="white" @click="imprimir()">Imprimir</v-btn>
             <v-btn class="mr-2" color="white" @click="retorno()">Retornar</v-btn>
             <modalAvalia />
           </v-col>
@@ -418,6 +448,7 @@ export default {
       complementoVazio: "Não Possui",
       tipoFaturamento: ["Pessoa Jurídica", "Cooperativa"],
       tipoCategoria: ["Efetivo", "Temporário", "Contratado"],
+      podeImprimir:false,
       medico: [],
       unidades: [],
       equipes: [],
@@ -486,7 +517,7 @@ export default {
       this.$axios
         .$get("/medico/" + id)
         .then((response) => {
-          this.medico = response;
+          this.medico = response,
           this.formData = {
             id: this.medico.id,
             nome: this.medico.usuario.nome,
@@ -567,13 +598,6 @@ export default {
         })
       }
     },
-    // baixarArquivos() {
-    //   let urls = [];
-    //   for (let i = 0; i < this.medico.arquivos.length; i++) {
-    //     urls.push(window.location.protocol + "//" + window.location.host + "/api/arquivo/" + this.medico.arquivos[i].id)
-    //   }
-    //   this.downloadAll(urls)
-    // },
     downloadAll(urls) {
       var link = document.createElement('a');
 
@@ -592,6 +616,14 @@ export default {
     retorno() {
       window.location.href = "/medico";
     },
+    imprimir(){
+      this.podeImprimir = true;
+      setTimeout(()=>{
+        let prtContent = document.getElementById("areaPrint")
+        window.print();
+        this.podeImprimir = false;
+      },100);
+    },
   },
 };
 </script>
@@ -603,11 +635,19 @@ body{
 .v-text-field.corpo{
   pointer-events: none; // unclickable element
 }
+
+hr.solid {
+  border-top: 1px solid rgb(148, 148, 148);
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .v-card * {
+    visibility: visible;
+  }
+}
 </style>
 
-body {
-  background-color: white;
-}
-.v-text-field.corpo {
-  pointer-events: none; // unclickable element
-}
+
