@@ -283,6 +283,9 @@ export const medicoUpdateValidationScheme = yup.object().shape({
     // campos de candidatura
     candidaturas: yup
     .array(yup.object().shape({
+      id: yup
+        .number()
+        .nullable(),
       candidatura_id: yup
         .number()
         .nullable(),
@@ -291,7 +294,8 @@ export const medicoUpdateValidationScheme = yup.object().shape({
         .nullable(),
       faturamento: yup
         .mixed()
-        .oneOf(['PJ', 'C']),
+        .oneOf(['PJ', 'C'])
+        .nullable(),
       unidade_id: yup
         .number()
         .nullable(),
