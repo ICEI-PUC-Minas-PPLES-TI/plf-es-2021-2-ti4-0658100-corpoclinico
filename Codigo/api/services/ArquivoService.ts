@@ -265,7 +265,7 @@ export default class ArquivoService {
         }
       }
 
-    if (arquivosObj.docs_cert_form){
+    if (formacoes) {
         let formacoesId : number[] = [];
         let indexFormacoes : number = 0;
         for (let formacao of formacoes) {
@@ -284,6 +284,7 @@ export default class ArquivoService {
 
 
             // Se o 'arquivo_id' é null quer dizer que tem arquivo novo para a formação
+            console.log(formacao.arquivo_id === null)
             if (formacao.arquivo_id === null) {
 
               // Captura o arquivo antigo para apagar
@@ -338,11 +339,10 @@ export default class ArquivoService {
       })
     }
 
-    if (arquivosObj.docs_cert_espec){
+    if (especialidades){
       let especialidadesId: number[] = [];
       let index = 0;
       for (const especialidade of especialidades) {
-        console.log(especialidade.especialidade_id)
         try {
           const especialidadeId = especialidade.especialidade_id ? especialidade.especialidade_id : null;
 
@@ -355,6 +355,7 @@ export default class ArquivoService {
           } catch (error) {
             espec = null;
           }
+          console.log(espec)
 
           let arquivoApagar: number = 0;
 
@@ -452,7 +453,7 @@ export default class ArquivoService {
 
   async gerar(arquivo: IAtributosArquivoCriacao) {
     try {
-      return Arquivo.create(arquivo);
+      return await Arquivo.create(arquivo);
     } catch (erro) {
       throw new AppError("Arquivo não criado!", 500, erro);
     }

@@ -22,10 +22,10 @@ import MedicoFormacao, { IAtributosMedicoFormacao, IAtributosMedicoFormacaoCriac
 import MedicoEspecialidade from "../models/MedicoEspecialidade";
 import { RequestHandler } from "express";
 
-interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao { 
-  especialidades : any, 
-  formacoes : any, 
-  candidaturas: Array<IAtributosCandidatura> 
+interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao {
+  especialidades : any,
+  formacoes : any,
+  candidaturas: Array<IAtributosCandidatura>
 }
 interface IGetHandlerGetFilter extends ISortPaginateQuery, IGetAllMedicoFilter { }
 class MedicoController {
@@ -254,16 +254,19 @@ class MedicoController {
         let arquivosAtualizados: any = [];
         let candidaturaAtualizada : any;
 
-        try {
-          await Promise.all( candidaturas.map(async (candidatura) => {
-            await this.candidaturaService.update({
-              ...candidatura,
-              medico_id: medico.get().id
-            });
-          }))
-        } catch (error) {
-          throw new AppError("Candidatura para médico não atualizada!" + error, 500);
+        if(candidaturas!=undefined) {
+          try {
+            await Promise.all( candidaturas.map(async (candidatura) => {
+              await this.candidaturaService.update({
+                ...candidatura,
+                medico_id: medico.get().id
+              });
+            }))
+          } catch (error) {
+            throw new AppError("Candidatura para médico não atualizada!" + error, 500);
+          }
         }
+
         try {
           arquivosAtualizados = await this.arquivoService.update(request.files, medico?.get().id, formacoesArray, especialidadesArray);
         } catch (error) {
