@@ -65,7 +65,7 @@ export default {
         foreignKey: 'medico_id'
       });
 
-      Medico.hasOne(Candidatura, {
+      Medico.hasMany(Candidatura, {
         as: 'candidatura',
         foreignKey: 'medico_id'
       });

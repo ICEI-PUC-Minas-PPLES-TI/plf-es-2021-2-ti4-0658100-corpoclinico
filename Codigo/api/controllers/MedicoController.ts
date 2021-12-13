@@ -348,7 +348,7 @@ class MedicoController {
         },
         {
           model: Candidatura, as: 'candidatura',
-          attributes: ['cnpj', 'faturamento', 'equipe_id', 'unidade_id', 'data_criado'],
+          attributes: ['id','cnpj', 'faturamento', 'equipe_id', 'unidade_id', 'data_criado'],
           include: [{
             model: Equipe,
             as: 'equipe'
