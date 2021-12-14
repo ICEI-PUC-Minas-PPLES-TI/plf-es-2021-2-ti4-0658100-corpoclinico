@@ -942,8 +942,11 @@ export default {
         data.celular = data.celular.replace(/\D/g,'')
       if(data.titulo_eleitoral)
         data.titulo_eleitoral = data.titulo_eleitoral.replace(/ /g,'')
-      if(data.cnpj)
-        data.cnpj = data.cnpj.replace(/\D/g,'')
+      if(data.candidaturas){
+        data.candidaturas.forEach((elem) => {
+          elem.cnpj = elem.cnpj?.replace(/\D/g,'')
+        })
+      }
 
       let formData = new FormData()
       for (var key in data){
