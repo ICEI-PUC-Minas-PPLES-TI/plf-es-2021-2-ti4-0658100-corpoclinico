@@ -642,7 +642,7 @@
           </v-btn>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row v-if="editCandidatura">
         <v-col>
           <v-btn text @click="adicionarCandidatura">
             Adicionar mais uma candidatura
@@ -909,7 +909,8 @@ export default {
         unidade_id: null,
         faturamento: null,
         cnpj: null,
-        removable: true
+        removable: true,
+        retornos: []
       })
     },
     editProfissionalBtn(){
