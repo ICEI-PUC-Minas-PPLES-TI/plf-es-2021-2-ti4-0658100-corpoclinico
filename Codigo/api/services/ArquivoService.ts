@@ -114,7 +114,7 @@ export default class ArquivoService {
       }
 
     let index : number = 0;
-    if (arquivosObj.docs_cert_form)
+    if (formacoes)
       for (const certFormFields of arquivosObj.docs_cert_form) {
         try {
           const nome_arquivo = certFormFields.filename;
@@ -130,12 +130,10 @@ export default class ArquivoService {
         }
       }
 
-    if (arquivosObj.docs_cert_espec) {
+    if (especialidades) {
       let rqeIndex = 0;
       for (const certEspecFields of arquivosObj.docs_cert_espec) {
-        console.log(especialidades[rqeIndex].especialidade_id)
         try {
-          console.log(certEspecFields.especialidade_id)
           const nome_arquivo = certEspecFields.filename;
           const tipo = 'RQE';
           const certEspec = await this.gerar({ nome_arquivo, tipo, medico_id });
@@ -284,7 +282,6 @@ export default class ArquivoService {
 
 
             // Se o 'arquivo_id' é null quer dizer que tem arquivo novo para a formação
-            console.log(formacao.arquivo_id === null)
             if (formacao.arquivo_id === null) {
 
               // Captura o arquivo antigo para apagar
@@ -355,7 +352,6 @@ export default class ArquivoService {
           } catch (error) {
             espec = null;
           }
-          console.log(espec)
 
           let arquivoApagar: number = 0;
 

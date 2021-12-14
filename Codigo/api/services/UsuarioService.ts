@@ -5,14 +5,14 @@ import Usuario, { IAtributosUsuario, IAtributosUsuarioCriacao } from "../models/
 export default class UsuarioService {
 
   async create(usuario: IAtributosUsuarioCriacao) {
-    return Usuario.create(usuario)
+    return await Usuario.create(usuario)
     .catch((err)=>{
       throw new AppError("Erro interno no servidor", 500, err)
     })
   }
 
   async update(usuario: Partial<IAtributosUsuario>) {
-    return Usuario.update(usuario, {
+    return await Usuario.update(usuario, {
       where: { id: usuario.id }
     })
     .catch((err)=>{
@@ -34,7 +34,7 @@ export default class UsuarioService {
   }
 
   async getById(id: number, paranoid?: boolean) {
-    return Usuario.findOne({
+    return await Usuario.findOne({
       where: { id },
       paranoid
     })
@@ -56,7 +56,7 @@ export default class UsuarioService {
   }
 
   async getAllBy(field: keyof IAtributosUsuario, value: any, attributes?: Array<keyof IAtributosUsuario>) {
-    return Usuario.findAll({
+    return await Usuario.findAll({
       where: {
         [field]: value
       },
@@ -72,7 +72,7 @@ export default class UsuarioService {
       Usuario.rawAttributes
     ) /* Todos os atributos de usuário */
 
-    return Usuario.findAndCountAll()
+    return await Usuario.findAndCountAll()
       .then(async (dados) => {
         const count: number = (dados.count) as any;
         const { paginas, ...SortPaginateOptions } = SortPaginate(

@@ -68,7 +68,7 @@ export default class CandidaturaService{
         })
     }
     async getById(id: number) {
-        return Candidatura.findOne({
+        return await Candidatura.findOne({
             where: { id },
             include: [Medico, Equipe]
         })
@@ -77,7 +77,7 @@ export default class CandidaturaService{
         })
     }
     async getBy(key: keyof Candidatura, atributo: any) {
-        return Candidatura.findAll({
+        return await Candidatura.findAll({
             where: {
                 [key]: atributo
             },
@@ -92,7 +92,7 @@ export default class CandidaturaService{
     }
 
     async getAll(sortPaginate: ISortPaginateQuery, atributos: string[]) {
-        return Candidatura.findAndCountAll()
+        return await Candidatura.findAndCountAll()
         .then(async (dados) => {
             const count: number = (dados.count) as any;
             const { paginas, ...SortPaginateOptions } = SortPaginate(

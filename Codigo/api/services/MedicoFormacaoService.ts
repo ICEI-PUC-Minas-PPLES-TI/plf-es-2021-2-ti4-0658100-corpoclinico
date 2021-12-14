@@ -5,13 +5,13 @@ import Especialidade from "../models/Especialidade";
 
 export default class MedicoFormacaoService{
     async create(formacao: IAtributosMedicoFormacaoCriacao){
-        return MedicoFormacao.create(formacao)
+        return await MedicoFormacao.create(formacao)
         .catch (erro => {
             throw new AppError("Erro interno no servidor!", 500, erro);
         })
     }
     async update(formacao: Partial<IAtributosMedicoFormacaoCriacao>){
-        return MedicoFormacao.update(formacao, {
+        return await MedicoFormacao.update(formacao, {
             where: {id: formacao.id},
         })
         .catch (erro => {
@@ -27,7 +27,7 @@ export default class MedicoFormacaoService{
         })
     }
     async getById(id: number){
-        return MedicoFormacao.findOne({
+        return await MedicoFormacao.findOne({
             where: {id},
             include: [ Especialidade ]
         })
@@ -37,7 +37,7 @@ export default class MedicoFormacaoService{
     }
 
     async getAll( sortPaginate: ISortPaginateQuery, atributos: string[],  ){
-        return MedicoFormacao.findAndCountAll()
+        return await MedicoFormacao.findAndCountAll()
         .then(async (dados) => {
             const count: number = (dados.count) as any;
             const { paginas, ...SortPaginateOptions } = SortPaginate(

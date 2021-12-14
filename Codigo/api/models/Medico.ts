@@ -80,8 +80,8 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
           type: DataTypes.STRING(20),
           allowNull: false,
           validate: {
-            isUnique: (value: string, next: ((err?: AppError) => void)) => {
-              Medico.findAll({
+            isUnique: async (value: string, next: ((err?: AppError) => void)) => {
+              await Medico.findAll({
                 where: { crm: value },
                 attributes: ["id"]
               })
@@ -112,8 +112,8 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
           type: DataTypes.STRING(25),
           allowNull: true,
           validate: {
-            isUnique: (value: string, next: ((err?: AppError) => void)) => {
-              Medico.findAll({
+            isUnique: async (value: string, next: ((err?: AppError) => void)) => {
+              await Medico.findAll({
                 where: { cartao_sus: value },
                 attributes: ["id"]
               })
@@ -136,8 +136,8 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
           type: DataTypes.STRING(20),
           allowNull: true,
           validate: {
-            isUnique: (value: string, next: ((err?: AppError) => void)) => {
-              Medico.findAll({
+            isUnique: async (value: string, next: ((err?: AppError) => void)) => {
+              await Medico.findAll({
                 where: { rg: value },
                 attributes: ["id"]
               })
@@ -168,8 +168,8 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
           type: DataTypes.STRING(20),
           allowNull: true,
           validate: {
-            isUnique: (value: string, next: ((err?: AppError) => void)) => {
-              Medico.findAll({
+            isUnique: async (value: string, next: ((err?: AppError) => void)) => {
+              await Medico.findAll({
                 where: { cpf: value },
                 attributes: ["id"]
               })
@@ -188,8 +188,8 @@ class Medico extends Model<IAtributosMedico, IAtributosMedicoCriacao>
           type: DataTypes.STRING(12),
           allowNull: true,
           validate: {
-            isUnique: (value: string, next: ((err?: AppError) => void)) => {
-              Medico.findAll({
+            isUnique: async (value: string, next: ((err?: AppError) => void)) => {
+              await Medico.findAll({
                 where: { titulo_eleitoral: value },
                 attributes: ["id"]
               })

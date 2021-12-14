@@ -32,8 +32,8 @@ class Arquivo extends Model<IAtributosArquivo, IAtributosArquivoCriacao> impleme
         type: DataTypes.STRING(50),
         allowNull: false,
         validate: {
-          isUnique: (value: string, next: ((err?: AppError) => void)) => {
-            Arquivo.findAll({
+          isUnique: async (value: string, next: ((err?: AppError) => void)) => {
+            await Arquivo.findAll({
               where: { nome_arquivo: value },
               attributes: ["id"]
             })

@@ -36,8 +36,8 @@ class Usuario extends Model<IAtributosUsuario, IAtributosUsuarioCriacao> impleme
         type: DataTypes.STRING(50),
         allowNull: false,
         validate: {
-          isUnique: (value: string, next: ((err?: AppError) => void)) => {
-            Usuario.findAll({
+          isUnique: async (value: string, next: ((err?: AppError) => void)) => {
+            await Usuario.findAll({
               where: { email: value },
               attributes: ["id"]
             })
