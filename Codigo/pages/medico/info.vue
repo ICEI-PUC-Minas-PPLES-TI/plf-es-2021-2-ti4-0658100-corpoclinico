@@ -614,7 +614,7 @@
         </v-col>
         <v-col cols="12" :sm="12" :md="3">
           <span class="info-label">Unidade</span>
-          <span v-if="!editCandidatura"> {{ cand.unidade.nome }} </span>
+          <span v-if="!editCandidatura && cand.unidade"> {{ cand.unidade.nome }} </span>
           <v-select
             v-else
             :hide-details="'auto'"
@@ -626,7 +626,7 @@
         </v-col>
         <v-col cols="12" :sm="12" :md="3">
           <span class="info-label">Equipe</span>
-          <span v-if="!editCandidatura"> {{ cand.equipe.nome }} </span>
+          <span v-if="!editCandidatura && cand.equipe"> {{ cand.equipe.nome }} </span>
           <v-select
             v-else
             :hide-details="'auto'"
