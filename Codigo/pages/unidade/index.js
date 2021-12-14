@@ -32,6 +32,7 @@ export default {
       toastMensagem: '',
       modalAtivo: false,
       dialog: false,
+      tabelaCarregando: false,
 
     }
   },
@@ -47,11 +48,13 @@ export default {
   methods: {
 
     listaUnidades() {
-
+      this.tabelaCarregando = true
       this.$axios.$get('/unidade').then(response => {
         this.unidades = response;
       }).catch(error => {
         console.log(error)
+      }).finally(() => {
+        this.tabelaCarregando = false
       })
 
     },

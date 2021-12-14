@@ -163,6 +163,7 @@ export const medicoCreateValidationScheme = yup.object().shape({
       cnpj: yup
         .string()
         .max(14)
+        .nullable(),
     })).min(1).required('"candidaturas" é obrigatório'),
 
   especialidades: yup
@@ -302,5 +303,6 @@ export const medicoUpdateValidationScheme = yup.object().shape({
       cnpj: yup
         .string()
         .max(14)
+        .nullable()
     })).notRequired().nullable()
 });

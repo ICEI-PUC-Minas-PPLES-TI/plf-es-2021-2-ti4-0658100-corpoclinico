@@ -45,7 +45,7 @@
                     v-model="equipe.especialidade_id"
                     :items="especialidades"
                     hide-details="auto"
-                    :rules="(v) => !!v || 'Especialidade é obrigatório'"
+                    :rules="[(v) => !!v || 'Especialidade é obrigatório']"
                     :clearable="true"
                     label="Especialidade"
                     item-text="identificacao"

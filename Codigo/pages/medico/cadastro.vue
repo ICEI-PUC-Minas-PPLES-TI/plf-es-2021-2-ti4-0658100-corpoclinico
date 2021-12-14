@@ -675,7 +675,18 @@
               <ul>
                 <li v-for="(espe, eidx) in formData.especialidades" :key="eidx">
                   <v-row>
-                    <v-col cols="12" :xs="12" :md="4">
+                    <v-col :xs="12" :md="2">
+                      <v-select
+                        :hide-details="'auto'"
+                        item-text="identificacao"
+                        item-value="id"
+                        :items="especialidades"
+                        v-model="formData.especialidades[eidx].especialidade_id"
+                        label="Especialidade"
+                        @change="salvarEmCache"
+                      />
+                    </v-col>
+                    <v-col cols="12" :xs="12" :md="3">
                       <v-text-field
                         :hide-details="'auto'"
                         label="Instituicao"
@@ -684,7 +695,7 @@
                         @blur="salvarEmCache"
                       />
                     </v-col>
-                    <v-col cols="12" :xs="12" :md="3">
+                    <v-col cols="12" :xs="12" :md="2">
                       <v-text-field
                         :hide-details="'auto'"
                         type="number"
@@ -753,36 +764,37 @@
       </v-stepper-step>
       <v-stepper-content step="5">
         <!-- Faturamento, CNPJ, Unidade, Equipe -->
-        <v-row>
-          <v-col cols="12" :xs="12" :md="formData.faturamento == 'PJ' ? 3: 6">
+        <v-row v-for="(ct, cidx) in formData.candidaturas" :key="cidx">
+          <v-col cols="12" :xs="12" :md="formData.candidaturas[cidx].faturamento == 'PJ' ? 3: 6">
             <v-select
               :hide-details="'auto'"
               :items="[
                 {text: 'Pessoa Juridica', value: 'PJ'},
                 {text: 'Cooperado', value: 'C'}
               ]"
-              v-model="formData.faturamento"
+              v-model="formData.candidaturas[cidx].faturamento"
               label="Faturamento"
               @change="salvarEmCache"
             />
           </v-col>
-          <v-col cols="12" :xs="12" :md="3" v-if="formData.faturamento == 'PJ'">
+          <v-col cols="12" :xs="12" :md="3" v-if="formData.candidaturas[cidx].faturamento == 'PJ'">
             <v-text-field
               :hide-details="'auto'"
               label="CNPJ"
-              v-model="formData.cnpj"
+              maxlength="14"
+              v-model="formData.candidaturas[cidx].cnpj"
               v-mask="['##.###.###/####-##']"
               @blur="salvarEmCache"
             />
           </v-col>
           
-          <v-col cols="12" :xs="12" :md="3">
+          <v-col cols="12" :xs="12" :md="2">
             <v-select
               :hide-details="'auto'"
               item-text="nome"
               item-value="id"
               :items="unidades"
-              v-model="formData.unidade_id"
+              v-model="formData.candidaturas[cidx].unidade_id"
               label="Unidade"
               @change="salvarEmCache"
             />
@@ -793,10 +805,22 @@
               item-text="nome"
               item-value="id"
               :items="equipes"
-              v-model="formData.equipe_id"
+              v-model="formData.candidaturas[cidx].equipe_id"
               label="Equipe"
               @change="salvarEmCache"
             />
+          </v-col>
+          <v-col :xs="12" :md="1" v-if="cidx > 0">
+            <v-btn icon class="mt-3" @click="formData.candidaturas.splice(cidx, 1);salvarEmCache()">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-btn text @click="adicionarCandidatura">
+              Adicionar outra candidatura
+            </v-btn>
           </v-col>
         </v-row>
         <!-- Explicação e link de certificados -->
@@ -860,7 +884,7 @@
 import axios2 from 'axios';
 import {mask} from 'vue-the-mask'
 const Swal = require('sweetalert2')
-const MODALV = '0.0.2' // Versão dos dados no modal, caso seja diferente da versao salva no PC do usuario nao vai carregar dados anteriores
+const MODALV = '0.0.3' // Versão dos dados no modal, caso seja diferente da versao salva no PC do usuario nao vai carregar dados anteriores
 export default {
   layout: 'cmedico',
   directives: {mask},
@@ -899,11 +923,13 @@ export default {
           faculdade_nome: null,
           faculdade_ano_formatura: null,
         }],
-        especialidades: [],
-        equipe_id: null,
-        unidade_id: null,
-        faturamento: null,
-        cnpj: null,
+        candidaturas: [{
+          equipe_id: null,
+          unidade_id: null,
+          faturamento: null,
+          cnpj: null,
+        }],
+        especialidades: []
       },
       arquivos: {
         doc_rg: null,
@@ -922,6 +948,7 @@ export default {
       menuDataCrm: false,
       unidades: [],
       equipes: [],
+      especialidades: [],
       senhaVisivel: false
     }
   },
@@ -929,6 +956,7 @@ export default {
     let data = {
       unidades: [],
       equipes: [],
+      especialidades: [],
     }
     await app.$axios.get(`/unidade`).then(res => {
       data.unidades = res.data
@@ -938,6 +966,12 @@ export default {
 
     await app.$axios.get(`/equipe`).then(res => {
       data.equipes = res.data.dados
+    }).catch(err => {
+      console.log(err.response)
+    })
+
+    await app.$axios.get(`/especialidade`).then(res => {
+      data.especialidades = res.data.dados
     }).catch(err => {
       console.log(err.response)
     })
@@ -982,9 +1016,18 @@ export default {
     },
     adicionarEspecialidade(){
       this.formData.especialidades.push({
+        especialidade_id: null,
         instituicao: null,
         ano_formatura: null,
         rqe: null,
+      })
+    },
+    adicionarCandidatura(){
+      this.formData.candidaturas.push({
+        equipe_id: null,
+        unidade_id: null,
+        faturamento: null,
+        cnpj: null,
       })
     },
     proximoPasso(formNome, step){

@@ -519,7 +519,17 @@
           <ul v-else>
             <li v-for="(espe, eidx) in formProfissional.especialidades" :key="eidx">
               <v-row>
-                <v-col cols="12" :xs="12" :md="4">
+                <v-col :sm="12" :md="2">
+                  <v-select
+                    :hide-details="'auto'"
+                    item-text="identificacao"
+                    item-value="id"
+                    :items="formProfissionalEspecialidade"
+                    v-model="formProfissional.especialidades[eidx].especialidade_id"
+                    label="Especialidade"
+                  />
+                </v-col>
+                <v-col cols="12" :xs="12" :md="3">
                   <v-text-field
                     :hide-details="'auto'"
                     label="Instituicao"
@@ -527,7 +537,7 @@
                     maxlength="60"
                   />
                 </v-col>
-                <v-col cols="12" :xs="12" :md="3">
+                <v-col cols="12" :xs="12" :md="2">
                   <v-text-field
                     :hide-details="'auto'"
                     type="number"
@@ -583,10 +593,10 @@
           </span>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col cols="12" :sm="12" :md="3">
+      <v-row v-for="(cand, cidx) in info.candidatura" :key="cidx">
+        <v-col cols="12" :sm="12" :md="2">
           <span class="info-label">Faturamento</span>
-          <span v-if="!editCandidatura"> {{ info.candidatura.faturamento == 'C' ? 'Cooperado': 'Pessoa Jurídica' }} </span>
+          <span v-if="!editCandidatura"> {{ cand.faturamento == 'C' ? 'Cooperado': 'Pessoa Jurídica' }} </span>
           <v-select
             v-else
             :hide-details="'auto'"
@@ -594,38 +604,52 @@
               {text: 'Pessoa Juridica', value: 'PJ'},
               {text: 'Cooperado', value: 'C'}
             ]"
-            v-model="formCandidatura.faturamento"
+            v-model="formCandidatura.candidaturas[cidx].faturamento"
           />
         </v-col>
-        <v-col v-if="info.candidatura.faturamento == 'PJ' || (editCandidatura && formCandidatura.faturamento == 'PJ') " cols="12" :sm="12" :md="3">
+        <v-col v-if="cand.faturamento == 'PJ' || (editCandidatura && formCandidatura.candidaturas[cidx].faturamento == 'PJ') " cols="12" :sm="12" :md="3">
           <span class="info-label">CNPJ</span>
-          <span v-if="!editCandidatura"> {{ info.candidatura.cnpj }} </span>
-          <v-text-field v-else :hide-details="'auto'" v-model="formCandidatura.cnpj" v-mask="['##.###.###/####-##']" />
+          <span v-if="!editCandidatura"> {{ cand.cnpj }} </span>
+          <v-text-field v-else :hide-details="'auto'" v-model="formCandidatura.candidaturas[cidx].cnpj" v-mask="['##.###.###/####-##']" />
         </v-col>
         <v-col cols="12" :sm="12" :md="3">
           <span class="info-label">Unidade</span>
-          <span v-if="!editCandidatura"> {{ info.candidatura.unidade.nome }} </span>
+          <span v-if="!editCandidatura && cand.unidade"> {{ cand.unidade.nome }} </span>
           <v-select
             v-else
             :hide-details="'auto'"
             item-text="nome"
             item-value="id"
             :items="formCandidaturaUnidade"
-            v-model="formCandidatura.unidade_id"
+            v-model="formCandidatura.candidaturas[cidx].unidade_id"
           />
         </v-col>
         <v-col cols="12" :sm="12" :md="3">
           <span class="info-label">Equipe</span>
-          <span v-if="!editCandidatura"> {{ info.candidatura.equipe.nome }} </span>
+          <span v-if="!editCandidatura && cand.equipe"> {{ cand.equipe.nome }} </span>
           <v-select
             v-else
             :hide-details="'auto'"
             item-text="nome"
             item-value="id"
             :items="formCandidaturaEquipe"
-            v-model="formCandidatura.equipe_id"
+            v-model="formCandidatura.candidaturas[cidx].equipe_id"
           />
         </v-col>
+        <v-col v-if="editCandidatura && formCandidatura.candidaturas[cidx].removable" :sm="12" :md="1" @click="formCandidatura.candidaturas.splice(cidx, 1)">
+          <v-btn icon class="mt-3">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
+      <v-row v-if="editCandidatura">
+        <v-col>
+          <v-btn text @click="adicionarCandidatura">
+            Adicionar mais uma candidatura
+          </v-btn>
+        </v-col>
+      </v-row>
+      <v-row>
         <v-col v-if="editCandidatura" cols="12" :xs="12" :md="4">
           <v-file-input
             accept="image/*"
@@ -684,9 +708,10 @@ export default {
       editMoradia: false,
       formMoradia: null,
       editCandidatura: false,
-      formCandidatura: false,
+      formCandidatura: [],
       formCandidaturaEquipe: [],
       formCandidaturaUnidade: [],
+      formProfissionalEspecialidade: [],
       editAcademico: false,
       formAcademico: null,
       editProfissional: false,
@@ -753,30 +778,45 @@ export default {
     retorno(){
       if(this.info){
         if(this.info.candidatura){
-          let denied = this.info.candidatura.retornos.filter((f) => {
-            return f.status == 'R'
-          })
-          if(denied.length > 0)
-            return {
-              status: 'R',
-              result: denied
-            }
-          else {
-            let pending = this.info.candidatura.retornos.filter((f) => {
-              return f.status == 'P'
+          let res = {
+            status: null,
+            result: []
+          }
+          this.info.candidatura.forEach((candidatura) => {
+            const denied = candidatura.retornos.filter((f) => {
+              return f.status == 'R'
             })
-            if(pending.length > 0)
-              return {status: 'P' }
-            else {
-              let approved = this.info.candidatura.retornos.filter((f) => {
+            if(denied.length > 0){
+              res.status = 'R'
+              res.result = res.result.concat(denied)
+            }
+          })
+          if(!res.status)
+            this.info.candidatura.forEach((candidatura) => {
+              const pending = candidatura.retornos.filter((f) => {
+                return f.status == 'P'
+              })
+              if(pending.length > 0){
+                res.status = 'P'
+                res.result = []
+              }
+            })
+
+          if(!res.status)
+            this.info.candidatura.forEach((candidatura) => {
+              const approved = candidatura.retornos.filter((f) => {
                 return f.status == 'A'
               })
-              if(approved.length > 0)
-                return {status: 'A' }
-              else
-                return null
-            }
-          }
+              if(approved.length == candidatura.retornos.length){
+                res.status = 'A'
+                res.result = []
+              }
+            })
+
+          if(res.status)
+            return res
+          else
+            return null
         } else 
           return null
         
@@ -845,10 +885,7 @@ export default {
       })
       
       this.formCandidatura = {
-        equipe_id: this.info.candidatura.equipe_id,
-        unidade_id: this.info.candidatura.unidade_id,
-        faturamento: this.info.candidatura.faturamento,
-        cnpj: this.info.candidatura.cnpj
+        candidaturas: this.info.candidatura
       }
       this.editCandidatura = true
     },
@@ -866,7 +903,23 @@ export default {
         faculdade_ano_formatura: null,
       })
     },
+    adicionarCandidatura(){
+      this.formCandidatura.candidaturas.push({
+        equipe_id: null,
+        unidade_id: null,
+        faturamento: null,
+        cnpj: null,
+        removable: true,
+        retornos: []
+      })
+    },
     editProfissionalBtn(){
+      this.$axios.get(`/especialidade`).then(res => {
+        this.formProfissionalEspecialidade = res.data.dados
+      }).catch(err => {
+        console.log(err.response)
+      })
+      
       this.formProfissional = {
         regiao: this.info.regiao,
         crm: this.info.crm,
@@ -889,8 +942,11 @@ export default {
         data.celular = data.celular.replace(/\D/g,'')
       if(data.titulo_eleitoral)
         data.titulo_eleitoral = data.titulo_eleitoral.replace(/ /g,'')
-      if(data.cnpj)
-        data.cnpj = data.cnpj.replace(/\D/g,'')
+      if(data.candidaturas){
+        data.candidaturas.forEach((elem) => {
+          elem.cnpj = elem.cnpj?.replace(/\D/g,'')
+        })
+      }
 
       let formData = new FormData()
       for (var key in data){
