@@ -32,14 +32,14 @@ class Arquivo extends Model<IAtributosArquivo, IAtributosArquivoCriacao> impleme
         type: DataTypes.STRING(50),
         allowNull: false,
         validate: {
-          isUnique: (value: string, next: ((err?: AppError) => void)) => {
-            Arquivo.findAll({
+          isUnique: async (value: string, next: ((err?: AppError) => void)) => {
+            await Arquivo.findAll({
               where: { nome_arquivo: value },
               attributes: ["id"]
             })
               .then(usuario => {
                 if (usuario.length != 0)
-                  next(new AppError("Falha ao cadastrar nome de arquivo (Duplicado)!", 422));
+                  next(new AppError(" Falha ao cadastrar arquivo (Duplicado)!", 422));
                 next();
               })
               .catch(error=>{

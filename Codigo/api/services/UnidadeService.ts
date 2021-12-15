@@ -4,14 +4,14 @@ import Unidade, { IAtributosUnidade, IAtributosUnidadeCriacao } from "../models/
 export default class UnidadeService {
 
   async create(unidade: IAtributosUnidadeCriacao) {
-    return Unidade.create(unidade)
+    return await Unidade.create(unidade)
     .catch (error => {
       throw new AppError("Usuário não criado!", 500, error);
     })
   }
 
   async update(unidade: Partial<IAtributosUnidade>) {
-    return Unidade.update(unidade, {
+    return await Unidade.update(unidade, {
       where: { id: unidade.id }
     })
     .catch(error => {
@@ -24,7 +24,7 @@ export default class UnidadeService {
     if (!unidade) {
       throw new AppError("Unidade não encontrada!", 404);
     }
-    unidade.update({
+    await unidade.update({
       ativo: false,
     })
     .catch(error => {
@@ -34,7 +34,7 @@ export default class UnidadeService {
   }
 
   async getById(id: number) {
-    return Unidade.findOne({
+    return await Unidade.findOne({
       where: { id }
     })
     .catch (erro => {
@@ -43,7 +43,7 @@ export default class UnidadeService {
   }
 
   async getBy(field: keyof Unidade, value: any) {
-    return Unidade.findOne({
+    return await Unidade.findOne({
       where: {
         [field]: value
       }
@@ -54,7 +54,7 @@ export default class UnidadeService {
   }
 
   async getAll() {
-    return Unidade.findAll()
+    return await Unidade.findAll()
     .catch(error => {
         throw new AppError("Erro interno do servidor!", 500, error);
     });
