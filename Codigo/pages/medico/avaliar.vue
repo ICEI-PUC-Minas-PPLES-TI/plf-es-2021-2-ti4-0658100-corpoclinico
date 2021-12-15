@@ -335,7 +335,7 @@
                   color="grey"
                   background="primary"
                   width="100%"
-                  @click="dialog = false"
+                  @click="modalAvaliaAtivo = false"
                 >
                   Cancelar
                 </v-btn>
