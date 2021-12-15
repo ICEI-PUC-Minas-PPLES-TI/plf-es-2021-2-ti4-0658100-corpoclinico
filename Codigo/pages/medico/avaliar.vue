@@ -322,7 +322,7 @@
                     label="Observações"
                     v-model="retorno.comentario"
                     :disabled = "retorno.status == 'A'"
-                    :rules="'retorno.status'== 'Reprovado' ? [v => !!v || 'Comentário é obrigatório'] : []"
+                    :rules="retorno.status == 'R' ? [v => !!v || 'Comentário é obrigatório'] : []"
                   />
                 </v-card-text>
               </v-form>
@@ -360,6 +360,7 @@
 </template>
 
 <script>
+const Swal = require('sweetalert2')
 export default {
   data() {
     return {
