@@ -21,6 +21,7 @@ import Retorno from "../models/Retorno";
 import MedicoFormacao, { IAtributosMedicoFormacao, IAtributosMedicoFormacaoCriacao } from "../models/MedicoFormacao";
 import MedicoEspecialidade from "../models/MedicoEspecialidade";
 import { RequestHandler } from "express";
+import Especialidade from "../models/Especialidade";
 
 interface IAtributosMedicoUsuarioCriacao extends IAtributosMedicoCriacao, IAtributosUsuarioCriacao, IAtributosCandidaturaCriacao {
   especialidades : any,
@@ -308,8 +309,11 @@ class MedicoController {
             attributes: ['id', 'comentario', 'status'],
             include: [{
               model: Usuario, as: 'avaliador',
-
             }]
+          }, {
+            model: Equipe, as: 'equipe',
+          }, {
+            model: Unidade, as: 'unidade',
           }],
           required: false
         },
@@ -318,6 +322,10 @@ class MedicoController {
         },
         {
           model: MedicoEspecialidade, as: 'especialidades',
+          include: [{
+            model: Especialidade,
+            as: 'especialidade'
+          }]
         }
       ]
     });
