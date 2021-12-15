@@ -5,13 +5,13 @@ import Especialidade from "../models/Especialidade";
 
 export default class EquipeService{
     async create(equipe: IAtributosEquipeCriacao){
-        return Equipe.create(equipe)
+        return await Equipe.create(equipe)
         .catch (erro => {
             throw new AppError("Erro interno no servidor!", 500, erro);
         })
     }
     async update(equipe: Partial<IAtributosEquipeCriacao>){
-        return Equipe.update(equipe, {
+        return await Equipe.update(equipe, {
             where: {id: equipe.id},
         })
         .catch (erro => {
@@ -27,7 +27,7 @@ export default class EquipeService{
         })
     }
     async getById(id: number){
-        return Equipe.findOne({
+        return await Equipe.findOne({
             where: {id},
             include: [ Especialidade ]
         })
@@ -37,7 +37,7 @@ export default class EquipeService{
     }
 
     async getAll( sortPaginate: ISortPaginateQuery, atributos: string[],  ){
-        return Equipe.findAndCountAll()
+        return await Equipe.findAndCountAll()
         .then(async (dados) => {
             const count: number = (dados.count) as any;
             const { paginas, ...SortPaginateOptions } = SortPaginate(

@@ -13,7 +13,7 @@ export default class MedicoEspecialidadeService {
   }
 
   async update(medicoEspecialidade: Partial<IAtributosMedicoEspecialidade>) {
-    return MedicoEspecialidade.update(medicoEspecialidade, {
+    return await MedicoEspecialidade.update(medicoEspecialidade, {
       where: { id: medicoEspecialidade.id }
     })
       .catch((err) => {
@@ -35,7 +35,7 @@ export default class MedicoEspecialidadeService {
   }
 
   async getById(id: number, paranoid?: boolean) {
-    return MedicoEspecialidade.findOne({
+    return await MedicoEspecialidade.findOne({
       where: { id },
       paranoid
     })
@@ -45,7 +45,7 @@ export default class MedicoEspecialidadeService {
   }
 
   async getBy(field: keyof IAtributosMedicoEspecialidade, value: any, attributes?: Array<keyof IAtributosMedicoEspecialidade>) {
-    return MedicoEspecialidade.findOne({
+    return await MedicoEspecialidade.findOne({
       where: {
         [field]: value
       },
@@ -61,7 +61,7 @@ export default class MedicoEspecialidadeService {
       MedicoEspecialidade.rawAttributes
     ) /* Todos os atributos de usuário */
 
-    return MedicoEspecialidade.findAndCountAll()
+    return await MedicoEspecialidade.findAndCountAll()
       .then(async (dados) => {
         const count: number = (dados.count) as any;
         const { paginas, ...SortPaginateOptions } = SortPaginate(

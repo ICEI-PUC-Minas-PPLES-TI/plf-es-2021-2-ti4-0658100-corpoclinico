@@ -14,7 +14,7 @@ import Retorno from "../models/Retorno";
 export default class MedicoService {
   async create(medico: IAtributosMedicoCriacao) {
     try {
-      return Medico.create(medico);
+      return await Medico.create(medico);
     } catch (erro) {
       throw new AppError("Usuário não criado!", 500, erro);
     }
@@ -53,7 +53,7 @@ export default class MedicoService {
   }
 
   async getById(id: number, include?: Includeable | Includeable[]) {
-    return Medico.findOne({
+    return await Medico.findOne({
       where: { id }
     })
     .catch (erro => {
@@ -62,7 +62,7 @@ export default class MedicoService {
   }
 
   async getBy(field: keyof Medico, value: any) {
-    return Medico.findOne({
+    return await Medico.findOne({
       where: {
         [field]: value
       }
@@ -90,7 +90,7 @@ export default class MedicoService {
       status: filtros.status
     } : undefined
 
-    return Medico.findAndCountAll({
+    return await Medico.findAndCountAll({
       order: [
         [{ model: Candidatura, as: "candidatura" }, { model: Retorno, as: 'retornos',}, 'id', "DESC"]
       ],
@@ -118,7 +118,7 @@ export default class MedicoService {
           include: [{
             model: Retorno, as: 'retornos',
             required: (filtros.status || filtros.idAvalidor) ? true : false,
-            where: whereRetoro            
+            where: whereRetoro
           }],
           where: {
             data_criado: {
@@ -146,7 +146,6 @@ export default class MedicoService {
         };
       })
       .catch (erro => {
-        console.log(erro)
         throw new AppError("Erro interno no servidor!", 500, erro);
       })
   }

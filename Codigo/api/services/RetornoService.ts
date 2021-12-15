@@ -11,7 +11,7 @@ export default class RetornoService {
   }
 
   async update(retorno: Partial<IAtributosRetorno>) {
-    return Retorno.update(retorno, {
+    return await Retorno.update(retorno, {
       where: { id: retorno.id }
     })
     .catch(error => {
@@ -24,7 +24,7 @@ export default class RetornoService {
     if (!retorno) {
       throw new AppError("Retorno não encontrada!", 404);
     }
-    retorno.update({
+    await retorno.update({
     })
     .catch(error => {
         throw new AppError("Erro interno do servidor!", 500, error);
@@ -33,7 +33,7 @@ export default class RetornoService {
   }
 
   async getById(id: number) {
-    return Retorno.findOne({
+    return await Retorno.findOne({
       where: { id }
     })
     .catch (erro => {
@@ -42,7 +42,7 @@ export default class RetornoService {
   }
 
   async getBy(field: keyof Retorno, value: any) {
-    return Retorno.findOne({
+    return await Retorno.findOne({
       where: {
         [field]: value
       }
@@ -52,7 +52,7 @@ export default class RetornoService {
     });
   }
   async getAllBy(field: keyof Retorno, value: any) {
-    return Retorno.findAll({
+    return await Retorno.findAll({
       where: {
         [field]: value
       }
@@ -63,7 +63,7 @@ export default class RetornoService {
   }
 
   async getAll() {
-    return Retorno.findAll()
+    return await Retorno.findAll()
     .catch(error => {
         throw new AppError("Erro interno do servidor!", 500, error);
     });

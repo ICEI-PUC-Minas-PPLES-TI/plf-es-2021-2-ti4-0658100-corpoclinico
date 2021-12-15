@@ -5,7 +5,7 @@ export default class VideoService {
 
   async create(video: IAtributosVideoCriacao) {
     video.ativo = true;
-    return Video.create(video)
+    return await Video.create(video)
     .catch (error => {
       throw new AppError("Vídeo não criado!", 500, error);
     })
@@ -19,7 +19,6 @@ export default class VideoService {
           videoComPrioridadeAtual = await this.getBy('prioridade', videoBD.get().prioridade);
         await videoBD.update(video)
         .catch(error => {
-            console.log(error)
             throw new AppError("Erro interno do servidor!", 500, error);
         });
         if (videoComPrioridadeAtual){
@@ -39,7 +38,7 @@ export default class VideoService {
     if (!video) {
       throw new AppError("Video não encontrada!", 404);
     }
-    video.update({
+    await video.update({
       ativo: false,
     })
     .catch(error => {
@@ -49,7 +48,7 @@ export default class VideoService {
   }
 
   async getById(id: number) {
-    return Video.findOne({
+    return await Video.findOne({
       where: { id }
     })
     .catch (erro => {
@@ -58,7 +57,7 @@ export default class VideoService {
   }
 
   async getBy(field: keyof Video, value: any) {
-    return Video.findOne({
+    return await Video.findOne({
       where: {
         [field]: value
       }
@@ -80,7 +79,7 @@ export default class VideoService {
   }
 
   async getAll() {
-    return Video.findAll({
+    return await Video.findAll({
       order: [[ 'prioridade', 'ASC' ]]
     })
     .catch(error => {
@@ -89,7 +88,7 @@ export default class VideoService {
   }
 
   async getLastByPrioridade(){
-    return Video.findOne({
+    return await Video.findOne({
       order: [["prioridade", "DESC"]]
     })
   }

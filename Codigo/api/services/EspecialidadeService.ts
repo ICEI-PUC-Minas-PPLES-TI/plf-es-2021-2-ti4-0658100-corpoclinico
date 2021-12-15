@@ -4,13 +4,13 @@ import Especialidade, { IAtributosEspecialidadeCriacao } from "../models/Especia
 
 export default class EspecialidadeService{
     async create(especialidade: IAtributosEspecialidadeCriacao){
-        return Especialidade.create(especialidade)
+        return await Especialidade.create(especialidade)
         .catch (erro => {
             throw new AppError("Erro interno no servidor!", 500, erro);
         })
     }
     async update(especialidade: Partial<IAtributosEspecialidadeCriacao>){
-        return Especialidade.update(especialidade, {
+        return await Especialidade.update(especialidade, {
             where: {id: especialidade.id},
         })
         .catch (erro => {
@@ -26,7 +26,7 @@ export default class EspecialidadeService{
         })
     }
     async getById(id: number){
-        return Especialidade.findOne({
+        return await Especialidade.findOne({
             where: {id},
         })
         .catch (erro => {
@@ -34,7 +34,7 @@ export default class EspecialidadeService{
         })
     }
     async getAll( sortPaginate: ISortPaginateQuery, atributos: string[],  ){
-        return Especialidade.findAndCountAll()
+        return await Especialidade.findAndCountAll()
         .then(async (dados) => {
             const count: number = (dados.count) as any;
             const { paginas, ...SortPaginateOptions } = SortPaginate(
