@@ -115,15 +115,15 @@ export default class ArquivoService {
 
     let index : number = 0;
     if (formacoes)
-      for (const certFormFields of arquivosObj.docs_cert_form) {
+      for (const formacao of formacoes) {
         try {
-          const nome_arquivo = certFormFields.filename;
+          const nome_arquivo = arquivosObj.docs_cert_form[index].filename;
           const tipo = 'FORM';
           const certForm = await this.gerar({ nome_arquivo, tipo, medico_id });
           const medicoFormacaoService = new MedicoFormacaoService();
-          formacoes[index].medico_id = medico_id;
-          formacoes[index].arquivo_id = certForm.id
-          medicoFormacaoService.create(formacoes[index]);
+          formacao.medico_id = medico_id;
+          formacao.arquivo_id = certForm.id
+          medicoFormacaoService.create(formacao);
           await arquivosCriados.push(certForm);
         } catch (erro) {
           throw new AppError("Arquivo não criado!" + erro, 500);
@@ -132,18 +132,18 @@ export default class ArquivoService {
 
     if (especialidades) {
       let rqeIndex = 0;
-      for (const certEspecFields of arquivosObj.docs_cert_espec) {
+      for (const especialidade of especialidades) {
         try {
-          const nome_arquivo = certEspecFields.filename;
+          const nome_arquivo = arquivosObj.docs_cert_espec[rqeIndex].filename;
           const tipo = 'RQE';
           const certEspec = await this.gerar({ nome_arquivo, tipo, medico_id });
           arquivosCriados.push(certEspec);
 
-          especialidades[rqeIndex].medico_id = medico_id;
-          especialidades[rqeIndex].especialidade_id = especialidades[rqeIndex].especialidade_id ? especialidades[rqeIndex].especialidade_id : null;
-          especialidades[rqeIndex].arquivo_id = certEspec.id;
+          especialidade.medico_id = medico_id;
+          especialidade.especialidade_id = especialidade.especialidade_id ? especialidade.especialidade_id : null;
+          especialidade.arquivo_id = certEspec.id;
           const medicoEspecialidadeService = new MedicoEspecialidadeService();
-          await medicoEspecialidadeService.create(especialidades[rqeIndex]);
+          await medicoEspecialidadeService.create(especialidade);
           rqeIndex++;
         } catch (erro) {
           throw new AppError("Arquivo não criado!" + erro, 500);

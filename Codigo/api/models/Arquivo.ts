@@ -39,7 +39,7 @@ class Arquivo extends Model<IAtributosArquivo, IAtributosArquivoCriacao> impleme
             })
               .then(usuario => {
                 if (usuario.length != 0)
-                  next(new AppError("Falha ao cadastrar nome de arquivo (Duplicado)!", 422));
+                  next(new AppError(" Falha ao cadastrar arquivo (Duplicado)!", 422));
                 next();
               })
               .catch(error=>{
