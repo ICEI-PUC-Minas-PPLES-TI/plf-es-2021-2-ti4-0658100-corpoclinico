@@ -1,44 +1,31 @@
-cff-version: 1.2.0
-title: Cadastro de Corpo Clínico
+cff-version: 1.0.1
 message: Please cite this software using these metadata.
-type: software
+title: Cadastro de Corpo Clínico 
 authors:
-  - given-names: Guilherme
-    family-names: Gabriel Silva Pereira
-  - given-names: Henrique
-    family-names: Penna Forte Monteiro
-  - given-names: Lucas
-    family-names: Ângelo Oliveira Martins Rocha
-  - given-names: Victor
-    family-names: Boaventura Goes Campos
-  - given-names: Vinicius
-    family-names: Marini Costa e Oliveira
-  - given-names: Ivre
+  - family-names: Gabriel Silva Pereira
+    given-names: Guilherme
+  - family-names: Penna Forte Monteiro
+    given-names: Henrique
+  - family-names: Ângelo Oliveira Martins Rocha
+    given-names: Lucas
+  - family-names: Boaventura Goes Campos
+    given-names: Victor
+  - family-names: Marini Costa e Oliveira
+    given-names: Vinicius
+  - family-names: 
+    given-names: 
+  - name-suffix: Professor
+    affiliation: PUC Minas
     family-names: Marjorie Ribeiro Machado
-    name-suffix: Professor
+    given-names: Ivre
+  - name-suffix: Professor
     affiliation: PUC Minas
-  - given-names: Soraia
     family-names: Lúcia da Silva
-    name-suffix: Professor
-    affiliation: PUC Minas
-  - given-names: Carina
-    family-names: Maia
-    name-suffix: Cliente
-    affiliation: HSF
-repository-code: >-
-  https://github.com/ICEI-PUC-Minas-PPLES-TI/plf-es-2021-2-ti4-0658100-corpoclinico
-abstract: >-
-  The main goal of the work was to design and produce
-  a software for the Hospital Complex São Francisco.
-  This software is used to register new doctors that
-  are entering to the instituition, so that they can
-  submit they data and documents, and the managers
-  can review the submit.
+    given-names: Soraia
 keywords:
-  - Saúde
   - Gestão
-  - Extensão
   - Hospital
+repository-code: https://github.com/ICEI-PUC-Minas-PPLES-TI/plf-es-2021-2-ti4-0658100-corpoclinico
 license: CC-BY-4.0
 version: 1.0.0
-date-released: '2022-11-09'
+date-released: 2021-12-22
